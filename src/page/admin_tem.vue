@@ -1,6 +1,7 @@
 <!-- 临时管理员页面 -->
 <template lang="html">
   <div class="admin">
+    <Header/>
     <el-row>
       <el-col :span="4">
         <div>
@@ -42,12 +43,14 @@
             <ul>
               <li v-for="(crum,index) in abc" @click="choseCru(index)" :key="index+'A'" ref="crum">
                 <router-link tag="span" :to="crum.url">{{crum.name}}</router-link>
-                <i class="iconfont icon-guanbi" ref="close" @click.stop="delCru(index)"></i>
+                <i class="el-icon-circle-close" ref="close" @click.stop="delCru(index)"></i>
               </li>
               <li></li>
             </ul>
           </div>
-          <router-view></router-view>
+          <div class="" style="height:80vh;overflow:auto;">
+            <router-view></router-view>
+          </div>
         </div>
       </el-col>
     </el-row>
@@ -82,6 +85,9 @@ export default {
        ],
        closeUrl:null,//暂存页面地址
      }
+   },
+   components:{
+     Header:resolve=>require(['@/components/header'],resolve)
    },
    mounted(){
      this.$refs.crum[0].style.borderBottom='0';
@@ -157,11 +163,12 @@ export default {
 .admin{
   margin:0 auto;
   max-height: none;
-  padding-top: 12px;
+  padding-top: 86px;
+  box-sizing: border-box;
+  height: 100vh;
   .admin_view{
     background: white;
     max-height: none;
-    padding-bottom: 50px;
     .crumbs{
       width: 100%;
       height: 30px;
@@ -191,10 +198,10 @@ export default {
           }
           i{
             position: absolute;
-            right:10px;
-            font-size: 12px;
+            right:3px;
+            font-size: 13px;
             color:#999;
-            top:0;
+            top:9px;
           }
           i:hover{
             color:#666;

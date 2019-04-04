@@ -61,12 +61,43 @@
       </el-pagination>
     </div>
     <!-- 查看申请人弹出框 -->
-    <div class="">
+    <div class="choseEng">
       <el-dialog
         title="查看"
         :visible.sync="takeOrder"
-        width="30%">
-        <span>这是一段信息</span>
+        width="50%">
+        <ul class="choseTitle">
+          <li>姓名</li>
+          <li>联系方式</li>
+          <li>工作年限</li>
+          <li>技能水平</li>
+          <li>操作</li>
+        </ul>
+        <ul class="choseCon">
+          <li v-for="(eng,index) in engList" :key="index+'B'">
+            <span>{{eng.engineerVO.name}}</span>
+            <span class="contact">{{eng.engineerVO.phone}}</span>
+            <span>{{eng.engineerVO.workYear}}</span>
+            <!-- <span v-for="(item,index) in eng.engineerVO.levels">{{item.technology.name+'-'+item.name}}</span> -->
+            <el-tooltip class="item" effect="dark" :content="eng.engineerVO.levelStr" placement="top">
+              <span style="cursor:pointer">{{eng.engineerVO.levelStr.substring(0,8)+'...'}}</span>
+            </el-tooltip>
+            <span class="select">
+              <el-select v-model="eng.engineerVO.stateStr" @change="choseSelEng(index)" ref="stateText">
+                <el-option
+                  size="mini"
+                  placeholder="请选择"
+                  v-for="opa in eng.engineerVO.stateV0"
+                  :key="index+'C'"
+                  :label="opa"
+                  :value="opa">
+                </el-option>
+              </el-select>
+            </span>
+          </li>
+        </ul>
+        <p style="width:100%;color:#666;text-align:center;font-size:16px;
+        line-height:50px;">暂无申请者</p>
         <span slot="footer" class="dialog-footer">
           <el-button @click="takeOrder = false">取 消</el-button>
           <el-button type="primary" @click="takeOrder = false">确 定</el-button>
@@ -93,6 +124,7 @@
 export default {
   data(){
     return{
+      choseEngVal:null,
       msgList:[],
       currentPage3:1,
       page:0,//当前页码
@@ -109,6 +141,7 @@ export default {
       loadOrder:false,//是否启用loading
       takeOrder:false,//接单记录查看
       pushOrder:false,//添加项目
+      engList:[],//申请人列表
     }
   },
   mounted(){
@@ -123,10 +156,10 @@ export default {
       this.getOrderList();
     },
     handleSizeChange(val) {
-       console.log(`每页 ${val} 条`);
+       // console.log(`每页 ${val} 条`);
     },
     handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
+        // console.log(`当前页: ${val}`);
         this.page=val-1;
         this.getOrderList()
     },
@@ -137,10 +170,10 @@ export default {
       formdata.append('sortStr','createTime');
       formdata.append('asc','desc');
       formdata.append('page',_vm.page);
-      formdata.append('size',15);
+      formdata.append('size',10);
       _vm.$axios.post(_vm.url+'/mission/findMissionListByCondition',formdata).then((res)=>{
         if(res.data.code==0){
-          _vm.length=_vm.page*15;
+          _vm.length=_vm.page*10;
           _vm.pageNum=res.data.data.totalPages*10;
           res.data.data.content.forEach((e)=>{
             _vm.$set(e,'num',_vm.length++);
@@ -164,7 +197,6 @@ export default {
       })
     },
     upStatus(index){//更新订单状态
-      console.log(this.msgList[index])
       if(this.msgList[index].state==-1){
         let formdata=new FormData();
         formdata.append('id',this.msgList[index].id);
@@ -206,7 +238,118 @@ export default {
       }
     },
     takeDis(index){//派发订单
-      this.takeOrder=true;
+      let _vm=this;
+      _vm.takeOrder=true;
+      setTimeout(()=>{
+        for(let i in _vm.msgList[index].missionRecordVOList){
+          let e=_vm.msgList[index].missionRecordVOList[i];
+          if(e.state==0){
+            let a=['已入选','未入选'];
+            _vm.$set(e.engineerVO,'stateV0',a);
+            _vm.$set(e.engineerVO,'stateStr',null)
+          }else if(e.state==1){
+            let b=['未入选'];
+            _vm.$set(e.engineerVO,'stateV0',b);
+            _vm.$set(e.engineerVO,'stateStr','已入选')
+          }else if(e.state==-1){
+            let c=['已入选'];
+            _vm.$set(e.engineerVO,'stateV0',c);
+            _vm.$set(e.engineerVO,'stateStr','未入选')
+          }
+        }
+        _vm.engList=_vm.msgList[index].missionRecordVOList;
+      })
+    },
+    choseSelEng(index){//更新入选状态
+      let _vm=this;
+      let id=_vm.engList[index].id;
+      if(_vm.engList[index].state==1){
+        let formdata=new FormData();
+        formdata.append('id',id);
+        formdata.append('state',-1);
+        _vm.$axios.post(_vm.url+'/mission/updateMissionRecordState',formdata).then((res)=>{
+          if(res.data.code==0){
+            let b=['已入选']
+            _vm.$set(_vm.engList[index].engineerVO,'stateV0',b);
+            _vm.engList[index].engineerVO.stateStre='未入选';
+            _vm.engList[index].state=-1;
+            _vm.$message({
+               message: '更新接单状态成功',
+               type: 'success'
+             });
+          }else{
+            _vm.$message.error(res.msg);
+          }
+        }).catch((err)=>{
+            _vm.$message.error('未知错误,请联系管理员');
+        })
+
+      }else if(_vm.engList[index].state==-1){
+        let formdata=new FormData();
+        formdata.append('id',id);
+        formdata.append('state',1);
+        _vm.$axios.post(_vm.url+'/mission/updateMissionRecordState',formdata).then((res)=>{
+          if(res.data.code==0){
+            let a=['未入选']
+            _vm.$set(_vm.engList[index].engineerVO,'stateV0',a);
+            _vm.engList[index].engineerVO.stateStre='已入选';
+            _vm.engList[index].state=1;
+            _vm.$message({
+               message: '更新接单状态成功',
+               type: 'success'
+             });
+          }else{
+            _vm.$message.error(res.msg);
+          }
+        }).catch((err)=>{
+            _vm.$message.error('未知错误,请联系管理员');
+        })
+      }else{
+        setTimeout(()=>{
+          let stateVal=_vm.$refs.stateText[index].value;
+          if(stateVal==='已入选'){
+            let formdata=new FormData();
+            formdata.append('id',id);
+            formdata.append('state',1);
+            _vm.$axios.post(_vm.url+'/mission/updateMissionRecordState',formdata).then((res)=>{
+              if(res.data.code==0){
+                _vm.engList[index].engineerVO.stateStre='已入选';
+                let a=['未入选']
+                _vm.$set(_vm.engList[index].engineerVO,'stateV0',a);
+                _vm.engList[index].state=1;
+                _vm.$message({
+                   message: '更新接单状态成功',
+                   type: 'success'
+                 });
+              }else{
+                _vm.$message.error(res.msg);
+              }
+            }).catch((err)=>{
+              _vm.$message.error('未知错误,请联系管理员');
+            })
+          }else{
+            let formdata=new FormData();
+            formdata.append('id',id);
+            formdata.append('state',-1);
+            _vm.$axios.post(_vm.url+'/mission/updateMissionRecordState',formdata).then((res)=>{
+              if(res.data.code==0){
+                _vm.engList[index].engineerVO.stateStre='未入选';
+                let b=['已入选']
+                _vm.$set(_vm.engList[index].engineerVO,'stateV0',b);
+                _vm.engList[index].state=-1;
+                _vm.$message({
+                   message: '更新接单状态成功',
+                   type: 'success'
+                 });
+              }else{
+                _vm.$message.error(res.msg);
+              }
+            }).catch((err)=>{
+              _vm.$message.error('未知错误,请联系管理员');
+            })
+          }
+        })
+      }
     }
   }
 }
@@ -248,12 +391,15 @@ export default {
   .order_con{
     width: 90%;
     margin-left: 20px;
-    min-height: 600px;
+    min-height: 550px;
     .title_con{
       text-align: center;
       font-size: 15px;
       line-height: 50px;
       max-height: none;
+      i:hover{
+        color:#eb7a1d;
+      }
     }
   }
   .el_con:nth-of-type(even){
@@ -262,7 +408,38 @@ export default {
   .order_page{
     width: 90%;
     text-align: right;
-    margin-top:15px;
+  }
+  .choseEng{
+    .choseTitle{
+        width: 100%;
+        height: 20px;
+        display: flex;
+        li{
+          width: 20%;
+          height: 100%;
+          text-align: center;
+          font-size: 16px;
+          font-weight: bold;
+          color:black;
+        }
+    }
+    .choseCon{
+      width: 100%;
+      margin-top: 10px;
+      max-height: none;
+      li{
+        width: 100%;
+        color:#666;
+        display: flex;
+        span{
+          display: inline-block;
+          width: 20%;
+          color:black;
+          text-align: center;
+          line-height: 40px;
+        }
+      }
+    }
   }
 }
 </style>

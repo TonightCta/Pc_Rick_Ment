@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
 
 Vue.use(Router)
 
@@ -8,13 +7,13 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Admin',
-      component:resolve=>require(['@/page/temAdmin/admin_tem'],resolve),
+      name: 'index',
+      component:resolve=>require(['@/page/admin_tem'],resolve),
     },
     {
       name:'Admin',//临时管理员
       path:'/admin',
-      component:resolve=>require(['@/page/temAdmin/admin_tem'],resolve),
+      component:resolve=>require(['@/page/admin_tem'],resolve),
       children:[
         {
           path:'/admin/wel',
