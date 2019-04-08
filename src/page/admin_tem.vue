@@ -14,24 +14,14 @@
             text-color="#fff"
             active-text-color="#fff"
             >
-            <el-submenu index="1">
+            <el-submenu v-for="(fun,key) in route" :key="'F'+key" index="1">
               <template slot="title">
-                <i class="el-icon-date"></i>
-                <span>临时管理</span>
+                <span>{{fun.name}}</span>
               </template>
               <el-menu-item-group >
-                <el-menu-item v-for="(url,index) in route" :key="index">
-                  <router-link tag="span" :to="url.path" @click.native="pushCru(index)">{{url.text}}</router-link>
+                <el-menu-item v-for="(c,index) in fun.usingChannelVOList" :key="'C'+index">
+                  <router-link tag="span" :to="c.url" @click.native="pushCru(key,index)">{{c.name}}</router-link>
                 </el-menu-item>
-              </el-menu-item-group>
-            </el-submenu>
-            <el-submenu index="2">
-              <template slot="title">
-                <i class="el-icon-warning"></i>
-                <span>临时管理</span>
-              </template>
-              <el-menu-item-group >
-                <el-menu-item>待开发</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
           </el-menu>
@@ -69,20 +59,7 @@ export default {
            url:'/admin/wel'
          }
        ],
-       route:[
-         {
-           text:'订单派发',
-           path:'/admin/order'
-         },
-         {
-           text:'角色管理',
-           path:'/admin/role'
-         },
-         {
-           text:'频道管理',
-           path:'/admin/channel'
-         }
-       ],
+       route:[],
        closeUrl:null,//暂存页面地址
      }
    },
@@ -94,7 +71,11 @@ export default {
      this.$refs.close[0].style.display='none';
      if(this.abc.length<2){
        this.$router.push('/admin/wel')
-     }
+     };
+     if(window.sessionStorage.getItem('adminMes')){
+       let mes=JSON.parse(window.sessionStorage.getItem('adminMes'))
+       this.route=mes.roleVO.usingTopChannelVOList
+     };
    },
    methods: {
      handleOpen(key, keyPath) {
@@ -113,8 +94,9 @@ export default {
          this.$refs.crum[index].style.borderBottom='0';
          this.$refs.crum[index].style.color='#eb7a1d'
        })
+       console.log(this.abc)
      },
-     pushCru(index){//添加面包屑
+     pushCru(key,index){//添加面包屑
        for(let i in this.$refs.crum){
          this.$refs.crum[i].style.borderBottom='1px solid #eb7a1d'
          this.$refs.crum[i].style.color='black'
@@ -123,9 +105,9 @@ export default {
          name:null,
          url:null
        };
-       curMes.name=this.route[index].text;
-       curMes.url=this.route[index].path;
-       this.closeUrl=this.route[index].path;
+       curMes.name=this.route[index].name;
+       curMes.url=this.route[key].usingChannelVOList[index].url;
+       this.closeUrl=this.route[key].usingChannelVOList[index].url;
        let a=[];
        this.abc.forEach((e)=>{
          a.push(e.name)
@@ -166,6 +148,8 @@ export default {
   padding-top: 86px;
   box-sizing: border-box;
   height: 100vh;
+  z-index: 100;
+  background: white;
   .admin_view{
     background: white;
     max-height: none;

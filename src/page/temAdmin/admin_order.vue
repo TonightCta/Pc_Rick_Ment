@@ -2,7 +2,7 @@
 <template lang="html">
   <div class="admin_order w100">
     <p class="admin_add">
-      <el-button type="primary" icon="el-icon-plus" @click="pushOrder=true">添加项目</el-button>
+      <el-button type="primary" icon="el-icon-plus" @click="mePushOrder()">添加项目</el-button>
     </p>
     <p class="admin_reload">
       <el-tooltip class="item" effect="dark" content="刷新数据" placement="bottom">
@@ -63,7 +63,7 @@
     <!-- 查看申请人弹出框 -->
     <div class="choseEng">
       <el-dialog
-        title="查看"
+        title="查看申请人"
         :visible.sync="takeOrder"
         width="50%">
         <ul class="choseTitle">
@@ -97,7 +97,7 @@
           </li>
         </ul>
         <p style="width:100%;color:#666;text-align:center;font-size:16px;
-        line-height:50px;">暂无申请者</p>
+        line-height:50px;" v-show="noEng">暂无申请者</p>
         <span slot="footer" class="dialog-footer">
           <el-button @click="takeOrder = false">取 消</el-button>
           <el-button type="primary" @click="takeOrder = false">确 定</el-button>
@@ -105,15 +105,61 @@
       </el-dialog>
     </div>
     <!-- 添加项目弹出框 -->
-    <div class="">
+    <div class="pushProject">
       <el-dialog
-        title="添加"
+        title="新增项目"
         :visible.sync="pushOrder"
-        width="30%">
-        <span>这是一段信息</span>
+        width="40%">
+        <el-row>
+          <el-col :span="6"><div class="proTitle">
+            <ul>
+              <li>项目名称:</li>
+              <li>项目地点:</li>
+              <li>详细地址:</li>
+              <li>项目内容:</li>
+            </ul>
+          </div></el-col>
+          <el-col :span="16"><div class="proCon">
+            <ul>
+              <li>
+                <el-input placeholder="请输入项目名称" v-model="projectName"></el-input>
+              </li>
+              <li>
+                <p>
+                  <el-select v-model="placeProName" @change="chosePro">
+                    <el-option
+                    v-for="(placePro,index) in placeList"
+                    :key="'Pro'+index"
+                    :label="placePro.name"
+                    :value="placePro.name"
+                    >
+                    </el-option>
+                  </el-select>
+                </p>
+                <p>
+                  <el-select v-model="placeCityName" @change="choseCity">
+                    <el-option
+                    v-for="(placePro,index) in cityList"
+                    :key="'City'+index"
+                    :label="placePro.name"
+                    :value="placePro.name"
+                    >
+                    </el-option>
+                  </el-select>
+                </p>
+              </li>
+              <li>
+                <el-input placeholder="请输入详细地址" v-model="addRess"></el-input>
+              </li>
+              <li>
+                <el-input v-model="projectCon" type="textarea" :autosize="{minRows:8}" resize="none" placeholder="请输入项目内容"></el-input>
+              </li>
+            </ul>
+          </div></el-col>
+        </el-row>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="pushOrder = false">取 消</el-button>
-          <el-button type="primary" @click="pushOrder = false">确 定</el-button>
+          <el-button @click="placeProName='';placeCityName='';projectName='';placeID=null;addRess='';projectCon='';pushOrder = false">取 消</el-button>
+          <el-button type="primary" @click="subOrder">确 定</el-button>
         </span>
       </el-dialog>
     </div>
@@ -142,15 +188,90 @@ export default {
       takeOrder:false,//接单记录查看
       pushOrder:false,//添加项目
       engList:[],//申请人列表
+      noEng:false,//是否有申请人
+      placeProName:null,//省级名称
+      placeCityName:null,//市级名称
+      placeID:null,//城市ID
+      placeList:[],//省级列表
+      cityList:[],//城市列表
+      projectName:'',//项目名称
+      addRess:'',//项目详细地址
+      projectCon:'',//项目内容
     }
   },
   mounted(){
-    if(window.sessionStorage.getItem('user')){
-      this.userMes=JSON.parse(window.sessionStorage.getItem('user'))
-    };
     this.getOrderList()
   },
   methods:{
+    mePushOrder(){//添加项目
+      let _vm=this;
+      _vm.pushOrder=true;
+      _vm.$axios.get(_vm.url+'/mobile/getUsingPlaceList').then((res)=>{
+        if(res.data.code==0){
+          console.log(res)
+          _vm.placeList=res.data.data.placeList
+        }else{
+          _vm.pushOrder=false;
+          _vm.$message.error(res.data.msg);
+        }
+      }).catch((err)=>{
+        _vm.pushOrder=false;
+        _vm.$message.error('未知错误,请联系管理员')
+      })
+    },
+    chosePro(index){//选择省
+      this.placeCityName=''
+      this.placeList.forEach((e)=>{
+        if(index===e.name){
+          this.cityList=e.usingChildList
+        }
+      })
+    },
+    choseCity(index){//选择市
+      this.cityList.forEach((e)=>{
+        if(index===e.name){
+          this.placeID=e.id;
+        }
+      })
+    },
+    subOrder(){//上传新增任务
+      let _vm=this;
+      let formdata=new FormData;
+      if(_vm.projectName==''){
+        _vm.$message.error('请输入项目名称')
+      }else if(_vm.placeID==null){
+        _vm.$message.error('请选择项目地点')
+      }else if(_vm.addRess==''){
+        _vm.$message.error('请输入项目详细地址')
+      }else if(_vm.projectCon==''){
+        _vm.$message.error('请输入项目内容')
+      }else{
+        formdata.append('name',_vm.projectName);
+        formdata.append('content',_vm.projectCon);
+        formdata.append('address',_vm.addRess);
+        formdata.append('placeId',_vm.placeID);
+        _vm.$axios.post(_vm.url+'/mission/saveMission',formdata).then((res)=>{
+          if(res.data.code==0){
+            _vm.$message({
+              message:'添加成功',
+              type:'success'
+            });
+            _vm.pushOrder=false;
+            _vm.getOrderList();
+            _vm.projectName='';
+            _vm.placeID=null;
+            _vm.addRess='';
+            _vm.projectCon='';
+          }else{
+            _vm.pushOrder=false;
+            _vm.$message.error(res.data.msg)
+          }
+        }).catch((err)=>{
+          _vm.pushOrder=false;
+          _vm.$message.error('未知错误,请联系管理员')
+        })
+      }
+    },
     refresh(){//刷新数据
       this.page=0;
       this.getOrderList();
@@ -240,6 +361,11 @@ export default {
     takeDis(index){//派发订单
       let _vm=this;
       _vm.takeOrder=true;
+      if(_vm.msgList[index].missionRecordVOList==null){
+        _vm.noEng=true;
+      }else{
+        _vm.noEng=false;
+      }
       setTimeout(()=>{
         for(let i in _vm.msgList[index].missionRecordVOList){
           let e=_vm.msgList[index].missionRecordVOList[i];
@@ -437,6 +563,34 @@ export default {
           color:black;
           text-align: center;
           line-height: 40px;
+        }
+      }
+    }
+  }
+  .pushProject{
+    .proTitle{
+      text-align: right;
+      box-sizing: border-box;
+      padding-right: 15px;
+      ul{
+        li{
+          line-height: 40px;
+          margin-top: 10px;
+          margin-bottom: 10px;
+        }
+      }
+    }
+    .proCon{
+      ul{
+        li{
+          margin-top: 10px;
+          margin-bottom: 10px;
+        }
+        li:nth-child(2){
+          display: flex;
+          p{
+            width: 30%;
+          }
         }
       }
     }

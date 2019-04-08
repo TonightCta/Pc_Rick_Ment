@@ -3,12 +3,12 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/',
       name: 'index',
-      component:resolve=>require(['@/page/admin_tem'],resolve),
+      component:resolve=>require(['@/page/login'],resolve),
     },
     {
       name:'Admin',//临时管理员
@@ -37,4 +37,14 @@ export default new Router({
       redirect:'/admin/wel'
     }
   ]
+});
+router.beforeEach((to,from,next)=>{
+  const adminList=['Admin','Wel','Order'];
+  if(adminList.indexOf(to.name)>-1){
+    if(!window.sessionStorage.getItem('adminMes')){
+      next('/')
+    }
+  };
+  next();
 })
+export default router;

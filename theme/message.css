@@ -261,10 +261,10 @@
   .el-message--info .el-message__content {
     color: #909399; }
   .el-message--success {
-    background-color: #f0f9eb;
-    border-color: #e1f3d8; }
+    background-color: #fdf2e8;
+    border-color: #fbe4d2; }
     .el-message--success .el-message__content {
-      color: #67C23A; }
+      color: #eb7a1d; }
   .el-message--warning {
     background-color: #fdf6ec;
     border-color: #faecd8; }
@@ -297,7 +297,7 @@
     .el-message__closeBtn:hover {
       color: #909399; }
   .el-message .el-icon-success {
-    color: #67C23A; }
+    color: #eb7a1d; }
   .el-message .el-icon-error {
     color: #F56C6C; }
   .el-message .el-icon-info {
