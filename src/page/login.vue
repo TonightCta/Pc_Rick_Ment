@@ -75,8 +75,11 @@ export default {
          window.sessionStorage.setItem('adminMes',JSON.stringify(res.data.data));
          _vm.$router.push('/admin');
          setTimeout(()=>{
-           document.getElementsByTagName('canvas')[0].style.display='none';
-         },500)
+           for(let i in document.getElementsByTagName('canvas')){
+             document.getElementsByTagName('canvas')[i].style.display='none';
+           }
+         },500);
+         console.log(res)
        }else{
          _vm.$message.error(res.data.msg)
        }

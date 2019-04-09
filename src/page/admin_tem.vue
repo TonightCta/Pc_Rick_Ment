@@ -4,15 +4,13 @@
     <Header/>
     <el-row>
       <el-col :span="4">
-        <div>
+        <div style="box-shadow:0px 0px 10px #999;border-right:1px solid #eee;">
           <el-menu
             default-active="4"
             class="el-menu-vertical-demo"
             @open="handleOpen"
             @close="handleClose"
-            background-color="#545c64"
-            text-color="#fff"
-            active-text-color="#fff"
+            active-text-color="#000"
             >
             <el-submenu v-for="(fun,key) in route" :key="'F'+key" index="1">
               <template slot="title">
@@ -38,7 +36,7 @@
               <li></li>
             </ul>
           </div>
-          <div class="" style="height:80vh;overflow:auto;">
+          <div class="" style="height:80vh;overflow:auto;position:relative;">
             <router-view></router-view>
           </div>
         </div>
@@ -73,8 +71,12 @@ export default {
        this.$router.push('/admin/wel')
      };
      if(window.sessionStorage.getItem('adminMes')){
-       let mes=JSON.parse(window.sessionStorage.getItem('adminMes'))
-       this.route=mes.roleVO.usingTopChannelVOList
+       let mes=JSON.parse(window.sessionStorage.getItem('adminMes'));
+       if(mes.roleVO!=null){
+         this.route=mes.roleVO.usingTopChannelVOList
+       }else{
+         this.route=[{name:'暂无权限'}]
+       }
      };
    },
    methods: {
@@ -145,9 +147,9 @@ export default {
 .admin{
   margin:0 auto;
   max-height: none;
+  height: 100%;
   padding-top: 86px;
   box-sizing: border-box;
-  height: 100vh;
   z-index: 100;
   background: white;
   .admin_view{
