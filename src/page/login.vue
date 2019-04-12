@@ -25,7 +25,7 @@
         </el-col>
       </el-row>
       <p class="login_sub">
-        <el-button type="primary" style="fontSize:16px;" :disabled="disabled" @click="loginSub()">&nbsp;&nbsp;登录&nbsp;&nbsp;</el-button>
+        <el-button type="primary" style="fontSize:16px;" size="small" :disabled="disabled" @click="loginSub()">&nbsp;&nbsp;登录&nbsp;&nbsp;</el-button>
       </p>
     </div>
   </div>
@@ -240,10 +240,10 @@ canvas{
     color:white;
     .login_sub{
       width: 100%;
-      text-align: right;
-      margin-top: 16px;
+      text-align: left;
+      margin-top: 26px;
       box-sizing: border-box;
-      padding-right: 70px;
+      padding-left: 200px;
       .el-button--primary{
         background: rgba(235,122,29,.3);
       }
