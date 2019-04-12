@@ -159,7 +159,11 @@
         </el-row>
         <span slot="footer" class="dialog-footer">
           <el-button @click="placeProName='';placeCityName='';projectName='';placeID=null;addRess='';projectCon='';pushOrder = false">取 消</el-button>
-          <el-button type="primary" @click="subOrder">确 定</el-button>
+          <el-button type="primary" @click="subOrder" v-loading="hasSub"
+          element-loading-spinner="el-icon-loading"
+          element-loading-background="rgba(255, 255, 255, .9)"
+          :disabled="hasSub"
+          >确 定</el-button>
         </span>
       </el-dialog>
     </div>
@@ -197,6 +201,7 @@ export default {
       projectName:'',//项目名称
       addRess:'',//项目详细地址
       projectCon:'',//项目内容
+      hasSub:false,//是否禁用按钮
     }
   },
   mounted(){
@@ -246,6 +251,7 @@ export default {
       }else if(_vm.projectCon==''){
         _vm.$message.error('请输入项目内容')
       }else{
+        _vm.hasSub=true;
         formdata.append('name',_vm.projectName);
         formdata.append('content',_vm.projectCon);
         formdata.append('address',_vm.addRess);
@@ -256,6 +262,7 @@ export default {
               message:'添加成功',
               type:'success'
             });
+            _vm.hasSub=false;
             _vm.pushOrder=false;
             _vm.getOrderList();
             _vm.projectName='';
