@@ -21,6 +21,7 @@
         <el-col :span="4"><div class="title">申请接单记录</div></el-col>
       </el-row>
     </div>
+    <p style="text-align:center;color:#666;margin-top:30px;width:90%;" v-show="hasOrder">暂无更多数据</p>
     <div class="order_con"  v-loading="loadOrder">
       <el-row v-for="(orderCon,index) in msgList" :key="index" class="el_con">
         <el-col :span="2"><div class="title_con">{{orderCon.num+1}}</div></el-col>
@@ -71,6 +72,7 @@
           <li>联系方式</li>
           <li>工作年限</li>
           <li>技能水平</li>
+          <li>详细资料</li>
           <li>操作</li>
         </ul>
         <ul class="choseCon">
@@ -82,6 +84,9 @@
             <el-tooltip class="item" effect="dark" :content="eng.engineerVO.levelStr" placement="top">
               <span style="cursor:pointer">{{eng.engineerVO.levelStr.substring(0,8)+'...'}}</span>
             </el-tooltip>
+            <span>
+              <i class="el-icon-search" @click="viewEng(index)" style="font-size:20px;cursor:pointer;margin-top:10px;"></i>
+            </span>
             <span class="select">
               <el-select v-model="eng.engineerVO.stateStr" @change="choseSelEng(index)" ref="stateText">
                 <el-option
@@ -98,11 +103,50 @@
         </ul>
         <p style="width:100%;color:#666;text-align:center;font-size:16px;
         line-height:50px;" v-show="noEng">暂无申请者</p>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="takeOrder = false">取 消</el-button>
-          <el-button type="primary" @click="takeOrder = false">确 定</el-button>
-        </span>
       </el-dialog>
+      <div class="engMes">
+        <el-dialog
+         width="40%"
+         title="工程师信息"
+         :visible.sync="innerVisible"
+         append-to-body>
+           <p style="font-size:16px;line-height:40px;width:100%;display:flex;">
+             <span style="width:25%;text-align:right;">姓名:</span>
+             <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;">{{engMes.name}}</span>
+           </p>
+
+           <p style="font-size:16px;line-height:40px;width:100%;display:flex;">
+             <span style="width:25%;text-align:right;">联系方式:</span>
+             <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;">{{engMes.phone}}</span>
+           </p>
+
+           <p style="font-size:16px;line-height:40px;width:100%;display:flex;">
+             <span style="width:25%;text-align:right;">工作年限:</span>
+             <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;">{{engMes.workyear}}</span>
+           </p>
+
+           <p style="font-size:16px;line-height:40px;width:100%;display:flex;">
+             <span style="width:25%;text-align:right;">接单区域:</span>
+             <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;">{{engMes.places}}</span>
+           </p>
+
+           <p style="font-size:16px;line-height:40px;width:100%;display:flex;">
+             <span style="width:25%;text-align:right;">技能水平:</span>
+             <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;">{{engMes.skills}}</span>
+           </p>
+           <p style="font-size:16px;line-height:40px;width:100%;display:flex;">
+             <span style="width:25%;text-align:right;">技能证书:</span>
+             <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;display:flex;flex-wrap:wrap;">
+               <viewer :images="engMes.skillPic">
+                 <img v-for="(skillPic,index) in engMes.skillPic"
+                 :key="'Skill'+index" :src="url+skillPic.fileName" alt=""
+                 style="width:20%;height:100px;margin-left:15px;margin-top:10px;cursor:pointer;"
+                 >
+               </viewer>
+             </span>
+           </p>
+       </el-dialog>
+     </div>
     </div>
     <!-- 添加项目弹出框 -->
     <div class="pushProject">
@@ -202,12 +246,49 @@ export default {
       addRess:'',//项目详细地址
       projectCon:'',//项目内容
       hasSub:false,//是否禁用按钮
+      hasOrder:false,//是否有数据
+      innerVisible:false,//二级弹框
+      engMes:{
+        name:null,//工程师姓名
+        phone:null,//联系方式
+        workyear:null,//工作年限
+        skills:null,//技能水平
+        skillPic:[],//技能图片
+        places:null,//接单区域
+      },
+      staging:[],//暂存数据
+    }
+  },
+  watch:{
+    innerVisible(val,oldVal){
+      if(!val){
+        this.engMes.places=null;
+        this.staging=[];
+      }else{
+        console.log(1)
+      }
     }
   },
   mounted(){
     this.getOrderList()
   },
   methods:{
+    viewEng(index){
+      console.log(this.engList[index]);
+      this.engMes.name=this.engList[index].engineerVO.name;
+      this.engMes.phone=this.engList[index].engineerVO.phone;
+      this.engMes.workyear=this.engList[index].engineerVO.workYear;
+      this.engMes.skills=this.engList[index].engineerVO.levelStr;
+      this.engMes.skillPic=this.engList[index].engineerVO.certificateFiles;
+      this.engList[index].engineerVO.childPlaces.forEach((e)=>{
+        this.staging.push(e.parentPlace.name+'-'+e.name);
+        console.log(this.staging)
+      });
+      setTimeout(()=>{
+        this.engMes.places=this.staging.join('/')
+      })
+      this.innerVisible=true
+    },
     mePushOrder(){//添加项目
       let _vm=this;
       _vm.pushOrder=true;
@@ -315,6 +396,11 @@ export default {
           });
           _vm.loadOrder=false;
           _vm.msgList=res.data.data.content;
+          if(_vm.msgList.length<1){
+            _vm.hasOrder=true
+          }else{
+            _vm.hasOrder=false;
+          }
         }else{
           _vm.loadOrder=false;
           _vm.$message.error(res.data.msg);
@@ -407,7 +493,7 @@ export default {
             _vm.engList[index].engineerVO.stateStre='未入选';
             _vm.engList[index].state=-1;
             _vm.$message({
-               message: '更新接单状态成功',
+               message: '更新入选状态成功',
                type: 'success'
              });
           }else{
