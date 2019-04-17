@@ -8,12 +8,13 @@ import '../static/css/index.css'
 import Viewer from 'v-viewer'
 import 'viewerjs/dist/viewer.css'
 Vue.prototype.$axios=Axios;
-Vue.prototype.url="http://hexsoft.top:8080/"
+// Vue.prototype.url="http://hexsoft.top:8080/"
+Vue.prototype.url='http://admin.rightservicetech.com/'
 Vue.config.productionTip = false;
 Vue.use(ElementUI)
 Vue.use(Viewer)
 Viewer.setDefaults({
-  Options: { 'inline': true, 'button': true, 'navbar': true, 'title': true, 'toolbar': true, 'tooltip': true, 'movable': true, 'zoomable': true, 'rotatable': true, 'scalable': true, 'transition': true, 'fullscreen': true, 'keyboard': true, 'url': 'data-source' }
+  Options: { 'inline': true, 'button': true, 'navbar': true, 'title': false, 'toolbar': false, 'tooltip': true, 'movable': true, 'zoomable': true, 'rotatable': false, 'scalable': false, 'transition': true, 'fullscreen': true, 'keyboard': true, 'url': 'data-source' }
 })
 /* eslint-disable no-new */
 new Vue({
