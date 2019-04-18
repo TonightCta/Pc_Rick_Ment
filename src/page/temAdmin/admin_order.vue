@@ -139,7 +139,7 @@
              <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;display:flex;flex-wrap:wrap;">
                <viewer :images="engMes.skillPic">
                  <img v-for="(skillPic,index) in engMes.skillPic"
-                 :key="'Skill'+index" :src="url+skillPic.fileName" alt=""
+                 :key="'Skill'+index" :src="url+'/'+skillPic.fileName" alt=""
                  style="width:20%;height:100px;margin-left:15px;margin-top:10px;cursor:pointer;"
                  >
                </viewer>

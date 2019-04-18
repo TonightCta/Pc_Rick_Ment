@@ -57,7 +57,25 @@ export default {
            url:'/admin/wel'
          }
        ],
-       route:[],
+       route:[
+         {
+           name:'平台内部管理',
+           usingChannelVOList:[
+             {
+               name:'内部工程师管理',
+               url:'/admin/internalEng'
+             },
+             {
+               name:'待认证工程师管理',
+               url:'/admin/externalEng'
+             },
+             {
+               name:'外部工程师管理',
+               url:'/admin/certifiedEng'
+             },
+           ]
+         }
+       ],
        closeUrl:null,//暂存页面地址
      }
    },
@@ -73,7 +91,8 @@ export default {
      if(window.sessionStorage.getItem('adminMes')){
        let mes=JSON.parse(window.sessionStorage.getItem('adminMes'));
        if(mes.roleVO!=null){
-         this.route=mes.roleVO.usingTopChannelVOList
+         // this.route=mes.roleVO.usingTopChannelVOList
+         console.log(mes.roleVO.usingTopChannelVOList)
        }else{
          this.route=[{name:'暂无权限'}]
        }
@@ -107,7 +126,7 @@ export default {
          name:null,
          url:null
        };
-       curMes.name=this.route[index].name;
+       curMes.name=this.route[key].usingChannelVOList[index].name;
        curMes.url=this.route[key].usingChannelVOList[index].url;
        this.closeUrl=this.route[key].usingChannelVOList[index].url;
        let a=[];
@@ -165,13 +184,12 @@ export default {
         li{
           float: none;
           line-height: 30px;
-          min-width: 110px;
           max-width: none;
           text-align: center;
           border:1px solid #eb7a1d;
           box-sizing: border-box;
-          padding-left: 5px;
-          padding-right: 5px;
+          padding-left: 25px;
+          padding-right: 25px;
           cursor:pointer;
           background: white;
           border-top-right-radius: 5px;

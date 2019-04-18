@@ -21,18 +21,25 @@ const router = new Router({
           component:resolve=>require(['@/page/temAdmin/admin_welcome'],resolve)
         },
         {
-          path:'/admin/order',
+          path:'/admin/order',//派单管理
           name:'Order',
           component:resolve=>require(['@/page/temAdmin/admin_order'],resolve)
         },
         {
-          path:'/admin/role',
-          component:resolve=>require(['@/page/temAdmin/admin_role'],resolve)
+          path:'/admin/internalEng',//内部工程师管理
+          name:'InternalEng',
+          component:resolve=>require(['@/page/internalAdmin/internalEng'],resolve)
         },
         {
-          path:'/admin/channel',
-          component:resolve=>require(['@/page/temAdmin/admin_channel'],resolve)
+          path:'/admin/externalEng',//外部工程师管理
+          name:'ExternalEng',
+          component:resolve=>require(['@/page/internalAdmin/externalEng'],resolve)
         },
+        {
+          path:'/admin/certifiedEng',//待认证工程师管理
+          name:'CertifiedEng',
+          component:resolve=>require(['@/page/internalAdmin/certifiedEng'],resolve)
+        }
       ],
       redirect:'/admin/wel'
     }
