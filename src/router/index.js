@@ -31,6 +31,11 @@ const router = new Router({
           component:resolve=>require(['@/page/internalAdmin/internalEng'],resolve)
         },
         {
+          path:'/admin/newEng',//新注册工程师管理
+          name:'NewEng',
+          component:resolve=>require(['@/page/internalAdmin/newEng'],resolve)
+        },
+        {
           path:'/admin/externalEng',//外部工程师管理
           name:'ExternalEng',
           component:resolve=>require(['@/page/internalAdmin/externalEng'],resolve)

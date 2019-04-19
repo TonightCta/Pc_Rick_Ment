@@ -66,12 +66,16 @@ export default {
                url:'/admin/internalEng'
              },
              {
+               name:'新注册工程师管理',
+               url:'/admin/newEng'
+             },
+             {
                name:'待认证工程师管理',
-               url:'/admin/externalEng'
+               url:'/admin/certifiedEng'
              },
              {
                name:'外部工程师管理',
-               url:'/admin/certifiedEng'
+               url:'/admin/externalEng'
              },
            ]
          }

@@ -40,7 +40,6 @@ export default {
     let _vm=this;
     _vm.$axios.get(_vm.url+'/mobile/getUsingPlaceList').then((res)=>{
       if(res.data.code==0){
-        console.log(res)
         _vm.placeList=res.data.data.placeList
       }else{
         _vm.pushOrder=false;
