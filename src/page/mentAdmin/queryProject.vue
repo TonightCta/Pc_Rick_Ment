@@ -35,9 +35,17 @@
           <el-col :span="3"><div class="projectCon">{{pro.creat}}</div></el-col>
           <el-col :span="3"><div class="projectCon">{{pro.time}}</div></el-col>
           <el-col :span="3"><div class="projectCon">
-            <i class="el-icon-view" style="color:#eb7a1d;font-size:23px;cursor:pointer;"></i>
+            <i class="el-icon-view" style="color:#eb7a1d;font-size:23px;cursor:pointer;" @click="hasDetials()"></i>
           </div></el-col>
         </el-row>
+      </div>
+      <!-- 蒙层 -->
+      <div class="project_mask" v-show="openDetils">
+
+      </div>
+      <!-- 详情弹框 -->
+      <div class="project_mes" v-show="openDetils" ref="project_mes">
+        <i class="el-icon-close"></i>
       </div>
       <!-- 分页器 -->
       <div class="project_page">
@@ -63,6 +71,7 @@ export default {
       dataLength:88,
       currentPage3:1,
       pageNum:10,
+      openDetils:false,
       proList:[
         {
           num:1,
@@ -111,6 +120,13 @@ export default {
         // console.log(`当前页: ${val}`);
         this.page=val-1;
     },
+    hasDetials(){//查看项目详情
+      this.openDetils=true;
+      setTimeout(()=>{
+        this.$refs.project_mes.style.width='100%'
+        this.$refs.project_mes.style.height='100%'
+      },200)
+    }
   }
 }
 </script>
@@ -119,6 +135,7 @@ export default {
 .query_project{
   width: 100%;
   height: 100%;
+  position: relative;
   .project_con{
     width: 98%;
     margin:0 auto;
@@ -168,6 +185,25 @@ export default {
     .el_con:nth-of-type(even){
       background:#eee;
     }
+  }
+  .project_mask{
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,.5);
+    position: fixed;
+    left:0;
+    top:0;
+    z-index: 666;
+  }
+  .project_mes{
+    width: 300px;
+    height: 200px;
+    position: absolute;
+    background: white;
+    top:0;
+    left:0;
+    z-index: 667;
+    transition: .5s all;
   }
   .project_page{
     width: 98%;

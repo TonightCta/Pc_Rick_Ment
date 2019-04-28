@@ -9,11 +9,17 @@ const router = new Router({
       path: '/',
       name: 'index',
       component:resolve=>require(['@/page/login'],resolve),
+      meta:{
+        keep:true
+      }
     },
     {
       name:'Admin',//临时管理员
       path:'/admin',
       component:resolve=>require(['@/page/admin_tem'],resolve),
+      meta:{
+        keep:false
+      },
       children:[
         {
           path:'/admin/wel',

@@ -28,8 +28,8 @@
         <el-button type="primary" style="fontSize:16px;" size="small" :disabled="disabled" @click="loginSub()">&nbsp;&nbsp;登录&nbsp;&nbsp;</el-button>
       </p>
     </div>
-    <canvas ref="loginCanv"></canvas>
-    <canvas ref="loginCanvT" width="500" height="500"></canvas>
+    <canvas ref="loginCanv" style="zIndex:-1;" class="loginCan"></canvas>
+    <canvas ref="loginCanvT" width="500" height="500" style="zIndex:-1;" class="loginCan"></canvas>
   </div>
 </template>
 
@@ -83,7 +83,6 @@ export default {
         formdata.append('password',_vm.userPass);
         _vm.$axios.post(_vm.url+'/login',formdata).then((res)=>{
           if(res.data.code==0){
-            console.log(res)
             _vm.$message({
              message: '登陆成功',
              type: 'success'
@@ -231,15 +230,15 @@ export default {
 }
 </script>
 
-<style lang="scss">
-canvas{
+<style lang="scss" scoped>
+.loginCan{
  position: absolute;
  top: 0;
  left: 0;
  width: 100%;
  height: 100%;
- z-index: -1;
  box-sizing: border-box;
+ color:red;
 }
 .login{
   width:100%;

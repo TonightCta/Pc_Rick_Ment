@@ -1,6 +1,7 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-view v-if="$route.meta.keep"></router-view>
+    <router-view v-if="!$route.meta.keep"></router-view>
   </div>
 </template>
 
