@@ -44,6 +44,16 @@ const router = new Router({
           path:'/admin/certifiedEng',//待认证工程师管理
           name:'CertifiedEng',
           component:resolve=>require(['@/page/internalAdmin/certifiedEng'],resolve)
+        },
+        {
+          path:'/admin/queryProject',//项目查询
+          name:'QueryProject',
+          component:resolve=>require(['@/page/mentAdmin/queryProject'],resolve)
+        },
+        {
+          path:'/admin/gressProject',//项目进度查询
+          name:'GressProject',
+          component:resolve=>require(['@/page/mentAdmin/gressProject'],resolve)
         }
       ],
       redirect:'/admin/wel'

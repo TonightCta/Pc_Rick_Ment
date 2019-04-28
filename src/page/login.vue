@@ -18,7 +18,7 @@
                 <el-input placeholder="请输入用户名" type="text" v-model="userName"></el-input>
               </li>
               <li>
-                <el-input placeholder="请输入密码" type="password" v-model="userPass"></el-input>
+                <el-input placeholder="请输入密码" type="password" v-model="userPass" @keyup.delete.native="delPass"></el-input>
               </li>
             </ul>
           </div>
@@ -28,6 +28,8 @@
         <el-button type="primary" style="fontSize:16px;" size="small" :disabled="disabled" @click="loginSub()">&nbsp;&nbsp;登录&nbsp;&nbsp;</el-button>
       </p>
     </div>
+    <canvas ref="loginCanv"></canvas>
+    <canvas ref="loginCanvT" width="500" height="500"></canvas>
   </div>
 </template>
 
@@ -56,36 +58,53 @@ export default {
       }
     }
   },
+  created(){
+    let _vc=this;
+    document.onkeydown = function(e) {
+         let key = window.event.keyCode;
+         if (key == 13) {
+             _vc.loginSub();
+         }
+     };
+  },
   mounted(){
     this.ani()
   },
   methods:{
     loginSub(){
       let _vm=this;
-      let formdata=new FormData();
-      formdata.append('name',_vm.userName);
-      formdata.append('password',_vm.userPass);
-      _vm.$axios.post(_vm.url+'/login',formdata).then((res)=>{
-        if(res.data.code==0){
-          console.log(res)
-          _vm.$message({
-           message: '登陆成功',
-           type: 'success'
-         });
-         window.sessionStorage.setItem('adminMes',JSON.stringify(res.data.data));
-         _vm.$router.push('/admin');
-         setTimeout(()=>{
-           for(let i in document.getElementsByTagName('canvas')){
-             document.getElementsByTagName('canvas')[i].style.display='none';
-           }
-         },500);
-         console.log(res)
-       }else{
-         _vm.$message.error(res.data.msg)
-       }
-     }).catch((err)=>{
-       _vm.$message.error('未知错误,请联系管理员')
-     })
+      if(_vm.userName==''){
+        _vm.$message.error('请输入用户名')
+      }else if(_vm.userPass==''){
+        _vm.$message.error('请输入密码')
+      }else{
+        let formdata=new FormData();
+        formdata.append('name',_vm.userName);
+        formdata.append('password',_vm.userPass);
+        _vm.$axios.post(_vm.url+'/login',formdata).then((res)=>{
+          if(res.data.code==0){
+            console.log(res)
+            _vm.$message({
+             message: '登陆成功',
+             type: 'success'
+           });
+           window.sessionStorage.setItem('adminMes',JSON.stringify(res.data.data));
+           _vm.$router.push('/admin')
+           setTimeout(()=>{
+             // this.$refs.loginCanv.style.display='none';
+             // this.$refs.loginCanvT.style.display='none';
+             // console.log(this.$refs.loginCanv.style)
+           },500);
+         }else{
+           _vm.$message.error(res.data.msg)
+         }
+       }).catch((err)=>{
+         _vm.$message.error('未知错误,请联系管理员')
+       })
+      }
+    },
+    delPass(){//键盘删除事件
+      this.userPass=''
     },
     ani(){
       /**
@@ -93,8 +112,8 @@ export default {
        */
 
       // Init Context
-      let c = document.createElement('canvas').getContext('2d')
-      let postctx = document.body.appendChild(document.createElement('canvas')).getContext('2d')
+      let c =this.$refs.loginCanv.getContext('2d')
+      let postctx =this.$refs.loginCanvT.getContext('2d')
       let canvas = c.canvas
       let vertices = []
 
@@ -220,6 +239,7 @@ canvas{
  width: 100%;
  height: 100%;
  z-index: -1;
+ box-sizing: border-box;
 }
 .login{
   width:100%;

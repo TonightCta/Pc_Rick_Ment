@@ -12,7 +12,7 @@
             @close="handleClose"
             active-text-color="#000"
             >
-            <el-submenu v-for="(fun,key) in route" :key="'F'+key" index="1">
+            <el-submenu v-for="(fun,key) in route" :key="'F'+key" :index="fun.in">
               <template slot="title">
                 <span>{{fun.name}}</span>
               </template>
@@ -36,7 +36,7 @@
               <li></li>
             </ul>
           </div>
-          <div class="" style="height:80vh;overflow:auto;position:relative;">
+          <div class="" style="height:85vh;overflow:auto;position:relative;">
             <router-view></router-view>
           </div>
         </div>
@@ -60,6 +60,7 @@ export default {
        route:[
          {
            name:'平台内部管理',
+           in:'1-1',
            usingChannelVOList:[
              {
                name:'内部工程师管理',
@@ -77,6 +78,20 @@ export default {
                name:'外部工程师管理',
                url:'/admin/externalEng'
              },
+           ]
+         },
+         {
+           name:'管理层',
+           in:'1-2',
+           usingChannelVOList:[
+             {
+               name:'项目浏览查询',
+               url:'/admin/queryProject'
+             },
+             {
+               name:'项目进度查询',
+               url:'/admin/gressProject'
+             }
            ]
          }
        ],
@@ -96,7 +111,6 @@ export default {
        let mes=JSON.parse(window.sessionStorage.getItem('adminMes'));
        if(mes.roleVO!=null){
          // this.route=mes.roleVO.usingTopChannelVOList
-         console.log(mes.roleVO.usingTopChannelVOList)
        }else{
          this.route=[{name:'暂无权限'}]
        }
@@ -104,10 +118,10 @@ export default {
    },
    methods: {
      handleOpen(key, keyPath) {
-       console.log(key, keyPath);
+       // console.log(key, keyPath);
      },
      handleClose(key, keyPath) {
-       console.log(key, keyPath);
+       // console.log(key, keyPath);
      },
      choseCru(index){//面包屑选择
        for(let i in this.$refs.crum){
@@ -119,7 +133,6 @@ export default {
          this.$refs.crum[index].style.borderBottom='0';
          this.$refs.crum[index].style.color='#eb7a1d'
        })
-       console.log(this.abc)
      },
      pushCru(key,index){//添加面包屑
        for(let i in this.$refs.crum){
@@ -152,9 +165,11 @@ export default {
        this.abc.splice(index,1);
        for(let i in this.$refs.crum){
          this.$refs.crum[i].style.borderBottom='1px solid #eb7a1d'
+         this.$refs.crum[i].style.color='black'
        };
        setTimeout(()=>{
-          this.$refs.crum[this.abc.length-1].style.borderBottom='0';
+         this.$refs.crum[this.abc.length-1].style.borderBottom='0';
+          this.$refs.crum[this.abc.length-1].style.color='#eb7a1d';
           this.$router.push(this.abc[this.abc.length-1].url);
        })
      }
@@ -189,11 +204,7 @@ export default {
           float: none;
           line-height: 30px;
           max-width: none;
-          text-align: center;
           border:1px solid #eb7a1d;
-          box-sizing: border-box;
-          padding-left: 25px;
-          padding-right: 25px;
           cursor:pointer;
           background: white;
           border-top-right-radius: 5px;
@@ -201,8 +212,10 @@ export default {
           position: relative;
           span{
             display: inline-block;
-            width: 100%;
             height: 100%;
+            padding-left: 25px;
+            text-align: center;
+            padding-right: 25px;
           }
           i{
             position: absolute;

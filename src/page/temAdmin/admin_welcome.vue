@@ -6,7 +6,7 @@
     <div class="mask">
 
     </div>
-    <p class="wel_title">瑞得音信息</p>
+    <!-- <p class="wel_title">瑞得音信息</p> -->
   </div>
 </template>
 
@@ -24,23 +24,15 @@ export default {
 .admin_wel{
   margin:0 auto;
   z-index: 866;
-  .can{
-    width: 100%;
-    height: 100%;
-    // background: linear-gradient(#464646 ,#626669);
-    box-sizing: border-box;
-    padding-top: 15%;
-  }
-  .can::-webkit-scrollbar {
-        display: none;
-    }
+  position: relative;
   .mask{
     width: 100%;
     height: 1000px;
     position: fixed;
-    background: linear-gradient(#464646 ,#626669);
-    top:116px;
-    // z-index: -1;
+    background: black;
+    top:300px;
+    z-index: -1;
+    filter: blur(5px);
   }
   .wel_title{
     position: fixed;

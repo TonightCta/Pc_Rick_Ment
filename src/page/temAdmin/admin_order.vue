@@ -317,6 +317,7 @@ export default {
       this.cityList.forEach((e)=>{
         if(index===e.name){
           this.placeID=e.id;
+          console.log(this.placeID)
         }
       })
     },
@@ -332,6 +333,10 @@ export default {
       }else if(_vm.projectCon==''){
         _vm.$message.error('请输入项目内容')
       }else{
+        console.log(_vm.projectName)
+        console.log(_vm.projectCon)
+        console.log(_vm.addRess)
+        console.log(_vm.placeID)
         _vm.hasSub=true;
         formdata.append('name',_vm.projectName);
         formdata.append('content',_vm.projectCon);
@@ -350,6 +355,9 @@ export default {
             _vm.placeID=null;
             _vm.addRess='';
             _vm.projectCon='';
+            console.log(this.placeID)
+            _vm.placeProName=null;
+            _vm.placeCityName=null;
           }else{
             _vm.pushOrder=false;
             _vm.$message.error(res.data.msg)

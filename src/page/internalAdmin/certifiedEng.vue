@@ -1,11 +1,12 @@
 <!-- 待认证工程师管理 -->
 <template lang="html">
   <div class="internalEng">
-    <Search/>
+    <Search :searchUrl="certifiedlEng" @searchData="getSearchData"/>
     <div class="engCon">
       <p class="addEng">
         <!-- <el-button type="primary" icon="el-icon-plus" size="medium" @click="addEng=true">添加工程师</el-button> -->
         <span class="dataLength">共有数据:&nbsp;<span style="color:#eb7a1d;font-weight:bold;">{{dataLength}}</span>&nbsp;条</span>
+        <Reload :reloadData='certifiedlEng' @reloadList="getReloadList"/>
       </p>
       <div class="internalEng_title">
         <el-row>
@@ -19,14 +20,18 @@
           <el-col :span="4"><div class="listTitle">操作</div></el-col>
         </el-row>
       </div>
+      <p v-show="noData" style="height:70px;font-size:18px;line-height:70px;text-align:center;width:90%;color:#666;position:absolute;left:20px;">暂无更多数据</p>
       <div class="internalEng_con" v-loading="engLoad">
         <el-row class="el_con" v-for="(eng,index) in engList" :key="'el'+index">
           <el-col :span="2"><div class="listCon">{{eng.num+1}}</div></el-col>
-          <el-col :span="3"><div class="listCon">{{eng.missionRecordVOList[0].engineerVO.name}}</div></el-col>
-          <el-col :span="3"><div class="listCon">{{eng.missionRecordVOList[0].engineerVO.phone}}</div></el-col>
-          <el-col :span="3"><div class="listCon">{{eng.missionRecordVOList[0].engineerVO.workYear}}&nbsp;年</div></el-col>
-          <el-col :span="3"><div class="listCon">{{eng.missionRecordVOList[0].engineerVO.number}}</div></el-col>
-          <el-col :span="3"><div class="listCon">{{eng.missionRecordVOList[0].engineerVO.createTime}}</div></el-col>
+          <el-col :span="3"><div class="listCon">{{eng.name}}</div></el-col>
+          <el-col :span="3" v-if="eng.phone!=null&&eng.phone!=''&&eng.phone!='null'"><div class="listCon">{{eng.phone}}</div></el-col>
+          <el-col :span="3" v-else><div class="listCon">-</div></el-col>
+          <el-col :span="3" v-if="eng.workYear!=null&&eng.workYear!=''&&eng.workYear!='null'"><div class="listCon">{{eng.workYear}}&nbsp;年</div></el-col>
+          <el-col :span="3" v-else><div class="listCon">-&nbsp;年</div></el-col>
+          <el-col :span="3"><div class="listCon">{{eng.operatorName}}</div></el-col>
+          <el-col :span="3" v-if="eng.email!=null&&eng.email!=''&&eng.email!='null'"><div class="listCon">{{eng.email}}</div></el-col>
+          <el-col :span="3" v-else><div class="listCon">-</div></el-col>
           <el-col :span="3"><div class="listCon" style="box-sizing:border-box;padding-top:5px;">
             <i class="el-icon-edit-outline" style="color:#eb7a1d;font-size:23px;cursor:pointer;" @click="operEng=true"></i>
           </div></el-col>
@@ -129,6 +134,7 @@
 <script>
 import Search from '@/components/search'
 import Place from '@/components/placeChose'
+import Reload from '@/components/reloadBtn'
 export default {
   data(){
     return{
@@ -144,6 +150,12 @@ export default {
       ucc:[],//工程师能力列表
       places:null,//工程师工作详细地址
       operEng:false,//操作工程师弹框
+      noData:false,
+      certifiedlEng:{
+        url:'/findEngineerListByCondition',
+        state:1,
+        isOfficial:false
+      },
       a:[
         {
           name:'Ucc',
@@ -207,11 +219,19 @@ export default {
       }else{
         console.log(1)
       }
+    },
+    engList(val,oldVal){
+      if(val.length<1){
+        this.noData=true;
+      }else{
+        this.noData=false;
+      }
     }
   },
   components:{
     Search,
-    Place
+    Place,
+    Reload
   },
   methods:{
     handleSizeChange(val) {
@@ -220,18 +240,19 @@ export default {
     handleCurrentChange(val) {
         // console.log(`当前页: ${val}`);
         this.page=val-1;
+        this.getEngList();
     },
     getEngList(){//获取所有工程师
       let _vm=this;
       _vm.engLoad=true;
       let formdata=new FormData();
-      formdata.append('sortStr','createTime');
+      formdata.append('isOfficial',false);
       formdata.append('asc','desc');
       formdata.append('page',_vm.page);
       formdata.append('size',10);
-      _vm.$axios.post(_vm.url+'/mission/findMissionListByCondition',formdata).then((res)=>{
+      formdata.append('states',1);
+      _vm.$axios.post(_vm.url+'/findEngineerListByCondition',formdata).then((res)=>{
         if(res.data.code==0){
-          console.log(res)
           _vm.engLoad=false;
           _vm.length=_vm.page*10;
           _vm.pageNum=res.data.data.totalPages*10;
@@ -250,22 +271,24 @@ export default {
     },
     engDetails(index){//工程师详情
       this.engMesBox=true;
-      this.engMes=this.engList[index].missionRecordVOList[0].engineerVO;
+      this.engMes=this.engList[index];
       this.engMes.childPlaces.forEach((e)=>{
         this.staging.push(e.parentPlace.name+'-'+e.name);
-        console.log(this.staging)
       });
       this.places=this.staging.join('/')
-      console.log(this.engMes)
     },
     uccChose(value){//工程师级别选择
       let a=[]
       value.forEach((e)=>{
-        console.log(e.id);
         a.push(e.id)
       })
-      console.log(a)
     },
+    getSearchData(engList){
+      this.engList=engList;
+    },
+    getReloadList(engList){
+      this.engList=engList;
+    }
   }
 }
 </script>
@@ -281,10 +304,14 @@ export default {
       width: 100%;
       border-bottom:1px solid #ccc;
       padding-bottom: 5px;
+      line-height: 42px;
+      height: 42px;
       .dataLength{
         display: inline-block;
         width: 98%;
         text-align: right;
+        box-sizing: border-box;
+        padding-right: 50px;
       }
     }
     .internalEng_title{

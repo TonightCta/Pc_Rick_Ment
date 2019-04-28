@@ -1,11 +1,12 @@
 <!-- 外部工程师管理 -->
 <template lang="html">
   <div class="internalEng">
-    <Search/>
+    <Search :searchUrl="externalEng" @searchData="getSearchData"/>
     <div class="engCon">
       <p class="addEng">
         <!-- <el-button type="primary" icon="el-icon-plus" size="medium" @click="addEng=true">添加工程师</el-button> -->
         <span class="dataLength">共有数据:&nbsp;<span style="color:#eb7a1d;font-weight:bold;">{{dataLength}}</span>&nbsp;条</span>
+        <Reload :reloadData='externalEng' @reloadList="getReloadList"/>
       </p>
       <div class="internalEng_title">
         <el-row>
@@ -21,26 +22,32 @@
           <el-col :span="3"><div class="listTitle">操作</div></el-col>
         </el-row>
       </div>
+      <p v-show="noData" style="height:70px;font-size:18px;line-height:70px;text-align:center;width:90%;color:#666;position:absolute;left:20px;">暂无更多数据</p>
       <div class="internalEng_con" v-loading="engLoad">
         <el-row class="el_con" v-for="(eng,index) in engList" :key="'el'+index">
           <el-col :span="1"><div class="listCon">{{eng.num+1}}</div></el-col>
-          <el-col :span="2"><div class="listCon">{{eng.missionRecordVOList[0].engineerVO.name}}</div></el-col>
-          <el-col :span="2"><div class="listCon">{{eng.missionRecordVOList[0].engineerVO.phone}}</div></el-col>
-          <el-col :span="2"><div class="listCon">{{eng.missionRecordVOList[0].engineerVO.workYear}}&nbsp;年</div></el-col>
-          <el-col :span="3"><div class="listCon">{{eng.missionRecordVOList[0].engineerVO.number}}</div></el-col>
-          <el-col :span="3"><div class="listCon">{{eng.missionRecordVOList[0].engineerVO.createTime}}</div></el-col>
-          <el-col :span="4"><div class="listCon">{{eng.missionRecordVOList[0].engineerVO.levelStr}}</div></el-col>
-          <el-col :span="3"><div class="listCon">何玄</div></el-col>
+          <el-col :span="2"><div class="listCon">{{eng.name}}</div></el-col>
+          <el-col :span="2" v-if="eng.phone!=null||eng.phone!=''"><div class="listCon">{{eng.phone}}</div></el-col>
+          <el-col :span="2" v-else><div class="listCon">-</div></el-col>
+          <el-col :span="2" v-if="eng.workYear!=null||eng.workYear!=''"><div class="listCon">{{eng.workYear}}&nbsp;年</div></el-col>
+          <el-col :span="2" v-else><div class="listCon">-&nbsp;年</div></el-col>
+          <el-col :span="3"><div class="listCon">{{eng.operatorName}}</div></el-col>
+          <el-col :span="3" v-if="eng.email!=null"><div class="listCon">{{eng.email}}</div></el-col>
+          <el-col :span="3" v-else><div class="listCon">-</div></el-col>
+          <el-col :span="4" v-if="eng.levelStr!=''"><div class="listCon">{{eng.levelStr}}</div></el-col>
+          <el-col :span="4" v-else><div class="listCon">-</div></el-col>
+          <el-col :span="3" v-if="eng.recommendCode!=null&&eng.recommendCode!=''&&eng.recommendCode!='null'"><div class="listCon">{{eng.recommendCode}}</div></el-col>
+          <el-col :span="3" v-else><div class="listCon">-</div></el-col>
           <el-col :span="1"><div class="listCon">
-            <span v-if="eng.state==-1" style="background:green;color:white;border-radius:18px;padding:5px;font-size:12px;">已启用</span>
-            <span v-else style="background:#666;color:white;border-radius:18px;padding:5px;font-size:12px;">已停用</span>
+            <span v-if="eng.state==2" style="background:green;color:white;border-radius:18px;padding:5px;font-size:12px;">已启用</span>
+            <span v-if="eng.state==-1" style="background:#666;color:white;border-radius:18px;padding:5px;font-size:12px;">已停用</span>
           </div></el-col>
           <el-col :span="3"><div class="listCon icon">
             <el-tooltip class="item" effect="dark" content="停用" placement="bottom">
-              <i class="el-icon-remove-outline" style="color:#666;" v-show="eng.state==-1"></i>
+              <i class="el-icon-remove-outline" style="color:#666;" v-show="eng.state==2"></i>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="启用" placement="bottom">
-              <i class="el-icon-circle-check-outline" style="color:balck;" v-show="eng.state==2"></i>
+              <i class="el-icon-circle-check-outline" style="color:balck;" v-show="eng.state==-1"></i>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="编辑工程师" placement="bottom">
               <i class="el-icon-edit" style="color:#eb7a1d;"></i>
@@ -125,6 +132,7 @@
 <script>
 import Search from '@/components/search'
 import Place from '@/components/placeChose'
+import Reload from '@/components/reloadBtn'
 export default {
   data(){
     return{
@@ -138,6 +146,12 @@ export default {
       engMesBox:false,//工程师详情弹框
       staging:[],//工程师工作区域
       places:null,//工程师工作详细地址
+      externalEng:{
+        url:'/findEngineerListByCondition',
+        state:['-1','2'],
+        isOfficial:false
+      },
+      noData:false,
     }
   },
   created(){
@@ -151,11 +165,19 @@ export default {
       }else{
         console.log(1)
       }
+    },
+    engList(val,oldVal){
+      if(val.length<1){
+        this.noData=true;
+      }else{
+        this.noData=false;
+      }
     }
   },
   components:{
     Search,
-    Place
+    Place,
+    Reload
   },
   methods:{
     handleSizeChange(val) {
@@ -164,18 +186,23 @@ export default {
     handleCurrentChange(val) {
         // console.log(`当前页: ${val}`);
         this.page=val-1;
+        this.getEngList();
+    },
+    getReloadList(engList){
+      this.engList=engList;
     },
     getEngList(){//获取所有工程师
       let _vm=this;
       _vm.engLoad=true;
       let formdata=new FormData();
-      formdata.append('sortStr','createTime');
       formdata.append('asc','desc');
+      formdata.append('isOfficial',false)
       formdata.append('page',_vm.page);
       formdata.append('size',10);
-      _vm.$axios.post(_vm.url+'/mission/findMissionListByCondition',formdata).then((res)=>{
+      formdata.append('states',-1);
+      formdata.append('states',2);
+      _vm.$axios.post(_vm.url+'/findEngineerListByCondition',formdata).then((res)=>{
         if(res.data.code==0){
-          console.log(res)
           _vm.engLoad=false;
           _vm.length=_vm.page*10;
           _vm.pageNum=res.data.data.totalPages*10;
@@ -194,14 +221,15 @@ export default {
     },
     engDetails(index){//工程师详情
       this.engMesBox=true;
-      this.engMes=this.engList[index].missionRecordVOList[0].engineerVO;
+      this.engMes=this.engList[index]
       this.engMes.childPlaces.forEach((e)=>{
         this.staging.push(e.parentPlace.name+'-'+e.name);
-        console.log(this.staging)
       });
       this.places=this.staging.join('/')
-      console.log(this.engMes)
-    }
+    },
+    getSearchData(engList){
+      this.engList=engList;
+    },
   }
 }
 </script>
@@ -217,10 +245,14 @@ export default {
       width: 100%;
       border-bottom:1px solid #ccc;
       padding-bottom: 5px;
+      height: 42px;
+      line-height: 42px;
       .dataLength{
         display: inline-block;
         width: 98%;
         text-align: right;
+        box-sizing: border-box;
+        padding-right: 50px;
       }
     }
     .internalEng_title{
