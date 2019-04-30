@@ -11,31 +11,45 @@
       <div class="project_title">
         <el-row>
           <el-col :span="1"><div class="projectTitle">序号</div></el-col>
-          <el-col :span="8"><div class="projectTitle">项目名称</div></el-col>
-          <el-col :span="3"><div class="projectTitle">项目状态</div></el-col>
-          <el-col :span="3"><div class="projectTitle">项目进度</div></el-col>
-          <el-col :span="3"><div class="projectTitle">创建人</div></el-col>
-          <el-col :span="3"><div class="projectTitle">创建时间</div></el-col>
-          <el-col :span="3"><div class="projectTitle">浏览</div></el-col>
+          <el-col :span="5"><div class="projectTitle">项目名称</div></el-col>
+          <el-col :span="2"><div class="projectTitle">项目状态</div></el-col>
+          <el-col :span="2"><div class="projectTitle">产品线</div></el-col>
+          <el-col :span="2"><div class="projectTitle">项目负责人</div></el-col>
+          <el-col :span="2"><div class="projectTitle">创建时间</div></el-col>
+          <el-col :span="2"><div class="projectTitle">入场时间</div></el-col>
+          <el-col :span="2"><div class="projectTitle">完工时间</div></el-col>
+          <el-col :span="2"><div class="projectTitle">验收时间</div></el-col>
+          <el-col :span="2"><div class="projectTitle">进度</div></el-col>
+          <el-col :span="2"><div class="projectTitle">浏览</div></el-col>
         </el-row>
       </div>
       <div class="project_con">
         <el-row class="el_con" v-for="(pro,index) in proList" :key="index">
-          <el-col :span="1"><div class="projectCon">{{pro.num}}</div></el-col>
+          <el-col :span="1"><div class="projectCon">{{pro.num+1}}</div></el-col>
           <el-tooltip class="item" effect="dark" :content="pro.name" placement="bottom">
-            <el-col :span="8"><div class="projectCon" style="cursor:pointer;">{{pro.name.substring(0,22)}}...</div></el-col>
+            <el-col :span="5" v-if="pro.name!=null&&pro.name!='null'"><div class="projectCon" style="cursor:pointer;">{{pro.name.substring(0,10)}}...</div></el-col>
+            <el-col :span="5" v-else><div class="projectCon" style="cursor:pointer;">-</div></el-col>
           </el-tooltip>
-          <el-col :span="3"><div class="projectCon status">
-            <span v-show="pro.status==1" style="background:rgb(255, 255, 153);">停工</span>
-            <span v-show="pro.status==2" style="background:rgb(204, 255, 153);">开工</span>
-            <span v-show="pro.status==3" style="background:rgb(102, 204, 255);">验收</span>
-            <span v-show="pro.status==4" style="background:rgb(204, 255, 255);">完工</span>
+          <el-col :span="2"><div class="projectCon status">
+            <span v-show="pro.state==2" style="background:rgb(255, 255, 153);">停工</span>
+            <span v-show="pro.state==0" style="background:rgb(255, 140, 105);">未开工</span>
+            <span v-show="pro.state==1" style="background:rgb(204, 255, 153);">开工</span>
+            <span v-show="pro.state==4" style="background:rgb(102, 204, 255);">验收</span>
+            <span v-show="pro.state==3" style="background:rgb(204, 255, 255);">完工</span>
           </div></el-col>
-          <el-col :span="3"><div class="projectCon">{{pro.gress}}%</div></el-col>
-          <el-col :span="3"><div class="projectCon">{{pro.creat}}</div></el-col>
-          <el-col :span="3"><div class="projectCon">{{pro.time}}</div></el-col>
-          <el-col :span="3"><div class="projectCon">
-            <i class="el-icon-view" style="color:#eb7a1d;font-size:23px;cursor:pointer;" @click="hasDetials()"></i>
+          <el-col :span="2" v-if="pro.technologyName!=null&&pro.technologyName!='null'"><div class="projectCon">{{pro.technologyName}}</div></el-col>
+          <el-col :span="2" v-else><div class="projectCon">-</div></el-col>
+          <el-col :span="2"><div class="projectCon">{{pro.creatorName}}</div></el-col>
+          <el-col :span="2"><div class="projectCon">{{pro.createTimeSec}}</div></el-col>
+          <el-col :span="2" v-if="pro.startTime!=null&&pro.startTime!='null'"><div class="projectCon">{{pro.entranceTimeSec}}</div></el-col>
+          <el-col :span="2" v-else><div class="projectCon">-</div></el-col>
+          <el-col :span="2" v-if="pro.finishTime!=null&&pro.finishTime!='null'"><div class="projectCon">{{pro.finishTimeSec}}</div></el-col>
+          <el-col :span="2" v-else><div class="projectCon">-</div></el-col>
+          <el-col :span="2" v-if="pro.acceptTime!=null&&pro.acceptTime!='null'"><div class="projectCon">{{pro.acceptTimeSec}}</div></el-col>
+          <el-col :span="2" v-else><div class="projectCon">-</div></el-col>
+          <el-col :span="2"><div class="projectCon">{{pro.schedule}}%</div></el-col>
+          <el-col :span="2"><div class="projectCon">
+            <i class="el-icon-view" style="color:#eb7a1d;font-size:23px;cursor:pointer;" @click="hasDetials(index)"></i>
           </div></el-col>
         </el-row>
       </div>
@@ -49,84 +63,206 @@
         <p class="mes_titleOne">
           <span>项目信息</span>
         </p>
-        <div class="" v-show="showMes" style="min-height:70%;">
+        <div class="" v-show="showMes" style="min-height:650px;">
           <ul class="con_mes">
-            <li>客户名称:&nbsp;&nbsp;&nbsp;<span>上海朋邦实业有限公司</span></li>
+            <li>客户名称:&nbsp;&nbsp;&nbsp;<span>{{projectMes.customerName}}</span></li>
             <li class="flex">
-              <p>项目名称:&nbsp;&nbsp;&nbsp;<span>边界会话控制器(SBC)项目文档归档</span></p>
-              <p>项目类型:&nbsp;&nbsp;&nbsp;<span>新建</span></p>
+              <p>项目名称:&nbsp;&nbsp;&nbsp;<span>{{projectMes.name}}</span></p>
+              <p>项目类型:&nbsp;&nbsp;&nbsp;<span v-if="projectMes.projectType">{{projectMes.projectType.name}}</span><span v-else>-</span></p>
             </li>
-            <li>项目内容:&nbsp;&nbsp;&nbsp;<span>设备安装调测</span></li>
+            <li>项目内容:&nbsp;&nbsp;&nbsp;<span>{{projectMes.content}}</span></li>
             <li class="flex">
-              <p>联系人:&nbsp;&nbsp;&nbsp;<span>黎良金</span></p>
-              <p>联系电话:&nbsp;&nbsp;&nbsp;<span>18888888888</span></p>
-            </li>
-            <li class="flex">
-              <p>项目人数:&nbsp;&nbsp;&nbsp;<span>1人</span></p>
-              <p>工期:&nbsp;&nbsp;&nbsp;<span>10天</span></p>
+              <p>联系人:&nbsp;&nbsp;&nbsp;<span>{{projectMes.linkman}}</span></p>
+              <p>联系电话:&nbsp;&nbsp;&nbsp;<span>{{projectMes.phone}}</span></p>
             </li>
             <li class="flex">
-              <p>交付标准:&nbsp;&nbsp;&nbsp;<span>签署完工报告及验收报告</span></p>
-              <p>技能要求:&nbsp;&nbsp;&nbsp;<span>UCC:中级工程师</span></p>
+              <p>项目人数:&nbsp;&nbsp;&nbsp;<span>{{projectMes.peopleNumber}}人</span></p>
+              <p>工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.dayNumber}}天</span></p>
             </li>
             <li class="flex">
-              <p>项目状态:&nbsp;&nbsp;&nbsp;<span>验收</span></p>
-              <p>项目进度:&nbsp;&nbsp;&nbsp;<span>20%</span></p>
+              <p>交付标准:&nbsp;&nbsp;&nbsp;<span>{{projectMes.standard}}</span></p>
+              <p>技能要求:&nbsp;&nbsp;&nbsp;<span>{{projectMes.levelStr}}</span></p>
             </li>
             <li class="flex">
-              <p>预警时间:&nbsp;&nbsp;&nbsp;<span>2019/05/05</span></p>
-              <p>入场时间:&nbsp;&nbsp;&nbsp;<span>2019/03/02</span></p>
+              <p>项目状态:&nbsp;&nbsp;&nbsp;<span>{{projectMes.stateStr}}</span></p>
+              <p>项目进度:&nbsp;&nbsp;&nbsp;<span>{{projectMes.schedule}}%</span></p>
             </li>
             <li class="flex">
-              <p>计划完工时间:&nbsp;&nbsp;&nbsp;<span>2019/05/01</span></p>
-              <p>完工时间:&nbsp;&nbsp;&nbsp;<span>2019/05/08</span></p>
+              <p>预警时间:&nbsp;&nbsp;&nbsp;
+                <span v-if="projectMes.warnTime!=null&&projectMes.warnTime!='null'">{{projectMes.warnTimeSec}}</span>
+                <span v-else>-</span>
+              </p>
+              <p>入场时间:&nbsp;&nbsp;&nbsp;
+                <span v-if="projectMes.startTime!=null&&projectMes.startTime!='null'">{{projectMes.startTimeSec}}</span>
+                <span v-else>-</span>
+              </p>
             </li>
             <li class="flex">
-              <p>计划验收时间:&nbsp;&nbsp;&nbsp;<span>2019/05/06</span></p>
-              <p>验收时间:&nbsp;&nbsp;&nbsp;<span>2019/05/10</span></p>
+              <p>计划完工时间:&nbsp;&nbsp;&nbsp;
+                <span v-if="projectMes.planFinishTime!=null&&projectMes.planFinishTime!='null'">{{projectMes.planFTimeSec}}</span>
+                <span v-else>-</span>
+              </p>
+              <p>完工时间:&nbsp;&nbsp;&nbsp;
+                <span v-if="projectMes.finishTime!=null&&projectMes.finishTime!='null'">{{projectMes.finishTimeSec}}</span>
+                <span v-else>-</span>
+              </p>
+            </li>
+            <li class="flex">
+              <p>计划验收时间:&nbsp;&nbsp;&nbsp;
+                <span v-if="projectMes.planAcceptTime!=null&&projectMes.planAcceptTime!='null'">{{projectMes.planATimeSec}}</span>
+                <span v-else>-</span>
+              </p>
+              <p>验收时间:&nbsp;&nbsp;&nbsp;
+                <span v-if="projectMes.acceptTime!=null&&projectMes.acceptTime!='null'">{{projectMes.acceptTimeSec}}</span>
+                <span v-else>-</span>
+              </p>
             </li>
           </ul>
         </div>
-        <p class="mes_titleOne">
-          <span>局点信息</span>
-        </p>
-        <div class="" v-show="showMes">
+        <div class="" v-show="showMes" v-for="(point,index) in projectMes.projectPointVOList" :key="'point'+index">
+          <p class="mes_titleOne">
+            <span>局点信息</span>
+          </p>
           <ul class="con_mes">
-            <li>地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点:&nbsp;&nbsp;&nbsp;<span>广州市</span></li>
-            <li>详细地址:&nbsp;&nbsp;&nbsp;<span>广东省广州市</span></li>
-            <li>备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注:&nbsp;&nbsp;&nbsp;<span></span></li>
-            <li>人员组成:&nbsp;&nbsp;&nbsp;<span>耿海涛</span></li>
+            <li>地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点:&nbsp;&nbsp;&nbsp;<span>{{point.placeName}}</span></li>
+            <li>详细地址:&nbsp;&nbsp;&nbsp;<span>{{point.address}}</span></li>
+            <li>备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注:&nbsp;&nbsp;&nbsp;<span>{{point.remark}}</span></li>
+            <li>人员组成:&nbsp;&nbsp;&nbsp;<span>{{point.engineerNameListStr}}</span></li>
             <li>
               <el-collapse v-model="activeNames" @change="handleChange">
                 <el-collapse-item name="1">
                   <template slot="title">
-                   <span style="color:rgba(235,122,29,1);fontSize:16px;">项目文档【点击展开】</span>
+                   <span style="color:rgba(235,122,29,1);fontSize:16px;">项目进程【点击展开】</span>
                   </template>
-                  <div>与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；</div>
-                  <div>在界面中一致：所有的元素和结构需保持一致，比如：设计样式、图标和文本、元素的位置等。</div>
+                  <el-row>
+                    <el-col :span="4"><div class="gress_title">进程节点</div></el-col>
+                    <el-col :span="5"><div class="gress_title">实际开始时间</div></el-col>
+                    <el-col :span="5"><div class="gress_title">实际完成时间</div></el-col>
+                    <el-col :span="6"><div class="gress_title">项目说明</div></el-col>
+                    <el-col :span="4"><div class="gress_title">项目附件</div></el-col>
+                  </el-row>
+                  <el-row v-for="(gress,index) in point.usingProjectCourseNodeVOList" :key="'gress'+index">
+                    <el-col :span="4"><div class="gress_con">{{gress.courseNodeName}}</div></el-col>
+                    <el-col :span="5"><div class="gress_con">
+                      <span v-if="gress.startTime!=null&&gress.startTime!='null'">{{gress.startTimeSec}}</span>
+                      <span v-else>-</span>
+                    </div></el-col>
+                    <el-col :span="5"><div class="gress_con">
+                      <span v-if="gress.endTime!=null&&gress.endTime!='null'">{{gress.endTimeSec}}</span>
+                      <span v-else>-</span>
+                    </div></el-col>
+                    <el-col :span="4"><div class="gress_con">
+                      <span v-if="gress.remark!=null&&gress.remark!='null'">{{gress.remark}}</span>
+                      <span v-else>-</span>
+                    </div></el-col>
+                    <el-col :span="6"><div class="gress_con">
+                      <span>-</span>
+                    </div></el-col>
+                    <el-col :span="4"><div class="gress_con">
+                      <span>-</span>
+                    </div></el-col>
+                  </el-row>
                 </el-collapse-item>
                 <el-collapse-item name="2">
                   <template slot="title">
-                   <span style="color:rgba(235,122,29,1);fontSize:16px;">验&nbsp;&nbsp;货&nbsp;&nbsp;单【点击展开】</span>
+                   <span style="color:rgba(235,122,29,1);fontSize:16px;">项目文档【点击展开】</span>
                   </template>
-                  <div>控制反馈：通过界面样式和交互动效让用户可以清晰的感知自己的操作；</div>
-                  <div>页面反馈：操作后，通过页面元素的变化清晰地展现当前状态。</div>
+                  <p v-for="(file,index) in point.projectFileVOList" :key="'file'+index" style="line-height:40px;">
+                    <span v-show="file.fileType==1">【开会检查项】</span>
+                    <span v-show="file.fileType==2">【会议纪要】</span>
+                    <span v-show="file.fileType==3">【技术方案】</span>
+                    <span v-show="file.fileType==4">【安装报告】</span>
+                    <span v-show="file.fileType==5">【加电测试】</span>
+                    <span v-show="file.fileType==6">【割接调测】</span>
+                    <span v-show="file.fileType==7">【完工报告】</span>
+                    <span v-show="file.fileType==8">【验收报告】</span>
+                    <a :href="url+'/'+file.fileName">{{file.fileName}}</a>
+                  </p>
                 </el-collapse-item>
                 <el-collapse-item name="3">
                   <template slot="title">
-                   <span style="color:rgba(235,122,29,1);fontSize:16px;">项目进程【点击展开】</span>
+                   <span style="color:rgba(235,122,29,1);fontSize:16px;">验&nbsp;&nbsp;货&nbsp;&nbsp;单【点击展开】</span>
                   </template>
-                  <div>简化流程：设计简洁直观的操作流程；</div>
-                  <div>清晰明确：语言表达清晰且表意明确，让用户快速理解进而作出决策；</div>
-                  <div>帮助用户识别：界面简单直白，让用户快速识别而非回忆，减少用户记忆负担。</div>
+                  <div class="" v-for="(ins,index) in point.inspectionVOList" :key="'ins'+index">
+                    <p style="width:100%;text-align:center;fontSize:16px;marginTop:15px;marginBottom:15px;">设备</p>
+                    <el-row>
+                      <el-col :span="3"><div class="insTitle">网元名称<span style="color:red;">*</span></div></el-col>
+                      <el-col :span="5"><div class="insTitle">
+                        <span v-if="ins.name!=null&&ins.name!=''">{{ins.name}}</span>
+                        <span v-else>-</span>
+                      </div></el-col>
+                      <el-col :span="3"><div class="insTitle">设备型号</div></el-col>
+                      <el-col :span="5"><div class="insTitle">
+                        <span v-if="ins.model!=null&&ins.model!=''">{{ins.model}}</span>
+                        <span v-else>-</span>
+                      </div></el-col>
+                      <el-col :span="3"><div class="insTitle">整机、机框条码</div></el-col>
+                      <el-col :span="5"><div class="insTitle">
+                        <span v-if="ins.code!=null&&ins.code!=''">{{ins.code}}</span>
+                        <span v-else>-</span>
+                      </div></el-col>
+                    </el-row>
+                    <el-row>
+                      <el-col :span="3"><div class="insTitle">省份</div></el-col>
+                      <el-col :span="5"><div class="insTitle">
+                        <span v-if="ins.province!=null&&ins.province!=''">{{ins.province}}</span>
+                        <span v-else>-</span>
+                      </div></el-col>
+                      <el-col :span="3"><div class="insTitle">城市</div></el-col>
+                      <el-col :span="5"><div class="insTitle">
+                        <span v-if="ins.city!=null&&ins.city!=''">{{ins.city}}</span>
+                        <span v-else>-</span>
+                      </div></el-col>
+                      <el-col :span="3"><div class="insTitle">地址</div></el-col>
+                      <el-col :span="5"><div class="insTitle">
+                        <span v-if="ins.address!=null&&ins.address!=''">{{ins.address}}</span>
+                        <span v-else>-</span>
+                      </div></el-col>
+                    </el-row>
+                    <el-row>
+                      <el-col :span="3"><div class="insTitle">主机版本</div></el-col>
+                      <el-col :span="5"><div class="insTitle">
+                        <span v-if="ins.hostVersion!=null&&ins.hostVersion!=''">{{ins.hostVersion}}</span>
+                        <span v-else>-</span>
+                      </div></el-col>
+                      <el-col :span="3"><div class="insTitle">补丁版本</div></el-col>
+                      <el-col :span="5"><div class="insTitle">
+                        <span v-if="ins.patchVersion!=null&&ins.patchVersion!=''">{{ins.patchVersion}}</span>
+                        <span v-else>-</span>
+                      </div></el-col>
+                      <el-col :span="3"><div class="insTitle">槽位号及单板名称</div></el-col>
+                      <el-col :span="5"><div class="insTitle">
+                        <span v-if="ins.boardName!=null&&ins.boardName!=''">{{ins.boardName}}</span>
+                        <span v-else>-</span>
+                      </div></el-col>
+                    </el-row>
+                    <el-row>
+                      <el-col :span="3"><div class="insTitle">单板型号</div></el-col>
+                      <el-col :span="5"><div class="insTitle">
+                        <span v-if="ins.boardModel!=null&&ins.boardModel!=''">{{ins.boardModel}}</span>
+                        <span>-</span>
+                      </div></el-col>
+                      <el-col :span="3"><div class="insTitle">单板条码</div></el-col>
+                      <el-col :span="5"><div class="insTitle">
+                        <span v-if="ins.boardCode!=null&&ins.boardCode!=''">{{ins.boardCode}}</span>
+                        <span v-else>-</span>
+                      </div></el-col>
+                      <el-col :span="3"><div class="insTitle">单板版本(软件)</div></el-col>
+                      <el-col :span="5"><div class="insTitle">
+                        <span v-if="ins.boardVersion!=null&&ins.boardVersion!=''">{{ins.boardVersion}}</span>
+                        <span v-else>-</span>
+                      </div></el-col>
+                    </el-row>
+                    <el-row>
+                      <el-col :span="3"><div class="insTitle">备注</div></el-col>
+                      <el-col :span="21"><div class="insTitle">
+                        <span v-if="ins.remark!=null&&ins.remark!=''">{{ins.remark}}</span>
+                        <span v-else>-</span>
+                      </div></el-col>
+                    </el-row>
+                  </div>
                 </el-collapse-item>
-                <el-collapse-item name="4">
-                  <template slot="title">
-                   <span style="color:rgba(235,122,29,1);fontSize:16px;">潜在风险【点击展开】</span>
-                  </template>
-                  <div>用户决策：根据场景可给予用户操作建议或安全提示，但不能代替用户进行决策；</div>
-                  <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
-                </el-collapse-item>
+
               </el-collapse>
             </li>
           </ul>
@@ -158,39 +294,36 @@ export default {
       pageNum:10,//页码
       openDetils:false,//打开详情弹框
       showMes:false,//显示内容
-      activeNames: ['1'],
-      proList:[
+      page:0,//当前页
+      activeNames: [],
+      length:0,
+      projectMes:{},
+      proList:[],
+      projectNum:0,
+      gressList:[
         {
-          num:1,
-          name:'边界会话控制器(SBC)项目文档归档',
-          status:1,
-          gress:'20',
-          creat:'耿达',
-          time:'2019-08-03'
+          name:'进场开工',
+          time1:'2019-01-04',
+          time2:'2019-05-05',
+          msg:'符号感受',
+          text:'萨达所大所大所多',
+          file:'-'
         },
         {
-          num:2,
-          name:'武汉品道建筑园林工程有限公司网络及监控系统工程PRO2018049430112-实施服务',
-          status:2,
-          gress:'100',
-          creat:'凌寒涛',
-          time:'2019-05-23'
+          name:'硬件暗转',
+          time1:'2019-01-04',
+          time2:'2019-05-05',
+          msg:'符号感受',
+          text:'萨达所大所大所多',
+          file:'-'
         },
         {
-          num:3,
-          name:'湖北中烟武汉卷烟厂易地技术改造项目安防系统采购项目（网络、存储）',
-          status:4,
-          gress:'81',
-          creat:'张江林',
-          time:'2019-05-23'
-        },
-        {
-          num:4,
-          name:'天津市政府合作办公室视频会议项目',
-          status:3,
-          gress:'100',
-          creat:'王龙飞',
-          time:'2019-05-23'
+          name:'加电单调',
+          time1:'2019-01-04',
+          time2:'2019-05-05',
+          msg:'符号感受',
+          text:'萨达所大所大所多',
+          file:'-'
         },
       ]
     }
@@ -198,6 +331,9 @@ export default {
   components:{
     Search,
     Reload
+  },
+  created(){
+    this.getProjectList()
   },
   methods:{
     handleChange(val) {//折叠面板
@@ -209,15 +345,206 @@ export default {
     handleCurrentChange(val) {
         // console.log(`当前页: ${val}`);
         this.page=val-1;
+        this.getProjectList()
     },
-    hasDetials(){//查看项目详情
-      this.openDetils=true;
-      setTimeout(()=>{
-        this.$refs.project_mes.style.width='100%'
-        this.$refs.project_mes.style.minHeight='100%';
-        setTimeout(()=>{
-          this.showMes=true;
-        },200)
+    getProjectList(){//获取全部项目
+      let _vc=this;
+      let formdata=new FormData();
+      formdata.append('page',_vc.page);
+      _vc.$axios.post(_vc.url+'/findProjectListByCondition',formdata).then((res)=>{
+        if(res.data.code==0){
+          _vc.dataLength=res.data.data.totalElements;
+          _vc.pageNum=res.data.data.totalPages*10;
+          _vc.length=_vc.page*10;
+          res.data.data.content.forEach((e)=>{
+            _vc.$set(e,'num',_vc.length++);
+            //创建时间-------------------------------------->
+            let createDate=new Date(e.createTime);
+            let cYear=createDate.getFullYear();
+            let cMon=createDate.getMonth()+1;
+            if(cMon<10){
+              cMon='0'+cMon
+            };
+            let cDay=createDate.getDate();
+            if(cDay<10){
+              cDay='0'+cDay
+            }
+            let cTime=cYear+'-'+cMon+'-'+cDay;
+            _vc.$set(e,'createTimeSec',cTime);
+            //入场时间-------------------------------------->
+            let entranceDate=new Date(e.startTime);
+            let eYear=entranceDate.getFullYear();
+            let eMon=entranceDate.getMonth()+1;
+            if(eMon<10){
+              eMon='0'+eMon
+            };
+            let eDay=entranceDate.getDate();
+            if(eDay<10){
+              eDay='0'+eDay
+            }
+            let eTime=eYear+'-'+eMon+'-'+eDay;
+            _vc.$set(e,'entranceTimeSec',eTime);
+            //完工时间-------------------------------------->
+            let finishDate=new Date(e.finishTime);
+            let fYear=finishDate.getFullYear();
+            let fMon=finishDate.getMonth()+1;
+            if(fMon<10){
+              fMon='0'+fMon
+            };
+            let fDay=finishDate.getDate();
+            if(fDay<10){
+              fDay='0'+fDay
+            }
+            let fTime=fYear+'-'+fMon+'-'+fDay;
+            _vc.$set(e,'finishTimeSec',fTime);
+            //验收时间-------------------------------------->
+            let acceptDate=new Date(e.acceptTime);
+            let aYear=acceptDate.getFullYear();
+            let aMon=acceptDate.getMonth()+1;
+            if(aMon<10){
+              aMon='0'+aMon
+            };
+            let aDay=acceptDate.getDate();
+            if(aDay<10){
+              aDay='0'+aDay
+            }
+            let aTime=aYear+'-'+aMon+'-'+aDay;
+            _vc.$set(e,'acceptTimeSec',aTime);
+          });
+          _vc.proList=res.data.data.content;
+        }
+      }).catch((err)=>{
+        console.log(err)
+      })
+    },
+    hasDetials(index){//查看项目详情
+      let _vc=this;
+      // +_vc.proList[index].id
+      _vc.$axios.get(_vc.url+'/projectInfo?projectId=afdd571d-f10d-4a88-998f-06c412b155b6').then((res)=>{
+        if(res.data.code==0){
+          //入场时间
+          let startDate=new Date(res.data.data.startTime);
+          let sYear=startDate.getFullYear();
+          let sMon=startDate.getMonth()+1;
+          if(sMon<10){
+            sMon='0'+sMon
+          };
+          let sDay=startDate.getDate();
+          if(sDay<10){
+            sDay='0'+sDay
+          }
+          let sTime=sYear+'-'+sMon+'-'+sDay;
+          _vc.$set(res.data.data,'startTimeSec',sTime);
+          //完工时间
+          let finishDate=new Date(res.data.data.finishTime);
+          let fYear=finishDate.getFullYear();
+          let fMon=finishDate.getMonth()+1;
+          if(fMon<10){
+            fMon='0'+fMon
+          };
+          let fDay=finishDate.getDate();
+          if(fDay<10){
+            fDay='0'+fDay
+          }
+          let fTime=fYear+'-'+fMon+'-'+fDay;
+          _vc.$set(res.data.data,'finishTimeSec',fTime);
+          //验收时间
+          let acceptDate=new Date(res.data.data.acceptTime);
+          let aYear=acceptDate.getFullYear();
+          let aMon=acceptDate.getMonth()+1;
+          if(aMon<10){
+            aMon='0'+aMon
+          };
+          let aDay=acceptDate.getDate();
+          if(aDay<10){
+            aDay='0'+aDay
+          }
+          let aTime=aYear+'-'+aMon+'-'+aDay;
+          _vc.$set(res.data.data,'acceptTimeSec',aTime);
+          //预警时间
+          let warnDate=new Date(res.data.data.warnTime );
+          let wYear=warnDate.getFullYear();
+          let wMon=warnDate.getMonth()+1;
+          if(wMon<10){
+            wMon='0'+wMon
+          };
+          let wDay=warnDate.getDate();
+          if(wDay<10){
+            wDay='0'+wDay
+          }
+          let wTime=wYear+'-'+wMon+'-'+wDay;
+          _vc.$set(res.data.data,'warnTimeSec',wTime);
+          //计划完工时间
+          let planFDate=new Date(res.data.data.planFinishTime);
+          let pfYear=planFDate.getFullYear();
+          let pfMon=planFDate.getMonth()+1;
+          if(pfMon<10){
+            pfMon='0'+pfMon
+          };
+          let pfDay=planFDate.getDate();
+          if(pfDay<10){
+            pfDay='0'+pfDay
+          }
+          let pfTime=pfYear+'-'+pfMon+'-'+pfDay;
+          _vc.$set(res.data.data,'planFTimeSec',pfTime);
+          //计划验收时间
+          let planADate=new Date(res.data.data.planAcceptTime);
+          let paYear=planADate.getFullYear();
+          let paMon=planADate.getMonth()+1;
+          if(paMon<10){
+            paMon='0'+paMon
+          };
+          let paDay=planADate.getDate();
+          if(paDay<10){
+            paDay='0'+paDay
+          }
+          let paTime=paYear+'-'+paMon+'-'+paDay;
+          _vc.$set(res.data.data,'planATimeSec',paTime);
+          for(let i in res.data.data.projectPointVOList){
+            for(let x in res.data.data.projectPointVOList[i].usingProjectCourseNodeVOList){
+              //开始时间
+              let startDate=new Date(res.data.data.projectPointVOList[i].usingProjectCourseNodeVOList[x].startTime);
+              let sYear=startDate.getFullYear();
+              let sMon=startDate.getMonth()+1;
+              if(sMon<10){
+                sMon='0'+sMon
+              };
+              let sDay=startDate.getDate();
+              if(sDay<10){
+                sDay='0'+sDay
+              };
+              let sTime=sYear+'-'+sMon+'-'+sDay
+              _vc.$set(res.data.data.projectPointVOList[i].usingProjectCourseNodeVOList[x],'startTimeSec',sTime)
+              //结束时间
+              let endDate=new Date(res.data.data.projectPointVOList[i].usingProjectCourseNodeVOList[x].endTime);
+              let eYear=endDate.getFullYear();
+              let eMon=endDate.getMonth()+1;
+              if(eMon<10){
+                eMon='0'+eMon
+              };
+              let eDay=endDate.getDate();
+              if(eDay<10){
+                eDay='0'+eDay
+              };
+              let eTime=eYear+'-'+eMon+'-'+eDay
+              _vc.$set(res.data.data.projectPointVOList[i].usingProjectCourseNodeVOList[x],'endTimeSec',eTime)
+            }
+          }
+          _vc.projectMes=res.data.data;
+          _vc.openDetils=true;
+          setTimeout(()=>{
+            _vc.$refs.project_mes.style.width='100%'
+            _vc.$refs.project_mes.style.minHeight='100%';
+            setTimeout(()=>{
+              _vc.showMes=true;
+            },200)
+          })
+        }else{
+          this.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        this.$message.error('未知错误,请联系管理员')
+        console.log(err)
       })
     },
     closeMes(){//关闭项目详情
@@ -353,6 +680,22 @@ export default {
         span{
           font-weight:normal;
         }
+        .insTitle{
+          text-align: center;
+          line-height: 40px;
+          border:1px solid #eee;
+        }
+      }
+      .gress_title{
+        text-align: center;
+        line-height: 40px;
+        background: rgba(235,122,29,.5);
+        color:black;
+        font-size: 15px;
+      }
+      .gress_con{
+        line-height: 50px;
+        text-align: center;
       }
       .flex{
         width: 100%;

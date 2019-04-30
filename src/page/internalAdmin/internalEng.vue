@@ -443,7 +443,7 @@ export default {
           res.data.data.content.forEach((e)=>{
             _vm.$set(e,'num',_vm.length++);
           });
-          _vm.dataLength=res.data.data.content.length;
+          _vm.dataLength=res.data.data.totalElements;
           _vm.engList=res.data.data.content;
         }else{
           _vm.engLoad=false;
