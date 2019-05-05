@@ -1,12 +1,75 @@
 <!-- 项目查询 -->
 <template lang="html">
   <div class="query_project">
-    <Search/>
+    <div class="query_search">
+      <ul>
+        <li>
+          <p>项目名称:&nbsp;<el-input type="primary" v-model="searchMes.proName" style="width:80%;" placeholder="请输入项目名称"></el-input/></p>
+          <p>客户名称:&nbsp;<el-input type="primary" v-model="searchMes.cusName" style="width:80%;" placeholder="请输入客户名称"></el-input></p>
+          <p>项目经理:&nbsp;<el-input type="primary" v-model="searchMes.manName" style="width:80%;" placeholder="请输入项目经理名称"></el-input/></p>
+        </li>
+        <li>
+          <p>&nbsp;&nbsp;&nbsp;产品线:
+            <el-select v-model="searchMes.lineName" placeholder="请选择产品线" style="width:70%;" @change="chooseLine">
+              <el-option
+                v-for="(item,index) in searchMes.lineList"
+                :key="item.name"
+                :value="item.name"
+                >
+              </el-option>
+            </el-select>
+          </p>
+          <p>项目状态:
+            <el-select v-model="searchMes.proStatus" placeholder="请选择项目状态" style="width:70%;" @change="chooseStatus">
+              <el-option
+                v-for="item in searchMes.typeList"
+                :key="item"
+                :value="item"
+                >
+              </el-option>
+            </el-select>
+          </p>
+          <p></p>
+        </li>
+        <li style="padding-left:40px;">
+          <span style="width:12%;display:inline-block;">
+              <el-select v-model="searchMes.dateText" placeholder="时间类型" style="width:70%;" @change="chooseDate">
+                <el-option
+                  v-for="item in searchMes.dateList"
+                  :key="item"
+                  :value="item">
+                </el-option>
+              </el-select>
+          :</span>
+          <span style="width:40%;display:inline-block;">
+            <el-date-picker
+               v-model="searchMes.dateChoose"
+               type="daterange"
+               :picker-options="pickerOptions2"
+               range-separator="至"
+               start-placeholder="开始日期"
+               end-placeholder="结束日期"
+               align="right"
+               @change="chooseTime"
+               >
+             </el-date-picker>
+          </span>
+          <span>
+            <el-button type="primary" icon="el-icon-zoom-in" @click="serchPro()">筛选</el-button>
+            <el-button type="primary" icon="el-icon-remove" @click="cancelPro()">取消筛选</el-button>
+          </span>
+        </li>
+      </ul>
+    </div>
     <div class="project_con">
       <p class="addEng">
         <!-- <el-button type="primary" icon="el-icon-plus" size="medium" @click="addEng=true" @keyup.enter.native="abc($event)">添加工程师</el-button> -->
         <span class="dataLength">共有数据:&nbsp;<span style="color:#eb7a1d;font-weight:bold;">{{dataLength}}</span>&nbsp;条</span>
-        <Reload/>
+      </p>
+      <p class="admin_reload">
+        <el-tooltip class="item" effect="dark" content="刷新数据" placement="bottom">
+          <i class="el-icon-refresh" @click="refresh()"></i>
+        </el-tooltip>
       </p>
       <div class="project_title">
         <el-row>
@@ -23,7 +86,7 @@
           <el-col :span="2"><div class="projectTitle">浏览</div></el-col>
         </el-row>
       </div>
-      <div class="project_con">
+      <div class="project_con" v-loading="loadPro">
         <el-row class="el_con" v-for="(pro,index) in proList" :key="index">
           <el-col :span="1"><div class="projectCon">{{pro.num+1}}</div></el-col>
           <el-tooltip class="item" effect="dark" :content="pro.name" placement="bottom">
@@ -43,11 +106,13 @@
           <el-col :span="2"><div class="projectCon">{{pro.createTimeSec}}</div></el-col>
           <el-col :span="2" v-if="pro.startTime!=null&&pro.startTime!='null'"><div class="projectCon">{{pro.entranceTimeSec}}</div></el-col>
           <el-col :span="2" v-else><div class="projectCon">-</div></el-col>
+          <el-col :span="2" v-else><div class="projectCon">-</div></el-col>
           <el-col :span="2" v-if="pro.finishTime!=null&&pro.finishTime!='null'"><div class="projectCon">{{pro.finishTimeSec}}</div></el-col>
           <el-col :span="2" v-else><div class="projectCon">-</div></el-col>
           <el-col :span="2" v-if="pro.acceptTime!=null&&pro.acceptTime!='null'"><div class="projectCon">{{pro.acceptTimeSec}}</div></el-col>
           <el-col :span="2" v-else><div class="projectCon">-</div></el-col>
-          <el-col :span="2"><div class="projectCon">{{pro.schedule}}%</div></el-col>
+          <el-col :span="2" v-if="pro.schedule!=null&&pro.schedule!='null'"><div class="projectCon">{{pro.schedule}}%</div></el-col>
+          <el-col :span="2"  v-else><div class="projectCon">-</div></el-col>
           <el-col :span="2"><div class="projectCon">
             <i class="el-icon-view" style="color:#eb7a1d;font-size:23px;cursor:pointer;" @click="hasDetials(index)"></i>
           </div></el-col>
@@ -284,8 +349,6 @@
 </template>
 
 <script>
-import Search from '@/components/search'
-import Reload  from '@/components/reloadBtn'
 export default {
   data(){
     return{
@@ -296,48 +359,65 @@ export default {
       showMes:false,//显示内容
       page:0,//当前页
       activeNames: [],
-      length:0,
-      projectMes:{},
+      searchMes:{//筛选条件
+        proName:null,//项目名称
+        cusName:null,//客户名称
+        manName:null,//项目经理
+        lineName:null,//产品线
+        lineID:null,//产品线ID
+        proStatus:null,//项目状态
+        proStatusNum:null,//项目状态值  0未开工   1开工   2停工  3完工  4验收
+        dateText:null,//时间文本
+        dateUpText:null,//上传时间类型字段
+        lineList:[],//产品线选择列表
+        typeList:['未开工','开工','停工','完工','验收'],//项目状态选择列表
+        dateList:['创建时间','预警时间','入场时间','计划完工时间','完工时间','计划验收时间','验收时间'],//时间类型选择列表
+        dateChoose:null,//时间选择
+        startTime:null,//筛选开始时间
+        endTime:null,//筛选结束时间
+      },
+      length:0,//列表排序
+      projectMes:{},//项目详情信息
       proList:[],
       projectNum:0,
-      gressList:[
-        {
-          name:'进场开工',
-          time1:'2019-01-04',
-          time2:'2019-05-05',
-          msg:'符号感受',
-          text:'萨达所大所大所多',
-          file:'-'
+      loadPro:false,//是否启用loading
+      gressList:[],//项目列表
+      pickerOptions2: {
+          shortcuts: [{
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }]
         },
-        {
-          name:'硬件暗转',
-          time1:'2019-01-04',
-          time2:'2019-05-05',
-          msg:'符号感受',
-          text:'萨达所大所大所多',
-          file:'-'
-        },
-        {
-          name:'加电单调',
-          time1:'2019-01-04',
-          time2:'2019-05-05',
-          msg:'符号感受',
-          text:'萨达所大所大所多',
-          file:'-'
-        },
-      ]
     }
   },
-  components:{
-    Search,
-    Reload
-  },
   created(){
-    this.getProjectList()
+    this.getProjectList();
+    this.getLineList()
   },
   methods:{
     handleChange(val) {//折叠面板
-       console.log(val);
+       // console.log(val);
      },
     handleSizeChange(val) {
        // console.log(`每页 ${val} 条`);
@@ -345,10 +425,15 @@ export default {
     handleCurrentChange(val) {
         // console.log(`当前页: ${val}`);
         this.page=val-1;
-        this.getProjectList()
+        if(this.searchMes.proName!=null||this.searchMes.cusName!=null||this.searchMes.manName!=null||this.searchMes.lineID!=null||this.searchMes.proStatusNum!=null||this.searchMes.proStatusNum!=null||this.searchMes.startTime!=null){
+          this.serchPro()
+        }else{
+          this.getProjectList()
+        }
     },
     getProjectList(){//获取全部项目
       let _vc=this;
+      _vc.loadPro=true;
       let formdata=new FormData();
       formdata.append('page',_vc.page);
       _vc.$axios.post(_vc.url+'/findProjectListByCondition',formdata).then((res)=>{
@@ -411,9 +496,14 @@ export default {
             let aTime=aYear+'-'+aMon+'-'+aDay;
             _vc.$set(e,'acceptTimeSec',aTime);
           });
+          _vc.loadPro=false;
           _vc.proList=res.data.data.content;
+        }else{
+          _vc.loadPro=false;
+          _vc.$message.error(res.data.msg);
         }
       }).catch((err)=>{
+        _vc.loadPro=false;
         console.log(err)
       })
     },
@@ -556,6 +646,196 @@ export default {
       setTimeout(()=>{
         this.openDetils=false;
       },200)
+    },
+    refresh(){//刷新数据
+      this.page=0;
+      this.getProjectList()
+    },
+    serchPro(){//筛选项目
+      let formdata=new FormData()
+      if(this.searchMes.proName!=null){
+        formdata.append('name',this.searchMes.proName)
+      };
+      if(this.searchMes.cusName!=null){
+        formdata.append('customerName',this.searchMes.cusName)
+      };
+      if(this.searchMes.manName!=null){
+        formdata.append('managerName',this.searchMes.manName)
+      };
+      if(this.searchMes.lineID!=null){
+        formdata.append('technologyId',this.searchMes.lineID)
+      };
+      if(this.searchMes.proStatusNum!=null){
+        formdata.append('state',this.searchMes.proStatusNum)
+      };
+      if(this.searchMes.dateUpText!=null&&this.searchMes.startTime!=null){
+        formdata.append('dateType',this.searchMes.dateUpText);
+        formdata.append('beginTime',this.searchMes.startTime);
+        formdata.append('endTime',this.searchMes.endTime);
+      };
+      formdata.append('page',this.page)
+      this.$axios.post(this.url+'/findProjectListByCondition',formdata).then((res)=>{
+        if(res.data.code==0){
+          this.dataLength=res.data.data.totalElements;
+          this.length=this.page*10;
+          this.pageNum=res.data.data.totalPages*10;
+          res.data.data.content.forEach((e)=>{
+            this.$set(e,'num',this.length++);
+            //创建时间-------------------------------------->
+            let createDate=new Date(e.createTime);
+            let cYear=createDate.getFullYear();
+            let cMon=createDate.getMonth()+1;
+            if(cMon<10){
+              cMon='0'+cMon
+            };
+            let cDay=createDate.getDate();
+            if(cDay<10){
+              cDay='0'+cDay
+            }
+            let cTime=cYear+'-'+cMon+'-'+cDay;
+            this.$set(e,'createTimeSec',cTime);
+            //入场时间-------------------------------------->
+            let entranceDate=new Date(e.startTime);
+            let eYear=entranceDate.getFullYear();
+            let eMon=entranceDate.getMonth()+1;
+            if(eMon<10){
+              eMon='0'+eMon
+            };
+            let eDay=entranceDate.getDate();
+            if(eDay<10){
+              eDay='0'+eDay
+            }
+            let eTime=eYear+'-'+eMon+'-'+eDay;
+            this.$set(e,'entranceTimeSec',eTime);
+            //完工时间-------------------------------------->
+            let finishDate=new Date(e.finishTime);
+            let fYear=finishDate.getFullYear();
+            let fMon=finishDate.getMonth()+1;
+            if(fMon<10){
+              fMon='0'+fMon
+            };
+            let fDay=finishDate.getDate();
+            if(fDay<10){
+              fDay='0'+fDay
+            }
+            let fTime=fYear+'-'+fMon+'-'+fDay;
+            this.$set(e,'finishTimeSec',fTime);
+            //验收时间-------------------------------------->
+            let acceptDate=new Date(e.acceptTime);
+            let aYear=acceptDate.getFullYear();
+            let aMon=acceptDate.getMonth()+1;
+            if(aMon<10){
+              aMon='0'+aMon
+            };
+            let aDay=acceptDate.getDate();
+            if(aDay<10){
+              aDay='0'+aDay
+            }
+            let aTime=aYear+'-'+aMon+'-'+aDay;
+            this.$set(e,'acceptTimeSec',aTime);
+          });
+          this.loadPro=false;
+          this.proList=res.data.data.content;
+          console.log(res)
+          this.proList=res.data.data.content
+        }else{
+          this.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        this.$message.error('未知错误,请联系管理员')
+        console.log(err)
+      })
+    },
+    cancelPro(){//取消筛选
+      this.page=0;
+      this.getProjectList();
+      this.searchMes.proName=null;
+      this.searchMes.cusName=null;
+      this.searchMes.manName=null;
+      this.searchMes.lineID=null;
+      this.searchMes.proStatusNum=null;
+      this.searchMes.dateUpText=null;
+      this.searchMes.startTime=null;
+      this.searchMes.endTime=null;
+      this.searchMes.lineName=null;
+      this.searchMes.dateText=null;
+      this.searchMes.proStatus=null;
+      this.searchMes.dateChoose=null;
+    },
+    getLineList(){//获取产品线选项
+      this.$axios.get(this.url+'/usingTechnologyList').then((res)=>{
+        if(res.data.code==0){
+          this.searchMes.lineList=res.data.data;
+        }else{
+          this.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        this.$message.error('获取产品线失败,请联系管理员')
+        console.log(err)
+      })
+    },
+    chooseStatus(){//选择项目状态
+      if(this.searchMes.proStatus==='未开工'){
+        this.searchMes.proStatusNum=0;
+      }else if(this.searchMes.proStatus==='开工'){
+        this.searchMes.proStatusNum=1;
+      }else if(this.searchMes.proStatus==='停工'){
+        this.searchMes.proStatusNum=2;
+      }else if(this.searchMes.proStatus==='完工'){
+        this.searchMes.proStatusNum=3;
+      }else{
+        this.searchMes.proStatusNum=4;
+      }
+    },
+    chooseLine(){//选择产品线
+      this.searchMes.lineList.forEach((e)=>{
+        if(e.name===this.searchMes.lineName){
+          this.searchMes.lineID=e.id;
+        }else{
+          return
+        }
+      })
+    },
+    chooseDate(){//选择时间类型
+      if(this.searchMes.dateText==='创建时间'){
+        this.searchMes.dateUpText='createTime'
+      }else if(this.searchMes.dateText==='预警时间'){
+        this.searchMes.dateUpText='warnTime'
+      }else if(this.searchMes.dateText==='入场时间'){
+        this.searchMes.dateUpText='startTime'
+      }else if(this.searchMes.dateText==='计划完工时间'){
+        this.searchMes.dateUpText='planFinishTime'
+      }else if(this.searchMes.dateText==='完工时间'){
+        this.searchMes.dateUpText='finishTime'
+      }else if(this.searchMes.dateText==='计划验收时间'){
+        this.searchMes.dateUpText='planAcceptTime'
+      }else{
+        this.searchMes.dateUpText='acceptTime'
+      };
+    },
+    chooseTime(){//选择时间段
+      let startDate=new Date(this.searchMes.dateChoose[0]);
+      let startYear=startDate.getFullYear();
+      let startMonth=startDate.getMonth()+1;
+      if(startMonth<10){
+        startMonth='0'+startMonth
+      }
+      let startDay=startDate.getDate();
+      if(startDay<10){
+        startDay='0'+startDay
+      };
+      this.searchMes.startTime=startYear+'-'+startMonth+'-'+startDay
+      let endData=new Date(this.searchMes.dateChoose[1]);
+      let endYear=endData.getFullYear();
+      let endMonth=endData.getMonth()+1;
+      if(endMonth<10){
+        endMonth='0'+endMonth
+      }
+      let endDay=endData.getDate();
+      if(endDay<10){
+        endDay='0'+endDay
+      }
+      this.searchMes.endTime=endYear+'-'+endMonth+'-'+endDay
     }
   }
 }
@@ -566,6 +846,31 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
+  .query_search{
+    width: 100%;
+    min-height: 230px;
+    ul{
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      padding-top: 30px;
+      li{
+        display: flex;
+        width: 80%;
+        margin:0 auto;
+        line-height: 60px;
+        p{
+          width: 30%;
+          margin:0 auto;
+        }
+      }
+      li:nth-child(2){
+        p{
+          margin-left: 20px;
+        }
+      }
+    }
+  }
   .project_con{
     width: 98%;
     margin:0 auto;
@@ -581,6 +886,17 @@ export default {
         text-align: right;
         box-sizing: border-box;
         padding-right: 50px;
+      }
+
+    }
+    .admin_reload{
+      position: absolute;
+      top:234px;
+      right:30px;
+      i{
+        font-size: 32px;
+        color:#eb7a1d;
+        cursor:pointer;
       }
     }
     .project_title{

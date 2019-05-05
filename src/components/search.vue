@@ -59,7 +59,9 @@ export default {
         value7:'',
         engName:null,
         startTime:null,
-        endTime:null
+        endTime:null,
+        length:0,
+        page:0,
     }
   },
   methods:{
@@ -110,10 +112,10 @@ export default {
       }
       _vc.$axios.post(_vc.url+_vc.searchUrl.url,formdata).then((res)=>{
         if(res.data.code==0){
-          let length=0;
+          _vm.length=_vm.page*10;
           console.log(res)
           res.data.data.content.forEach((e)=>{
-            _vc.$set(e,'num',length++);
+            _vc.$set(e,'num',_vc.length++);
           });
           _vc.$emit('searchData',res.data.data.content)
         }

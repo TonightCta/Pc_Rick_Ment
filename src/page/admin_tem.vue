@@ -110,7 +110,7 @@ export default {
      if(window.sessionStorage.getItem('adminMes')){
        let mes=JSON.parse(window.sessionStorage.getItem('adminMes'));
        if(mes.roleVO!=null){
-         // this.route=mes.roleVO.usingTopChannelVOList
+         this.route=mes.roleVO.usingTopChannelVOList
        }else{
          this.route=[{name:'暂无权限'}]
        }

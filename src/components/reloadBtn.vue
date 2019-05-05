@@ -12,7 +12,13 @@
 export default {
   props:{
     reloadData:Object,
-    required:true
+    required:true,
+  },
+  data(){
+    return{
+      lenth:0,
+      page:10
+    }
   },
   methods:{
     refresh(){
@@ -34,10 +40,10 @@ export default {
       }
       _vc.$axios.post(_vc.url+_vc.reloadData.url,formdata).then((res)=>{
         if(res.data.code==0){
-          let length=0;
           console.log(res)
+          _vc.length=_vc.page*10;
           res.data.data.content.forEach((e)=>{
-            _vc.$set(e,'num',length++);
+            _vc.$set(e,'num',_vc.length++);
           });
           _vc.$emit('reloadList',res.data.data.content)
         }
