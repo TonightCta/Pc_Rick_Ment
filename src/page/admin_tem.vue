@@ -4,13 +4,14 @@
     <Header/>
     <el-row>
       <el-col :span="4">
-        <div style="box-shadow:0px 0px 10px #999;border-right:1px solid #eee;">
+        <div style="box-shadow:0px 0px 10px #999;border-right:1px solid #eee;height:80vh;padding-bottom:150px;overflow-y:auto;" class="terM">
           <el-menu
             default-active="4"
             class="el-menu-vertical-demo"
             @open="handleOpen"
             @close="handleClose"
             active-text-color="#000"
+            unique-opened
             >
             <el-submenu v-for="(fun,key) in route" :key="'F'+key" :index="fun.in">
               <template slot="title">
@@ -36,7 +37,7 @@
               <li></li>
             </ul>
           </div>
-          <div class="" style="height:85vh;overflow:auto;position:relative;">
+          <div class="" style="height:85vh;position:relative;">
             <router-view></router-view>
           </div>
         </div>
@@ -57,6 +58,7 @@ export default {
            url:'/admin/wel'
          }
        ],
+       length:0,
        route:[
          {
            name:'平台内部管理',
@@ -110,7 +112,12 @@ export default {
      if(window.sessionStorage.getItem('adminMes')){
        let mes=JSON.parse(window.sessionStorage.getItem('adminMes'));
        if(mes.roleVO!=null){
-         this.route=mes.roleVO.usingTopChannelVOList
+         // console.log(mes.roleVO)
+         mes.roleVO.usingTopChannelVOList.forEach((e)=>{
+           this.$set(e,'in','1-'+this.length++)
+         })
+         this.route=mes.roleVO.usingTopChannelVOList;
+         console.log(this.route)
        }else{
          this.route=[{name:'暂无权限'}]
        }
@@ -190,6 +197,7 @@ export default {
   box-sizing: border-box;
   z-index: 100;
   background: white;
+  .terM::-webkit-scrollbar {display:none}
   .admin_view{
     background: white;
     max-height: none;

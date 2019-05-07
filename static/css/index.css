@@ -11,11 +11,16 @@ sub{vertical-align:text-bottom}
 input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit}
 input,textarea,select{*font-size:100%}
 a{text-decoration: none;color:#000;}
+body{
+	overflow: hidden;
+}
 .swiper-pagination-bullet-active{
 		background: #e86521!important;
 }
 .el-menu{
 	min-width: 205px!important;
+	/* overflow: auto!important;
+	max-height: 800px; */
 }
 .el-loading-spinner i{
 	margin-top:12px!important;
@@ -39,9 +44,9 @@ a{text-decoration: none;color:#000;}
 	max-width: 350px!important;
 	max-height: none;
 }
-.el-select{
+/* .el-select{
 	width: 80%!important;
-}
+} */
 .el-select-dropdown__item{
 	width: 100%!important;
 }

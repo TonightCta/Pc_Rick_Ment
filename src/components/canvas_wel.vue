@@ -11,11 +11,16 @@ export default {
 
 <style lang="css" scoped>
 .canvas_wel{
-  background: #000;
   display: grid;
   place-content: center;
-  height: 600px;
-  filter: blur(5px);
+  height: 1500px;
+  width: 100%;
+  top:110px;
+  background: black;
+  position: absolute;
+  top:0;
+  overflow: hidden;
+  /* filter: blur(5px); */
 }
 b, b:before, b:after {
   display: block;
@@ -24,6 +29,10 @@ b, b:before, b:after {
 b {
   width: 50vmin;
   height: 51vmin;
+  position: absolute;
+  top:30px;
+  left:50%;
+  margin-left:-25vmin;
   box-shadow: 1vmin 0 3vmin 2vmin #f50,
        inset -1vmin 0 3vmin 4vmin #f80,
              -4vmin 0 35vmin 0 #f60;

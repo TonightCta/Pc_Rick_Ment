@@ -6,7 +6,7 @@
     <div class="mask">
 
     </div>
-    <!-- <p class="wel_title">瑞得音信息</p> -->
+    <p class="wel_title">瑞得音信息</p>
   </div>
 </template>
 
@@ -24,16 +24,15 @@ export default {
 .admin_wel{
   margin:0 auto;
   z-index: 866;
-  position: relative;
-  .mask{
-    width: 100%;
-    height: 1000px;
-    position: fixed;
-    background: black;
-    top:300px;
-    z-index: -1;
-    filter: blur(5px);
-  }
+  // .mask{
+  //   width: 100%;
+  //   height: 5000px;
+  //   position: fixed;
+  //   background: black;
+  //   top:300px;
+  //   z-index: -1;
+  //   // filter: blur(5px);
+  // }
   .wel_title{
     position: fixed;
     width: 70%;
@@ -41,7 +40,7 @@ export default {
     color:#eb7a1d;
     font-size: 40px;
     font-weight: bold;
-    top:30%;
+    top:38%;
     left:23%;
   }
 }

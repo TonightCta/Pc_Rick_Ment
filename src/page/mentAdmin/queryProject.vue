@@ -4,9 +4,9 @@
     <div class="query_search">
       <ul>
         <li>
-          <p>项目名称:&nbsp;<el-input type="primary" v-model="searchMes.proName" style="width:80%;" placeholder="请输入项目名称"></el-input/></p>
-          <p>客户名称:&nbsp;<el-input type="primary" v-model="searchMes.cusName" style="width:80%;" placeholder="请输入客户名称"></el-input></p>
-          <p>项目经理:&nbsp;<el-input type="primary" v-model="searchMes.manName" style="width:80%;" placeholder="请输入项目经理名称"></el-input/></p>
+          <p>项目名称:&nbsp;<el-input type="primary" v-model="searchMes.proName" style="width:70%;" placeholder="请输入项目名称"></el-input/></p>
+          <p>客户名称:&nbsp;<el-input type="primary" v-model="searchMes.cusName" style="width:70%;" placeholder="请输入客户名称"></el-input></p>
+          <p>项目经理:&nbsp;<el-input type="primary" v-model="searchMes.manName" style="width:70%;" placeholder="请输入项目经理名称"></el-input/></p>
         </li>
         <li>
           <p>&nbsp;&nbsp;&nbsp;产品线:
@@ -31,8 +31,8 @@
           </p>
           <p></p>
         </li>
-        <li style="padding-left:40px;">
-          <span style="width:12%;display:inline-block;">
+        <li style="padding-left:25px;">
+          <span style="width:160px;display:inline-block;">
               <el-select v-model="searchMes.dateText" placeholder="时间类型" style="width:70%;" @change="chooseDate">
                 <el-option
                   v-for="item in searchMes.dateList"
@@ -61,7 +61,7 @@
         </li>
       </ul>
     </div>
-    <div class="project_con">
+    <div class="project_con" style="position:relative;">
       <p class="addEng">
         <!-- <el-button type="primary" icon="el-icon-plus" size="medium" @click="addEng=true" @keyup.enter.native="abc($event)">添加工程师</el-button> -->
         <span class="dataLength">共有数据:&nbsp;<span style="color:#eb7a1d;font-weight:bold;">{{dataLength}}</span>&nbsp;条</span>
@@ -184,7 +184,7 @@
             </li>
           </ul>
         </div>
-        <div class="" v-show="showMes" v-for="(point,index) in projectMes.projectPointVOList" :key="'point'+index">
+        <div class="" v-show="showMes" v-for="(point,key) in projectMes.projectPointVOList" :key="'point'+key" style="minHeight:450px;maxHeight:none;">
           <p class="mes_titleOne">
             <span>局点信息</span>
           </p>
@@ -193,9 +193,11 @@
             <li>详细地址:&nbsp;&nbsp;&nbsp;<span>{{point.address}}</span></li>
             <li>备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注:&nbsp;&nbsp;&nbsp;<span>{{point.remark}}</span></li>
             <li>人员组成:&nbsp;&nbsp;&nbsp;<span>{{point.engineerNameListStr}}</span></li>
-            <li>
-              <el-collapse v-model="activeNames" @change="handleChange">
-                <el-collapse-item name="1">
+
+          </ul>
+          <div class="coll">
+            <el-collapse v-model="activeNames" @change="handleChange">
+              <el-collapse-item :name="point.openKey">
                   <template slot="title">
                    <span style="color:rgba(235,122,29,1);fontSize:16px;">项目进程【点击展开】</span>
                   </template>
@@ -204,7 +206,7 @@
                     <el-col :span="5"><div class="gress_title">实际开始时间</div></el-col>
                     <el-col :span="5"><div class="gress_title">实际完成时间</div></el-col>
                     <el-col :span="6"><div class="gress_title">项目说明</div></el-col>
-                    <el-col :span="4"><div class="gress_title">项目附件</div></el-col>
+                    <el-col :span="4"><div class="gress_title">项目日报</div></el-col>
                   </el-row>
                   <el-row v-for="(gress,index) in point.usingProjectCourseNodeVOList" :key="'gress'+index">
                     <el-col :span="4"><div class="gress_con">{{gress.courseNodeName}}</div></el-col>
@@ -216,19 +218,20 @@
                       <span v-if="gress.endTime!=null&&gress.endTime!='null'">{{gress.endTimeSec}}</span>
                       <span v-else>-</span>
                     </div></el-col>
-                    <el-col :span="4"><div class="gress_con">
-                      <span v-if="gress.remark!=null&&gress.remark!='null'">{{gress.remark}}</span>
+                    <el-col :span="6"><div class="gress_con">
+                      <span v-if="gress.remark!=null&&gress.remark!=''">{{gress.remark}}</span>
                       <span v-else>-</span>
                     </div></el-col>
-                    <el-col :span="6"><div class="gress_con">
-                      <span>-</span>
-                    </div></el-col>
                     <el-col :span="4"><div class="gress_con">
-                      <span>-</span>
+                      <span class="el-icon-tickets"
+                      @click="proDay(key,index)" style="fontSize:18px;color:rgba(235,122,29,1);cursor:pointer;"
+                      v-if="gress.workRecordVOList!=null&&gress.workRecordVOList!=''"
+                      ></span>
+                      <span v-else>-</span>
                     </div></el-col>
                   </el-row>
-                </el-collapse-item>
-                <el-collapse-item name="2">
+              </el-collapse-item>
+              <el-collapse-item :name="point.openKey">
                   <template slot="title">
                    <span style="color:rgba(235,122,29,1);fontSize:16px;">项目文档【点击展开】</span>
                   </template>
@@ -243,8 +246,8 @@
                     <span v-show="file.fileType==8">【验收报告】</span>
                     <a :href="url+'/'+file.fileName">{{file.fileName}}</a>
                   </p>
-                </el-collapse-item>
-                <el-collapse-item name="3">
+              </el-collapse-item>
+              <el-collapse-item :name="point.openKey">
                   <template slot="title">
                    <span style="color:rgba(235,122,29,1);fontSize:16px;">验&nbsp;&nbsp;货&nbsp;&nbsp;单【点击展开】</span>
                   </template>
@@ -326,11 +329,9 @@
                       </div></el-col>
                     </el-row>
                   </div>
-                </el-collapse-item>
-
-              </el-collapse>
-            </li>
-          </ul>
+              </el-collapse-item>
+            </el-collapse>
+          </div>
         </div>
       </div>
       <!-- 分页器 -->
@@ -343,6 +344,32 @@
           :current-page.sync="currentPage3"
           :total="pageNum">
         </el-pagination>
+      </div>
+      <!-- 项目日报 -->
+      <div class="project_day" ref="project_day" v-show="showProDay">
+        <p class="close_day">
+          <span class="day_title">项目日报</span>
+          <span class="el-icon-close close" @click="closeProDay()"></span>
+        </p>
+        <ul>
+          <li v-for="(proDay,index) in dayList" :key="'DayWork'+index">
+            <p class="engName">{{proDay.engineerName}}&nbsp;<span>[{{proDay.workTimeSec}}]</span></p>
+            <p class="proName">项目名称:&nbsp;{{proDay.projectName}}</p>
+            <p class="nodeTime">
+              <span>进程节点:&nbsp;{{proDay.projectCourseNodeName}}</span>
+              <span>工作时长:&nbsp;{{proDay.workDay}}天 [<span>{{proDay.startTime}}:00</span>-<span>{{proDay.endTime}}:00</span>]</span>
+            </p>
+            <p class="proContent">工作内容:&nbsp;{{proDay.content}}</p>
+            <p>日报附件:
+              <a :href="utl+'/'+dayFile.fileName" v-for="(dayFile,index) in proDay.fileUploads">{{dayFile.fileName}}</a>
+            </p>
+            <p>日报图片:
+              <viewer :images="proDay.imgUploads">
+                <img alt="" v-for="(dayPic,index) in proDay.imgUploads" :key="'DayPic'+index" :src="url+'/'+dayPic.fileName">
+              </viewer>
+            </p>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -377,6 +404,7 @@ export default {
         endTime:null,//筛选结束时间
       },
       length:0,//列表排序
+      lengthNum:0,
       projectMes:{},//项目详情信息
       proList:[],
       projectNum:0,
@@ -409,6 +437,35 @@ export default {
             }
           }]
         },
+      showProDay:false,//显示项目日报
+      dayList:[
+          {
+            name:'彭闯',
+            createTime:'2019/02/05',
+            proName:'天津信息所数据设备更新项目PRO20190110537776',
+            node:'进场开公',
+            workTime:'1天[14:00-17:00]',
+            workContent:' S12800*2 S5720*53',
+            file:[
+              '天津信息所数据设备更新项目PRO20190110537776.xls',
+              '天津信息所数据设备更新项目PRO20190110537776.xls',
+            ],
+            pics:[
+              'static/img/card_bg.png',
+              'static/img/skill_bg.png',
+            ]
+          },
+          {
+            name:'凌寒涛',
+            createTime:'2019/02/05',
+            proName:'天津信息所数据设备更新项目PRO20190110537776',
+            node:'进场开公',
+            workTime:'1天[14:00-17:00]',
+            workContent:' S12800*2 S5720*53',
+            file:[],
+            pics:[]
+          },
+      ]
     }
   },
   created(){
@@ -509,9 +566,10 @@ export default {
     },
     hasDetials(index){//查看项目详情
       let _vc=this;
-      // +_vc.proList[index].id
-      _vc.$axios.get(_vc.url+'/projectInfo?projectId=afdd571d-f10d-4a88-998f-06c412b155b6').then((res)=>{
+
+      _vc.$axios.get(_vc.url+'/projectInfo?projectId='+_vc.proList[index].id).then((res)=>{
         if(res.data.code==0){
+          // console.log(res)
           //入场时间
           let startDate=new Date(res.data.data.startTime);
           let sYear=startDate.getFullYear();
@@ -617,7 +675,8 @@ export default {
                 eDay='0'+eDay
               };
               let eTime=eYear+'-'+eMon+'-'+eDay
-              _vc.$set(res.data.data.projectPointVOList[i].usingProjectCourseNodeVOList[x],'endTimeSec',eTime)
+              _vc.$set(res.data.data.projectPointVOList[i].usingProjectCourseNodeVOList[x],'endTimeSec',eTime);
+              _vc.$set(res.data.data.projectPointVOList[i].usingProjectCourseNodeVOList[x],'openKey',_vc.lengthNum++);
             }
           }
           _vc.projectMes=res.data.data;
@@ -836,6 +895,33 @@ export default {
         endDay='0'+endDay
       }
       this.searchMes.endTime=endYear+'-'+endMonth+'-'+endDay
+    },
+    proDay(key,index){//显示项目日报
+      this.dayList=this.projectMes.projectPointVOList[key].usingProjectCourseNodeVOList[index].workRecordVOList;
+      this.dayList.forEach((e)=>{
+        let crDate=new Date(e.workTime);
+        let cYear=crDate.getFullYear();
+        let cMon=crDate.getMonth()+1;
+        if(cMon<10){
+          cMon='0'+cMon
+        };
+        let cDay=crDate.getDate();
+        if(cDay<10){
+          cDay='0'+cDay
+        }
+        let cTime=cYear+'-'+cMon+'-'+cDay;
+        this.$set(e,'workTimeSec',cTime);
+      })
+      this.showProDay=true;
+      setTimeout(()=>{
+        this.$refs.project_day.style.opacity='1'
+      },10)
+    },
+    closeProDay(){//关闭项目日报
+      this.$refs.project_day.style.opacity='0';
+      setTimeout(()=>{
+        this.showProDay=false;
+      },500)
     }
   }
 }
@@ -845,10 +931,12 @@ export default {
 .query_project{
   width: 100%;
   height: 100%;
-  position: relative;
+  overflow-x: hidden;
   .query_search{
-    width: 100%;
+    width: 1224px;
     min-height: 230px;
+    overflow: hidden;
+    margin:0 auto;
     ul{
       width: 100%;
       height: 100%;
@@ -856,7 +944,7 @@ export default {
       padding-top: 30px;
       li{
         display: flex;
-        width: 80%;
+        width: 100%;
         margin:0 auto;
         line-height: 60px;
         p{
@@ -866,7 +954,7 @@ export default {
       }
       li:nth-child(2){
         p{
-          margin-left: 20px;
+          // margin-left: 28px;
         }
       }
     }
@@ -891,7 +979,7 @@ export default {
     }
     .admin_reload{
       position: absolute;
-      top:234px;
+      top:5px;
       right:30px;
       i{
         font-size: 32px;
@@ -944,21 +1032,26 @@ export default {
   .project_mes{
     width: 300px;
     height: 200px;
-    position: absolute;
+    position: fixed;
     background: white;
     overflow: auto;
     top:0;
     left:0;
     z-index: 667;
     transition: .5s all;
+    padding-top: 70px;
+    padding-bottom:70px;
+    box-sizing: border-box;
     .mes_close{
       width: 100%;
       height: 60px;
       line-height: 60px;
       text-align: right;
       box-sizing: border-box;
-      position: relative;
+      position: fixed;
+      top:0;
       border-bottom:1px solid #eee;
+      background: white;
       i{
         font-size: 35px;
         color: rgba(235,122,29,1);
@@ -985,7 +1078,6 @@ export default {
       width: 100%;
       box-sizing: border-box;
       padding-left: 40px;
-      height: 55px;
       li{
         width: 100%;
         text-align: left;
@@ -1002,17 +1094,6 @@ export default {
           border:1px solid #eee;
         }
       }
-      .gress_title{
-        text-align: center;
-        line-height: 40px;
-        background: rgba(235,122,29,.5);
-        color:black;
-        font-size: 15px;
-      }
-      .gress_con{
-        line-height: 50px;
-        text-align: center;
-      }
       .flex{
         width: 100%;
         display: flex;
@@ -1024,10 +1105,116 @@ export default {
         }
       }
     }
+    .coll{
+      box-sizing: border-box;
+      padding-left: 40px;
+      .gress_title{
+        text-align: center;
+        line-height: 40px;
+        background: rgba(235,122,29,.5);
+        color:black;
+        font-size: 15px;
+      }
+      .gress_con{
+        line-height: 50px;
+        text-align: center;
+      }
+    }
   }
   .project_page{
     width: 98%;
     text-align: right;
+  }
+  .project_day{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    top:0;
+    left:0;
+    z-index: 668;
+    background: white;
+    opacity: 0;
+    transition: .5s all;
+    box-sizing: border-box;
+    padding-top:70px;
+    .close_day{
+      width: 100%;
+      height: 60px;
+      line-height: 60px;
+      box-sizing: border-box;
+      position: fixed;
+      top:0;
+      border-bottom:1px solid #eee;
+      background: white;
+      padding-left: 30px;
+      text-align: left;
+      .day_title{
+        font-size: 20px;
+        font-weight: bold;
+        color: rgba(235,122,29,1);
+        position: static;
+      }
+      .close{
+        font-size: 35px;
+        color: rgba(235,122,29,1);
+        cursor:pointer;
+        top: 12px;
+        right:30px;
+        position: absolute;
+      }
+
+    }
+    ul{
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      li{
+        min-height: 200px;
+        width: 97%;
+        margin:0 auto;
+        box-shadow: 0px 0px 10px #999;
+        margin-top: 15px;
+        p{
+          line-height: 50px;
+          box-sizing: border-box;
+          padding-left: 15px;
+          a{
+            display: inline-block;
+            width: 80%;
+            color:#e86521;
+            padding-left: 70px;
+          }
+          a:first-child{
+            padding-left: 0;
+          }
+          img:first-child{
+            margin-left: 70px;
+          }
+          img{
+            margin-left: 15px;
+          }
+        }
+        .engName{
+          width: 100%;
+          font-weight: bold;
+          font-size: 18px;
+          color:#e86521;
+          span{
+            color:black;
+          }
+        }
+        .nodeTime{
+          display: flex;
+          span:first-child{
+            width: 15%;
+          }
+        }
+      }
+      li:last-child{
+        margin-bottom: 70px;
+      }
+    }
   }
 }
 </style>
