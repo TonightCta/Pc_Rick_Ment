@@ -60,6 +60,11 @@ const router = new Router({
           path:'/admin/gressProject',//项目进度查询
           name:'GressProject',
           component:resolve=>require(['@/page/mentAdmin/gressProject'],resolve)
+        },
+        {
+          path:'/admin/skillMent',//技能管理
+          name:'skillMent',
+          component:resolve=>require(['@/page/skillAdmin/skill_ment'],resolve)
         }
       ],
       redirect:'/admin/wel'

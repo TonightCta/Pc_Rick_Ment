@@ -95,7 +95,17 @@ export default {
                url:'/admin/gressProject'
              }
            ]
-         }
+         },
+         {
+           name:'技能管理',
+           in:'1-3',
+           usingChannelVOList:[
+             {
+               name:'技能管理',
+               url:'/admin/skillMent'
+             }
+           ]
+         },
        ],
        closeUrl:null,//暂存页面地址
      }
@@ -116,8 +126,7 @@ export default {
          mes.roleVO.usingTopChannelVOList.forEach((e)=>{
            this.$set(e,'in','1-'+this.length++)
          })
-         this.route=mes.roleVO.usingTopChannelVOList;
-         console.log(this.route)
+         // this.route=mes.roleVO.usingTopChannelVOList;
        }else{
          this.route=[{name:'暂无权限'}]
        }
