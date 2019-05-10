@@ -1,8 +1,8 @@
 <!-- 项目查询 -->
 <template lang="html">
   <div class="query_project">
-    <div class="query_search">
-      <ul>
+    <div class="query_search" ref="query_search">
+      <ul v-show="searchList">
         <li>
           <p>项目名称:&nbsp;<el-input type="primary" v-model="searchMes.proName" style="width:70%;" placeholder="请输入项目名称"></el-input/></p>
           <p>客户名称:&nbsp;<el-input type="primary" v-model="searchMes.cusName" style="width:70%;" placeholder="请输入客户名称"></el-input></p>
@@ -60,6 +60,11 @@
           </span>
         </li>
       </ul>
+      <el-tooltip class="item" effect="dark" :content="closeText" placement="bottom">
+        <p class="add" @click="searchSwitch" ref="add">
+          <img :src="operClose" alt="">
+        </p>
+      </el-tooltip>
     </div>
     <div class="project_con" style="position:relative;">
       <p class="addEng">
@@ -410,6 +415,8 @@ export default {
       projectNum:0,
       loadPro:false,//是否启用loading
       gressList:[],//项目列表
+      closeText:'收起筛选',
+      searchList:true,
       pickerOptions2: {
           shortcuts: [{
             text: '最近一周',
@@ -465,7 +472,8 @@ export default {
             file:[],
             pics:[]
           },
-      ]
+      ],
+      operClose:'./static/img/close_search.png'
     }
   },
   created(){
@@ -922,6 +930,26 @@ export default {
       setTimeout(()=>{
         this.showProDay=false;
       },500)
+    },
+    searchSwitch(){//闭合搜索
+      if(this.closeText==='收起筛选'){
+        this.closeText='展开筛选';
+        this.$refs.query_search.style.height="10px";
+        this.operClose='./static/img/open_search.png';
+        this.$refs.add.style.bottom='-20px'
+        setTimeout(()=>{
+          this.searchList=false;
+        },50)
+      }else{
+        this.closeText='收起筛选';
+        this.$refs.query_search.style.height="230px";
+        this.operClose='./static/img/close_search.png';
+        this.$refs.add.style.bottom='0'
+        setTimeout(()=>{
+          this.searchList=true;
+        },200)
+      }
+
     }
   }
 }
@@ -933,12 +961,32 @@ export default {
   height: 100%;
   overflow-x: hidden;
   .query_search{
-    width: 1224px;
-    min-height: 230px;
-    overflow: hidden;
+    width: 100%;
+    height: 230px;
     margin:0 auto;
+    border-bottom:1px solid #eee;
+    padding-bottom: 20px;
+    position: relative;
+    transition: .5s all;
+    margin-bottom: 20px;
+    .add{
+      width: 80px;
+      height: 20px;
+      position: absolute;
+      bottom:0;
+      left:50%;
+      margin-left: -40px;
+      cursor:pointer;
+      transition: .5s all;
+      img{
+        width: 100%;
+        height: 100%;
+        opacity: 1;
+      }
+    }
     ul{
-      width: 100%;
+      width: 1224px;
+      margin:0 auto;
       height: 100%;
       box-sizing: border-box;
       padding-top: 30px;
