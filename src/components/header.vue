@@ -28,6 +28,7 @@ export default {
   methods:{
     loginOut(){//退出登录
       window.localStorage.clear('adminMes');
+      window.localStorage.clear('Uid');
       this.$router.push('/')
     }
   }

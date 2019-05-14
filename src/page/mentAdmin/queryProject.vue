@@ -189,7 +189,7 @@
             </li>
           </ul>
         </div>
-        <div class="" v-show="showMes" v-for="(point,key) in projectMes.projectPointVOList" :key="'point'+key" style="minHeight:450px;maxHeight:none;">
+        <div class="" v-show="showMes" v-for="(point,key) in projectMes.projectPointVOList" :key="'point'+key" style="minHeight:450px;maxHeight:none;margin-top:20px;">
           <p class="mes_titleOne">
             <span>局点信息</span>
           </p>
@@ -334,6 +334,21 @@
                       </div></el-col>
                     </el-row>
                   </div>
+              </el-collapse-item>
+              <el-collapse-item :name="point.openKey">
+                <template slot="title">
+                 <span style="color:rgba(235,122,29,1);fontSize:16px;">潜在风险【点击展开】</span>
+                </template>
+                <el-row>
+                  <el-col :span="20"><div class="warnTitle" style="text-align:left;box-sizing:border-box;padding-left:30px;background:rgba(235,122,29,1);">潜在风险描述</div></el-col>
+                  <el-col :span="2"><div class="warnTitle" style="text-align:center;background:rgba(235,122,29,1);">提交人员</div></el-col>
+                  <el-col :span="2"><div class="warnTitle" style="text-align:center;background:rgba(235,122,29,1);">创建时间</div></el-col>
+                </el-row>
+                <el-row class="el_con" v-for="(warnMes,indexWarn) in point.warnRecordVOList">
+                  <el-col :span="20"><div class="warnCon" style="text-align:left;box-sizing:border-box;padding-left:30px;">{{warnMes.content}}</div></el-col>
+                  <el-col :span="2"><div class="warnCon" style="text-align:center;">{{warnMes.engineerName}}</div></el-col>
+                  <el-col :span="2"><div class="warnCon" style="text-align:center;">{{warnMes.warnTimeCreat}}</div></el-col>
+                </el-row>
               </el-collapse-item>
             </el-collapse>
           </div>
@@ -574,7 +589,6 @@ export default {
     },
     hasDetials(index){//查看项目详情
       let _vc=this;
-
       _vc.$axios.get(_vc.url+'/projectInfo?projectId='+_vc.proList[index].id).then((res)=>{
         if(res.data.code==0){
           // console.log(res)
@@ -686,8 +700,24 @@ export default {
               _vc.$set(res.data.data.projectPointVOList[i].usingProjectCourseNodeVOList[x],'endTimeSec',eTime);
               _vc.$set(res.data.data.projectPointVOList[i].usingProjectCourseNodeVOList[x],'openKey',_vc.lengthNum++);
             }
+            for(let y in res.data.data.projectPointVOList[i].warnRecordVOList){
+              //风险创建时间
+              let startDate=new Date(res.data.data.projectPointVOList[i].warnRecordVOList[y].createTime);
+              let sYear=startDate.getFullYear();
+              let sMon=startDate.getMonth()+1;
+              if(sMon<10){
+                sMon='0'+sMon
+              };
+              let sDay=startDate.getDate();
+              if(sDay<10){
+                sDay='0'+sDay
+              };
+              let sTime=sYear+'-'+sMon+'-'+sDay
+              _vc.$set(res.data.data.projectPointVOList[i].warnRecordVOList[y],'warnTimeCreat',sTime)
+            }
           }
           _vc.projectMes=res.data.data;
+          console.log(_vc.projectMes)
           _vc.openDetils=true;
           setTimeout(()=>{
             _vc.$refs.project_mes.style.width='100%'
@@ -1159,13 +1189,23 @@ export default {
       .gress_title{
         text-align: center;
         line-height: 40px;
-        background: rgba(235,122,29,.5);
-        color:black;
-        font-size: 15px;
+        background: rgba(235,122,29,1);
+        color:white;
+        font-size: 16px;
       }
       .gress_con{
+        font-size: 15px;
         line-height: 50px;
         text-align: center;
+      }
+      .warnTitle{
+        line-height: 40px;
+        color:white;
+        font-size: 16px;
+      }
+      .warnCon{
+        line-height: 60px;
+        font-size: 15px;
       }
     }
   }

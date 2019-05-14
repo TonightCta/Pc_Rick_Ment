@@ -1,150 +1,152 @@
 <!-- 技能管理 -->
 <template lang="html">
   <div class="skill_ment">
-    <div class="search_skill" ref="search_skill">
-      <ul v-show="searchList">
-        <li>
-          <p>技能标签名称:&nbsp;&nbsp;<el-input type="primary" style="width:60%;" v-model="searchName" placeholder="请输入项目名称"></el-input></p>
-          <p>技能标签分类:&nbsp;
-            <el-select v-model="SearchSkillText" placeholder="技能分类" style="width:60%;" @change="SchooseType">
-              <el-option
-                v-for="item in skillType"
-                :key="item"
-                :label="item"
-                :value="item">
-              </el-option>
-            </el-select>
+    <div class="" style="width:98%;margin:0 auto;">
+      <div class="search_skill" ref="search_skill">
+        <ul v-show="searchList">
+          <li>
+            <p>技能标签名称:&nbsp;&nbsp;<el-input type="primary" style="width:60%;" v-model="searchName" placeholder="请输入项目名称"></el-input></p>
+            <p>技能标签分类:&nbsp;
+              <el-select v-model="SearchSkillText" placeholder="技能分类" style="width:60%;" @change="SchooseType">
+                <el-option
+                  v-for="item in skillType"
+                  :key="item"
+                  :label="item"
+                  :value="item">
+                </el-option>
+              </el-select>
+            </p>
+          </li>
+          <li>
+            <p>技能标签类型:&nbsp;
+              <el-select v-model="SearchStatusText" placeholder="技能类型" style="width:60%;" @change="SchooseState">
+                <el-option
+                  v-for="item in skillStatus"
+                  :key="item"
+                  :label="item"
+                  :value="item">
+                </el-option>
+              </el-select>
+            </p>
+            <p><el-button type="primary" size="medium" icon="el-icon-zoom-in" @click="searchSkill()">筛选</el-button>
+              <el-button size="medium" type="primary" icon="el-icon-remove" @click="cancelSearch()">取消筛选</el-button></p>
+          </li>
+        </ul>
+        <el-tooltip class="item" effect="dark" :content="closeText" placement="bottom">
+          <p class="add" @click="searchSwitch" ref="add">
+            <img :src="operClose" alt="">
           </p>
-        </li>
-        <li>
-          <p>技能标签类型:&nbsp;
-            <el-select v-model="SearchStatusText" placeholder="技能类型" style="width:60%;" @change="SchooseState">
-              <el-option
-                v-for="item in skillStatus"
-                :key="item"
-                :label="item"
-                :value="item">
-              </el-option>
-            </el-select>
-          </p>
-          <p><el-button type="primary" size="medium" icon="el-icon-zoom-in" @click="searchSkill()">筛选</el-button>
-            <el-button size="medium" type="primary" icon="el-icon-remove" @click="cancelSearch()">取消筛选</el-button></p>
-        </li>
-      </ul>
-      <el-tooltip class="item" effect="dark" :content="closeText" placement="bottom">
-        <p class="add" @click="searchSwitch" ref="add">
-          <img :src="operClose" alt="">
+        </el-tooltip>
+      </div>
+      <p class="skill_title">
+        <el-button type="primary" icon="el-icon-plus" size="medium" @click="addSkill=true;change=false;">添加技能标签</el-button>
+        <span class="dataLength">共有数据:&nbsp;<span style="color:#eb7a1d;font-weight:bold;">{{dataLength}}</span>&nbsp;条</span>
+        <i class="el-icon-refresh" @click="getSkillList"></i>
+      </p>
+      <div class="skillList" v-loading='skillLoad'>
+        <el-row>
+          <el-col :span="4"><div class="list_title">序号</div></el-col>
+          <el-col :span="4"><div class="list_title">名称</div></el-col>
+          <el-col :span="4"><div class="list_title">分类</div></el-col>
+          <el-col :span="4"><div class="list_title">类型</div></el-col>
+          <el-col :span="4"><div class="list_title">状态</div></el-col>
+          <el-col :span="4"><div class="list_title">操作</div></el-col>
+        </el-row>
+        <el-row class="skillCon" v-for="(skill,index) in skillList" :key="'SK'+index">
+          <el-col :span="4"><div class="list_con">{{skill.num+1}}</div></el-col>
+          <el-col :span="4"><div class="list_con">{{skill.name}}</div></el-col>
+          <el-col :span="4"><div class="list_con">
+            <span v-show="skill.category==0">其他</span>
+            <span v-show="skill.category==1">厂商</span>
+            <span v-show="skill.category==2">产品类型</span>
+            <span v-show="skill.category==3">专项技能</span>
+          </div></el-col>
+          <el-col :span="4"><div class="list_con">
+            <span v-if="skill.type==0">默认</span>
+            <span v-else>自定义</span>
+          </div></el-col>
+          <el-col :span="4"><div class="list_con">
+            <span v-if="skill.state==2" style="background:green;
+            borderRadius:10px;color:white;fontSize:12px;padding:5px;">启用</span>
+            <span v-else style="background:red;
+            borderRadius:10px;color:white;fontSize:12px;padding:5px;">停用</span>
+          </div></el-col>
+          <el-col :span="4"><div class="list_con oper">
+            <el-tooltip class="item" effect="dark" content="启用" placement="bottom">
+              <i class="el-icon-circle-check-outline" style="color:green;" v-show="skill.state==-1" @click="upStatus(index)"></i>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="停用" placement="bottom">
+              <i class="el-icon-remove-outline" style="color:red;" v-show="skill.state==2" @click="upStatus(index)"></i>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="编辑" placement="bottom">
+              <i class="el-icon-edit cen" style="color:#eb7a1d;" @click="changeSkill(index)"></i>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="删除" placement="bottom">
+              <i class="el-icon-delete" @click="delSkill(index)"></i>
+            </el-tooltip>
+          </div></el-col>
+        </el-row>
+      </div>
+      <!-- 分页器 -->
+      <div class="order_page">
+        <el-pagination
+          background
+          layout="prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page.sync="currentPage3"
+          :total="pageNum">
+        </el-pagination>
+      </div>
+      <!-- 添加技能弹框 -->
+      <el-dialog
+        title="添加技能"
+        :visible.sync="addSkill"
+        width="30%">
+        <p class="addSkill">技能名称:&nbsp;<el-input type="primary" style="width:60%;" v-model="addSkillText"
+          placeholder="请输入技能名称"
+        ></el-input></p>
+        <p class="addSkill">技能分类:&nbsp;
+          <el-select v-model="AddTypeText" placeholder="技能分类" style="width:60%;" @change="AchooseType">
+            <el-option
+              v-for="item in skillType"
+              :key="item"
+              :label="item"
+              :value="item">
+            </el-option>
+          </el-select>
         </p>
-      </el-tooltip>
+        <p class="addSkill">技能类型:&nbsp;
+          <el-select v-model="AddStatusText" placeholder="技能类型" style="width:60%;" @change="AchooseState">
+            <el-option
+              v-for="item in skillStatus"
+              :key="item"
+              :label="item"
+              :value="item">
+            </el-option>
+          </el-select>
+        </p>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="addSkill = false">取 消</el-button>
+          <el-button type="primary" @click="subAddSkill()" v-loading="isUpSkill"
+          element-loading-spinner="el-icon-loading"
+          element-loading-background="rgba(255,255,255, 0.8)"
+          :disabled="isUpSkill"
+          >确 定</el-button>
+        </span>
+      </el-dialog>
+      <!-- 确认删除弹框 -->
+      <el-dialog
+        title="确认删除"
+        :visible.sync="delSkillBox"
+        width="30%">
+        <span>确认删除当前技能吗？此操作将不可撤销。</span>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="delSkillBox = false">取 消</el-button>
+          <el-button type="primary" @click="turnDel()">确 定</el-button>
+        </span>
+      </el-dialog>
     </div>
-    <p class="skill_title">
-      <el-button type="primary" icon="el-icon-plus" size="medium" @click="addSkill=true;change=false;">添加技能标签</el-button>
-      <span class="dataLength">共有数据:&nbsp;<span style="color:#eb7a1d;font-weight:bold;">{{dataLength}}</span>&nbsp;条</span>
-      <i class="el-icon-refresh" @click="getSkillList"></i>
-    </p>
-    <div class="skillList" v-loading='skillLoad'>
-      <el-row>
-        <el-col :span="4"><div class="list_title">序号</div></el-col>
-        <el-col :span="4"><div class="list_title">名称</div></el-col>
-        <el-col :span="4"><div class="list_title">分类</div></el-col>
-        <el-col :span="4"><div class="list_title">类型</div></el-col>
-        <el-col :span="4"><div class="list_title">状态</div></el-col>
-        <el-col :span="4"><div class="list_title">操作</div></el-col>
-      </el-row>
-      <el-row class="skillCon" v-for="(skill,index) in skillList" :key="'SK'+index">
-        <el-col :span="4"><div class="list_con">{{skill.num+1}}</div></el-col>
-        <el-col :span="4"><div class="list_con">{{skill.name}}</div></el-col>
-        <el-col :span="4"><div class="list_con">
-          <span v-show="skill.category==0">其他</span>
-          <span v-show="skill.category==1">厂商</span>
-          <span v-show="skill.category==2">产品类型</span>
-          <span v-show="skill.category==3">专项技能</span>
-        </div></el-col>
-        <el-col :span="4"><div class="list_con">
-          <span v-if="skill.type==0">默认</span>
-          <span v-else>自定义</span>
-        </div></el-col>
-        <el-col :span="4"><div class="list_con">
-          <span v-if="skill.state==2" style="background:green;
-          borderRadius:10px;color:white;fontSize:12px;padding:5px;">启用</span>
-          <span v-else style="background:red;
-          borderRadius:10px;color:white;fontSize:12px;padding:5px;">停用</span>
-        </div></el-col>
-        <el-col :span="4"><div class="list_con oper">
-          <el-tooltip class="item" effect="dark" content="启用" placement="bottom">
-            <i class="el-icon-circle-check-outline" style="color:green;" v-show="skill.state==-1" @click="upStatus(index)"></i>
-          </el-tooltip>
-          <el-tooltip class="item" effect="dark" content="停用" placement="bottom">
-            <i class="el-icon-remove-outline" style="color:red;" v-show="skill.state==2" @click="upStatus(index)"></i>
-          </el-tooltip>
-          <el-tooltip class="item" effect="dark" content="编辑" placement="bottom">
-            <i class="el-icon-edit cen" style="color:#eb7a1d;" @click="changeSkill(index)"></i>
-          </el-tooltip>
-          <el-tooltip class="item" effect="dark" content="删除" placement="bottom">
-            <i class="el-icon-delete" @click="delSkill(index)"></i>
-          </el-tooltip>
-        </div></el-col>
-      </el-row>
-    </div>
-    <!-- 分页器 -->
-    <div class="order_page">
-      <el-pagination
-        background
-        layout="prev, pager, next, jumper"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page.sync="currentPage3"
-        :total="pageNum">
-      </el-pagination>
-    </div>
-    <!-- 添加技能弹框 -->
-    <el-dialog
-      title="添加技能"
-      :visible.sync="addSkill"
-      width="30%">
-      <p class="addSkill">技能名称:&nbsp;<el-input type="primary" style="width:60%;" v-model="addSkillText"
-        placeholder="请输入技能名称"
-      ></el-input></p>
-      <p class="addSkill">技能分类:&nbsp;
-        <el-select v-model="AddTypeText" placeholder="技能分类" style="width:60%;" @change="AchooseType">
-          <el-option
-            v-for="item in skillType"
-            :key="item"
-            :label="item"
-            :value="item">
-          </el-option>
-        </el-select>
-      </p>
-      <p class="addSkill">技能类型:&nbsp;
-        <el-select v-model="AddStatusText" placeholder="技能类型" style="width:60%;" @change="AchooseState">
-          <el-option
-            v-for="item in skillStatus"
-            :key="item"
-            :label="item"
-            :value="item">
-          </el-option>
-        </el-select>
-      </p>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="addSkill = false">取 消</el-button>
-        <el-button type="primary" @click="subAddSkill()" v-loading="isUpSkill"
-        element-loading-spinner="el-icon-loading"
-        element-loading-background="rgba(255,255,255, 0.8)"
-        :disabled="isUpSkill"
-        >确 定</el-button>
-      </span>
-    </el-dialog>
-    <!-- 确认删除弹框 -->
-    <el-dialog
-      title="确认删除"
-      :visible.sync="delSkillBox"
-      width="30%">
-      <span>确认删除当前技能吗？此操作将不可撤销。</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="delSkillBox = false">取 消</el-button>
-        <el-button type="primary" @click="turnDel()">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -208,6 +210,7 @@ export default {
     handleCurrentChange(val) {
         // console.log(`当前页: ${val}`);
         this.page=val-1;
+        this.getSkillList()
     },
     getSkillList(){//获取所有技能数据
       let _vc=this;
@@ -319,6 +322,8 @@ export default {
         formdata.append('name',this.addSkillText);
         formdata.append('type',this.AddStatusID);
         formdata.append('category',this.AddTypeID);
+        let ID=window.localStorage.getItem('Uid');
+        formdata.append('operatorId',ID)
         if(this.change){
           formdata.append('id',this.changeID)
         }
@@ -408,8 +413,9 @@ export default {
 
 <style lang="scss" scoped>
 .skill_ment{
-  width:98%;
-  margin:0 auto;
+  width:100%;
+  height: 100%;
+  overflow-x: hidden;
   .search_skill{
     width: 100%;
     margin:0 auto;
