@@ -241,6 +241,7 @@
                    <span style="color:rgba(235,122,29,1);fontSize:16px;">项目文档【点击展开】</span>
                   </template>
                   <p v-for="(file,index) in point.projectFileVOList" :key="'file'+index" style="line-height:40px;">
+                    <span v-show="file.fileType==0">【项目经理任命】</span>
                     <span v-show="file.fileType==1">【开会检查项】</span>
                     <span v-show="file.fileType==2">【会议纪要】</span>
                     <span v-show="file.fileType==3">【技术方案】</span>
@@ -249,6 +250,8 @@
                     <span v-show="file.fileType==6">【割接调测】</span>
                     <span v-show="file.fileType==7">【完工报告】</span>
                     <span v-show="file.fileType==8">【验收报告】</span>
+                    <span v-show="file.fileType==9">【进场报告】</span>
+                    <span v-show="file.fileType==10">【离场报告】</span>
                     <a :href="url+'/'+file.fileName">{{file.fileName}}</a>
                   </p>
               </el-collapse-item>
@@ -591,7 +594,6 @@ export default {
       let _vc=this;
       _vc.$axios.get(_vc.url+'/projectInfo?projectId='+_vc.proList[index].id).then((res)=>{
         if(res.data.code==0){
-          // console.log(res)
           //入场时间
           let startDate=new Date(res.data.data.startTime);
           let sYear=startDate.getFullYear();

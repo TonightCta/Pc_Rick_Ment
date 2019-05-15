@@ -126,7 +126,7 @@ export default {
          mes.roleVO.usingTopChannelVOList.forEach((e)=>{
            this.$set(e,'in','1-'+this.length++)
          })
-         // this.route=mes.roleVO.usingTopChannelVOList;
+         this.route=mes.roleVO.usingTopChannelVOList;
        }else{
          this.route=[{name:'暂无权限'}]
        }
