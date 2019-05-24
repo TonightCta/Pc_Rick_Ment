@@ -347,7 +347,7 @@
                   <el-col :span="2"><div class="warnTitle" style="text-align:center;background:rgba(235,122,29,1);">提交人员</div></el-col>
                   <el-col :span="2"><div class="warnTitle" style="text-align:center;background:rgba(235,122,29,1);">创建时间</div></el-col>
                 </el-row>
-                <el-row class="el_con" v-for="(warnMes,indexWarn) in point.warnRecordVOList">
+                <el-row class="el_con" v-for="(warnMes,indexWarn) in point.warnRecordVOList" :key="indexWarn">
                   <el-col :span="20"><div class="warnCon" style="text-align:left;box-sizing:border-box;padding-left:30px;">{{warnMes.content}}</div></el-col>
                   <el-col :span="2"><div class="warnCon" style="text-align:center;">{{warnMes.engineerName}}</div></el-col>
                   <el-col :span="2"><div class="warnCon" style="text-align:center;">{{warnMes.warnTimeCreat}}</div></el-col>

@@ -112,8 +112,7 @@ export default {
       }
       _vc.$axios.post(_vc.url+_vc.searchUrl.url,formdata).then((res)=>{
         if(res.data.code==0){
-          _vm.length=_vm.page*10;
-          console.log(res)
+          _vc.length=_vc.page*10;
           res.data.data.content.forEach((e)=>{
             _vc.$set(e,'num',_vc.length++);
           });

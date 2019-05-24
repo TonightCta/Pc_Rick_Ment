@@ -13,10 +13,10 @@
           <el-col :span="2"><div class="listTitle">序号</div></el-col>
           <el-col :span="3"><div class="listTitle">姓名</div></el-col>
           <el-col :span="3"><div class="listTitle">联系电话</div></el-col>
-          <el-col :span="3"><div class="listTitle">工作年限</div></el-col>
-          <el-col :span="3"><div class="listTitle">登录账号</div></el-col>
-          <el-col :span="3"><div class="listTitle">邮箱</div></el-col>
-          <el-col :span="3"><div class="listTitle">技术能力认证</div></el-col>
+          <el-col :span="4"><div class="listTitle">工作年限</div></el-col>
+          <el-col :span="4"><div class="listTitle">登录账号</div></el-col>
+          <el-col :span="4"><div class="listTitle">邮箱</div></el-col>
+          <!-- <el-col :span="3"><div class="listTitle">技术能力认证</div></el-col> -->
           <el-col :span="4"><div class="listTitle">操作</div></el-col>
         </el-row>
       </div>
@@ -27,14 +27,14 @@
           <el-col :span="3"><div class="listCon">{{eng.name}}</div></el-col>
           <el-col :span="3" v-if="eng.phone!=null&&eng.phone!=''&&eng.phone!='null'"><div class="listCon">{{eng.phone}}</div></el-col>
           <el-col :span="3" v-else><div class="listCon">-</div></el-col>
-          <el-col :span="3" v-if="eng.workYear!=null&&eng.workYear!=''&&eng.workYear!='null'"><div class="listCon">{{eng.workYear}}&nbsp;年</div></el-col>
-          <el-col :span="3" v-else><div class="listCon">-&nbsp;年</div></el-col>
-          <el-col :span="3"><div class="listCon">{{eng.operatorName}}</div></el-col>
-          <el-col :span="3" v-if="eng.email!=null&&eng.email!=''&&eng.email!='null'"><div class="listCon">{{eng.email}}</div></el-col>
-          <el-col :span="3" v-else><div class="listCon">-</div></el-col>
-          <el-col :span="3"><div class="listCon" style="box-sizing:border-box;padding-top:5px;">
+          <el-col :span="4" v-if="eng.workYear!=null&&eng.workYear!=''&&eng.workYear!='null'"><div class="listCon">{{eng.workYear}}&nbsp;年</div></el-col>
+          <el-col :span="4" v-else><div class="listCon">-&nbsp;年</div></el-col>
+          <el-col :span="4"><div class="listCon">{{eng.operatorName}}</div></el-col>
+          <el-col :span="4" v-if="eng.email!=null&&eng.email!=''&&eng.email!='null'"><div class="listCon">{{eng.email}}</div></el-col>
+          <el-col :span="4" v-else><div class="listCon">-</div></el-col>
+          <!-- <el-col :span="3"><div class="listCon" style="box-sizing:border-box;padding-top:5px;">
             <i class="el-icon-edit-outline" style="color:#eb7a1d;font-size:23px;cursor:pointer;" @click="operEng=true"></i>
-          </div></el-col>
+          </div></el-col> -->
           <el-col :span="4"><div class="listCon icon">
             <el-tooltip class="item" effect="dark" content="查看工程师" placement="bottom">
               <i class="el-icon-view" style="color:#eb7a1d;" @click="engDetails(index)"></i>

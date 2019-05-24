@@ -48,12 +48,23 @@
           title="能力评定"
           :visible.sync="operEng"
           width="25%">
-          <p v-for="(engType,index) in a" :key="'type'+index" style="">
-            <span style="">{{engType.name}}</span>
-            <el-checkbox-group @change="uccChose"  v-model="ucc">
-              <el-checkbox-button v-for="(engExp,index) in engType.children" :label="engExp" :key="engType.name+index">{{engExp.name}}</el-checkbox-button>
-            </el-checkbox-group>
-          </p>
+          <div class="" style="maxHeight:500px;overflow:auto;">
+            <p v-for="(engType,index) in a" :key="'type'+index" style="">
+              <span style="">{{engType.name}}</span>
+              <el-checkbox-group @change="uccChose"  v-model="ucc">
+                <el-checkbox-button v-for="(engExp,index) in engType.children" :label="engExp" :key="engType.name+index">{{engExp.name}}</el-checkbox-button>
+              </el-checkbox-group>
+            </p>
+            <p class="texrTitle">技术能力说明</p>
+            <p class="supSkillText">
+              <el-input
+                type="textarea"
+                :autosize="{ minRows: 6, maxRows: 15}"
+                placeholder="请输入能力说明"
+                v-model="skillText">
+              </el-input>
+            </p>
+          </div>
           <span slot="footer" class="dialog-footer">
             <el-button @click="operEng = false">取 消</el-button>
             <el-button type="primary" @click="operEng = false">确 定</el-button>
@@ -151,6 +162,7 @@ export default {
       places:null,//工程师工作详细地址
       operEng:false,//操作工程师弹框
       noData:false,
+      skillText:null,//技术能力说明
       certifiedlEng:{
         url:'/findEngineerListByCondition',
         state:1,
@@ -158,7 +170,7 @@ export default {
       },
       a:[
         {
-          name:'Ucc',
+          name:'UCC',
           children:[
             {name:'初级工程师',id:1},
             {name:'中级工程师',id:2},
@@ -353,6 +365,21 @@ export default {
           font-size:16px;
           color:black;
         }
+      }
+      .texrTitle{
+        width: 100%;
+        margin:0 auto;
+        text-align: left;
+        font-size:16px;
+        padding-left:20px;
+        color:black;
+        box-sizing: border-box;
+        line-height: 50px;
+      }
+      .supSkillText{
+        width: 80%;
+        margin:0 auto;
+        margin-bottom: 50px;
       }
     }
     .el_con:nth-of-type(even){
