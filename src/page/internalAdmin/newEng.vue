@@ -105,7 +105,7 @@
            <p style="font-size:16px;line-height:40px;width:100%;display:flex;">
              <span style="width:25%;text-align:right;">技能证书:</span>
              <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;display:flex;flex-wrap:wrap;">
-               <viewer :images="engMes.certificateFiles">
+               <viewer :images="engMes.certificateFiles" style="width:100%;">
                  <img v-for="(skillPic,index) in engMes.certificateFiles"
                  :key="'Skill'+index" :src="url+'/'+skillPic.fileName" alt=""
                  style="width:40%;height:100px;margin-left:15px;margin-top:10px;cursor:pointer;border:1px solid #eb7a1d;border-radius:8px;"

@@ -16,8 +16,8 @@
           <el-col :span="3"><div class="listTitle">工作年限</div></el-col>
           <el-col :span="3"><div class="listTitle">登录账号</div></el-col>
           <el-col :span="3"><div class="listTitle">邮箱</div></el-col>
-          <el-col :span="3"><div class="listTitle">技术能力认证</div></el-col>
-          <el-col :span="4"><div class="listTitle">操作</div></el-col>
+          <el-col :span="5"><div class="listTitle">技术能力认证</div></el-col>
+          <el-col :span="2"><div class="listTitle">操作</div></el-col>
         </el-row>
       </div>
       <p v-show="noData" style="height:70px;font-size:18px;line-height:70px;text-align:center;width:90%;color:#666;position:absolute;left:20px;">暂无更多数据</p>
@@ -32,10 +32,10 @@
           <el-col :span="3"><div class="listCon">{{eng.operatorName}}</div></el-col>
           <el-col :span="3" v-if="eng.email!=null&&eng.email!=''&&eng.email!='null'"><div class="listCon">{{eng.email}}</div></el-col>
           <el-col :span="3" v-else><div class="listCon">-</div></el-col>
-          <el-col :span="3"><div class="listCon" style="box-sizing:border-box;padding-top:5px;">
-            <i class="el-icon-edit-outline" style="color:#eb7a1d;font-size:23px;cursor:pointer;" @click="operEng=true"></i>
+          <el-col :span="5"><div class="listCon" style="box-sizing:border-box;padding-top:5px;">
+            <i class="el-icon-edit-outline" style="color:#eb7a1d;font-size:23px;cursor:pointer;" @click="assment(index)"></i>
           </div></el-col>
-          <el-col :span="4"><div class="listCon icon">
+          <el-col :span="2"><div class="listCon icon">
             <el-tooltip class="item" effect="dark" content="查看工程师" placement="bottom">
               <i class="el-icon-view" style="color:#eb7a1d;" @click="engDetails(index)"></i>
             </el-tooltip>
@@ -49,10 +49,10 @@
           :visible.sync="operEng"
           width="25%">
           <div class="" style="maxHeight:500px;overflow:auto;">
-            <p v-for="(engType,index) in a" :key="'type'+index" style="">
+            <p v-for="(engType,index) in skillList" :key="'type'+index" style="">
               <span style="">{{engType.name}}</span>
               <el-checkbox-group @change="uccChose"  v-model="ucc">
-                <el-checkbox-button v-for="(engExp,index) in engType.children" :label="engExp" :key="engType.name+index">{{engExp.name}}</el-checkbox-button>
+                <el-checkbox-button v-for="(engExp,index) in engType.usingLevelVOList" :label="engExp" :key="engType.name+index">{{engExp.name}}</el-checkbox-button>
               </el-checkbox-group>
             </p>
             <p class="texrTitle">技术能力说明</p>
@@ -66,8 +66,8 @@
             </p>
           </div>
           <span slot="footer" class="dialog-footer">
-            <el-button @click="operEng = false">取 消</el-button>
-            <el-button type="primary" @click="operEng = false">确 定</el-button>
+            <el-button @click="operEng = false;skillIDList=[]">取 消</el-button>
+            <el-button type="primary" @click="upSkillID()">确 定</el-button>
           </span>
         </el-dialog>
       </div>
@@ -168,56 +168,9 @@ export default {
         state:1,
         isOfficial:false
       },
-      a:[
-        {
-          name:'UCC',
-          children:[
-            {name:'初级工程师',id:1},
-            {name:'中级工程师',id:2},
-            {name:'高级工程师',id:3}
-          ]
-        },
-        {
-          name:'数通',
-          children:[
-            {name:'初级工程师',id:4},
-            {name:'中级工程师',id:5},
-            {name:'高级工程师',id:6}
-          ]
-        },
-        {
-          name:'IT',
-          children:[
-            {name:'初级工程师',id:7},
-            {name:'中级工程师',id:8},
-            {name:'高级工程师',id:9}
-          ]
-        },
-        {
-          name:'能基',
-          children:[
-            {name:'初级工程师',id:10},
-            {name:'中级工程师',id:11},
-            {name:'高级工程师',id:12}
-          ]
-        },
-        {
-          name:'VC',
-          children:[
-            {name:'初级工程师',id:13},
-            {name:'中级工程师',id:14},
-            {name:'高级工程师',id:15}
-          ]
-        },
-        {
-          name:'光伏',
-          children:[
-            {name:'初级工程师',id:16},
-            {name:'中级工程师',id:17},
-            {name:'高级工程师',id:18}
-          ]
-        },
-      ],
+      skillList:[],//技能评估列表
+      skillIDList:[],//技能ID列表
+      engID:null,//工程师ID
     }
   },
   created(){
@@ -293,13 +246,60 @@ export default {
       let a=[]
       value.forEach((e)=>{
         a.push(e.id)
+      });
+      this.skillIDList=a;
+    },
+    getSearchData(engList){//接受筛选数据
+      this.engList=engList;
+    },
+    getReloadList(engList){//接受刷新数据
+      this.engList=engList;
+    },
+    assment(index){//工程师能力评估
+      let _vm=this;
+      console.log(_vm.engList[index])
+      _vm.$axios.get(_vm.url+'/usingTechnologyList').then((res)=>{
+        if(res.data.code==0){
+          _vm.skillList=res.data.data;
+          _vm.operEng=true;
+          _vm.engID=_vm.engList[index].id;
+        }else{
+          _vm.operEng=false;
+          _vm.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        _vm.operEng=false;
+        _vm.$message.error('未知错误,请联系管理员')
+        console.log(err)
       })
     },
-    getSearchData(engList){
-      this.engList=engList;
-    },
-    getReloadList(engList){
-      this.engList=engList;
+    upSkillID(){//上传工程师认证
+      let _vm=this;
+      if(_vm.skillIDList.length<1){
+        _vm.$message.error('请选择能力标签');
+      }else{
+        console.log(_vm.engID)
+        console.log(_vm.skillIDList);
+        let formdata=new FormData();
+        formdata.append('id',_vm.engID);
+        formdata.append('levelIds',_vm.skillIDList);
+        if(_vm.skillText!=null&&_vm.skillText!=''){
+          formdata.append('remark',_vm.skillText)
+        };
+        _vm.$axios.post(_vm.url+'/externalEngineerLevelCheck',formdata).then((res)=>{
+          console.log(res)
+          if(res.data.code==0){
+            _vm.operEng=false;
+            _vm.$message.success('评定成功');
+            _vm.getEngList();
+          }else{
+            _vm.operEng=false;
+            _vm.$message(res.data.msg);
+          }
+        }).catch((err)=>{
+          _vm.operEng=false;
+        })
+      }
     }
   }
 }

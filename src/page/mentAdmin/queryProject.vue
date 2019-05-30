@@ -1214,6 +1214,8 @@ export default {
   .project_page{
     width: 98%;
     text-align: right;
+    margin-top: 20px;
+    margin-bottom: 50px;
   }
   .project_day{
     position: fixed;

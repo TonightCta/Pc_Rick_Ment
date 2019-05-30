@@ -11,9 +11,10 @@
         :visible.sync="placeBox"
         width="40%"
         append-to-body
+        :lock-scroll="false"
         >
         <div class="plBox" ref="locaBox" v-if="abbs">
-          <!-- <input type="text" name="" value="" v-model="choseTurn"> -->
+          <input type="text" name="" value="" v-model="choseTurn">
           <input type="text" name="" value="" v-model="choseText">
           <span class="text_mask"></span>
           <div class="localist">
@@ -28,7 +29,7 @@
               <li ref="allchose">
                 <p @click="allChose()">全选</p>
                 <span class="cityMask" ref="allicon" @click="cancelAll()">
-                  <i class="iconfont icon-xuanzhong"></i>
+                  <i class="el-icon-check"></i>
                 </span>
               </li>
               <li v-for="(itemlea,index) in delArr"
@@ -36,7 +37,7 @@
               >
               <p @click="choseCity(index)" >{{itemlea.name}}</p>
               <span class="cityMask" @click="delCity(index)">
-                <i class="iconfont icon-xuanzhong"></i>
+                <i class="el-icon-check"></i>
               </span>
             </li>
           </ul>
@@ -52,6 +53,7 @@
 
 <script>
 export default {
+  props:['editId','plStr'],
   data(){
     return{
       placeProName:null,//省级名称
@@ -76,36 +78,32 @@ export default {
       abbs:true,
     }
   },
+  watch:{
+    placeBox(val,oldVal){
+      if(!val){
+        this.cancelChose()
+      }
+    }
+  },
   mounted(){
-    this.getLocation()
   },
   methods:{
-    getLocation(){//获取服务地址
+    editEng(){//获取服务地址
+      // console.log(this.plStr)
       let _vm=this;
-      _vm.$axios.get(_vm.url+'/mobile/getUsingPlaceList').then((res)=>{
+      _vm.placeStr=_vm.plStr.join('/')
+      _vm.$axios.get(_vm.url+'/mobile/getUsingPlaceList?engineerId='+this.editId).then((res)=>{
         if(res.data.code==0){
+          console.log(res)
           _vm.cityList=res.data.data.placeList;
           _vm.delArr=_vm.cityList[0].usingChildList;
           _vm.choseVal=_vm.cityList[0].name;
+          _vm.choseTurn=_vm.plStr.join('/')
           let b=[];//存放是全选状态
           _vm.delArr.forEach((c)=>{
             _vm.a.push(c.id);
             b.push(c.selected)
           });
-          if(b.indexOf(false)>=0){
-            console.log(1)
-          }else{
-            _vm.isAll.push(_vm.choseVal);
-            _vm.isAll.forEach((x)=>{
-              if(_vm.choseVal===x){
-                _vm.$refs.allchose.style.color='#eb7a1d';
-                _vm.$refs.allicon.style.display='block';
-              }else{
-                _vm.$refs.allchose.style.color='black';
-                _vm.$refs.allicon.style.display='none';
-              }
-            });
-          }
           _vm.cityList.forEach((cityL)=>{
             cityL.usingChildList.forEach((x)=>{
               if(x.selected){
@@ -113,23 +111,40 @@ export default {
               }
             })
           });
-          _vm.b.push(_vm.cityList[0].usingChildList[0].id)
+          console.log(_vm.cityID)
           setTimeout(()=>{
-            _vm.cityID.forEach((s)=>{
-              let c=_vm.b.indexOf(s);
-              if(c>=0){
-                _vm.$refs.city[c].style.color='#eb7a1d';
-                _vm.$refs.city[c].children[1].style.display='block';
-              }else{
-                return
-              }
+            if(b.indexOf(false)>=0){
+              console.log(1)
+            }else{
+              _vm.isAll.push(_vm.choseVal);
+              _vm.isAll.forEach((x)=>{
+                if(_vm.choseVal===x){
+                  _vm.$refs.allchose.style.color='#eb7a1d';
+                  _vm.$refs.allicon.style.display='block';
+                }else{
+                  _vm.$refs.allchose.style.color='black';
+                  _vm.$refs.allicon.style.display='none';
+                }
+              });
+            }
+            _vm.b.push(_vm.cityList[0].usingChildList[0].id)
+            setTimeout(()=>{
+              _vm.cityID.forEach((s)=>{
+                let c=_vm.b.indexOf(s);
+                if(c>=0){
+                  _vm.$refs.city[c].style.color='#eb7a1d';
+                  _vm.$refs.city[c].children[1].style.display='block';
+                }else{
+                  console.log(1)
+                }
+              })
             })
-          })
+          },1000)
         }else{
-          _vm.$Toast(res.data.msg)
+          _vm.$message.error(res.data.msg)
         }
       }).catch((err)=>{
-        _vm.$Toast('未知错误')
+        _vm.$message.error('未知错误')
         console.log(err)
       })
     },
@@ -150,7 +165,8 @@ export default {
       this.a=[];//数据暂存数组
       this.b=[];//数据暂存数组2
       this.abbs=false;
-      this.getLocation()
+      // this.editEng();
+      // console.log(this.cityID)
     },
     choseInV(index){//选择省份
       let _vm=this;
@@ -223,9 +239,9 @@ export default {
       setTimeout(()=>{
         _vm.cityID.push(_vm.cityList[_vm.proID].usingChildList[index].id);
       });
-      _vm.showPl.push(_vm.choseVal+'-'+_vm.delArr[index].name);
+      _vm.plStr.push(_vm.choseVal+'-'+_vm.delArr[index].name);
+      _vm.choseTurn=_vm.plStr.join('/');
       _vm.choseText=_vm.placeArr.join('/');
-      _vm.choseTurn=_vm.showPl.join('/');
       _vm.$refs.city[index].style.color='#eb7a1d';
       _vm.$refs.city[index].children[1].style.display='block';
     },
@@ -233,10 +249,11 @@ export default {
       let _vm=this;
       let indexT=_vm.placeArr.indexOf(_vm.choseVal+'-'+_vm.delArr[index].name);
       _vm.placeArr.splice(indexT,1);
-      let indexE=_vm.showPl.indexOf(_vm.choseVal+'-'+_vm.delArr[index].name);
+      let indexE=_vm.plStr.indexOf(_vm.choseVal+'-'+_vm.delArr[index].name);
       if(indexE>=0){
-        _vm.showPl.splice(indexE,1);
-        _vm.choseTurn=_vm.showPl.join('/');
+        _vm.plStr.splice(indexE,1);
+        console.log(_vm.plStr)
+        _vm.choseTurn=_vm.plStr.join('/');
       }
       let indexID=_vm.cityID.indexOf(_vm.cityList[_vm.proID].usingChildList[index].id);
       _vm.cityID.splice(indexID,1);
@@ -256,9 +273,9 @@ export default {
         this.placeArr.splice(indexD,1);
         setTimeout(()=>{
           this.placeArr.push(this.choseVal+'-'+y.name);
-          this.showPl.push(this.choseVal+'-'+y.name)
+          this.plStr.push(this.choseVal+'-'+y.name)
           this.choseText=this.placeArr.join('/');
-          this.choseTurn=this.showPl.join('/');
+          this.choseTurn=this.plStr.join('/');
         })
       });
       this.delArr.forEach((i)=>{
@@ -280,11 +297,11 @@ export default {
       });
       _vm.delArr.forEach((r)=>{
         let indexT=_vm.placeArr.indexOf(_vm.choseVal+'-'+r.name)
-        let indexPc=_vm.showPl.indexOf(_vm.choseVal+'-'+r.name);
+        let indexPc=_vm.plStr.indexOf(_vm.choseVal+'-'+r.name);
         _vm.placeArr.splice(indexT,1)
-        _vm.showPl.splice(indexPc,1)
+        _vm.plStr.splice(indexPc,1)
         this.choseText=this.placeArr.join('/');
-        this.choseTurn=this.showPl.join('/');
+        this.choseTurn=this.plStr.join('/');
       });
       let arr=[];
       _vm.delArr.forEach((c)=>{
@@ -301,7 +318,7 @@ export default {
         vm.$message.error('请选择工作区域')
       }else{
         vm.$emit('getPlace',vm.cityID);
-        vm.placeStr=vm.choseText;
+        vm.placeStr=vm.choseTurn;
         console.log(vm.placeStr)
         setTimeout(()=>{
           vm.placeBox=false;
@@ -402,6 +419,7 @@ export default {
       width: 75%;
       li{
         position: relative;
+        color:black;
         .cityMask{
           position: absolute;
           width: 100%;
@@ -412,11 +430,12 @@ export default {
           left:0;
           display: none;
           i{
-            font-size: 12px;
+            font-size: 15px;
             font-weight: bold;
             color:#eb7a1d;
             position: absolute;
-            right:3rem;
+            right:40px;
+            top:18px;
           }
         }
       }

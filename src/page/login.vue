@@ -70,6 +70,10 @@ export default {
   mounted(){
     this.ani()
   },
+  beforeRouteLeave(to,from,next){
+    document.onkeydown = undefined;
+    next()
+  },
   methods:{
     loginSub(){
       let _vm=this;

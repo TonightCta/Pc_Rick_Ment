@@ -586,6 +586,9 @@ export default {
 .admin_order{
   margin:0 auto;
   position: relative;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
   .admin_add{
     width: 100%;
     padding-top: 30px;
@@ -595,7 +598,7 @@ export default {
   .admin_reload{
     position: absolute;
     top:30px;
-    right:150px;
+    right:20px;
     i{
       font-size: 32px;
       color:#eb7a1d;
@@ -604,7 +607,7 @@ export default {
   }
   .order_title{
     margin-top: 15px;
-    width: 90%;
+    width: 98%;
     margin-left: 20px;
     .title{
       text-align: center;
@@ -616,7 +619,7 @@ export default {
     }
   }
   .order_con{
-    width: 90%;
+    width: 98%;
     margin-left: 20px;
     min-height: 550px;
     .title_con{
@@ -635,6 +638,7 @@ export default {
   .order_page{
     width: 90%;
     text-align: right;
+    margin-bottom: 100px;
   }
   .choseEng{
     .choseTitle{
