@@ -47,7 +47,7 @@
         <el-dialog
           title="能力评定"
           :visible.sync="operEng"
-          width="25%">
+          width="35%">
           <div class="" style="maxHeight:500px;overflow:auto;">
             <p v-for="(engType,index) in skillList" :key="'type'+index" style="">
               <span style="">{{engType.name}}</span>
@@ -203,7 +203,6 @@ export default {
        // console.log(`每页 ${val} 条`);
     },
     handleCurrentChange(val) {
-        // console.log(`当前页: ${val}`);
         this.page=val-1;
         this.getEngList();
     },
@@ -257,7 +256,6 @@ export default {
     },
     assment(index){//工程师能力评估
       let _vm=this;
-      console.log(_vm.engList[index])
       _vm.$axios.get(_vm.url+'/usingTechnologyList').then((res)=>{
         if(res.data.code==0){
           _vm.skillList=res.data.data;
@@ -278,8 +276,6 @@ export default {
       if(_vm.skillIDList.length<1){
         _vm.$message.error('请选择能力标签');
       }else{
-        console.log(_vm.engID)
-        console.log(_vm.skillIDList);
         let formdata=new FormData();
         formdata.append('id',_vm.engID);
         formdata.append('levelIds',_vm.skillIDList);
@@ -287,7 +283,6 @@ export default {
           formdata.append('remark',_vm.skillText)
         };
         _vm.$axios.post(_vm.url+'/externalEngineerLevelCheck',formdata).then((res)=>{
-          console.log(res)
           if(res.data.code==0){
             _vm.operEng=false;
             _vm.$message.success('评定成功');
@@ -309,6 +304,8 @@ export default {
 .internalEng{
   width: 100%;
   height: 100%;
+  overflow-x: hidden;
+  position: relative;
   .engCon{
     width: 98%;
     margin:0 auto;
@@ -486,6 +483,8 @@ export default {
     .order_page{
       width: 98%;
       text-align: right;
+      margin-top: 55px;
+      margin-bottom:60px;
     }
   }
 }

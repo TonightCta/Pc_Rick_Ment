@@ -28,7 +28,7 @@
               <li ref="allchose">
                 <p @click="allChose()">全选</p>
                 <span class="cityMask" ref="allicon" @click="cancelAll()">
-                  <i class="iconfont icon-xuanzhong"></i>
+                  <i class="el-icon-check"></i>
                 </span>
               </li>
               <li v-for="(itemlea,index) in delArr"
@@ -36,7 +36,7 @@
               >
               <p @click="choseCity(index)" >{{itemlea.name}}</p>
               <span class="cityMask" @click="delCity(index)">
-                <i class="iconfont icon-xuanzhong"></i>
+                <i class="el-icon-check"></i>
               </span>
             </li>
           </ul>
@@ -412,11 +412,12 @@ export default {
           left:0;
           display: none;
           i{
-            font-size: 12px;
+            font-size: 15px;
             font-weight: bold;
             color:#eb7a1d;
             position: absolute;
-            right:3rem;
+            right:40px;
+            top:18px;
           }
         }
       }

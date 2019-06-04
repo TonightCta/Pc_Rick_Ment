@@ -153,7 +153,8 @@ export default {
       noData:false,//数据为空
       newEng:{
         url:'/findEngineerListByCondition',
-        state:0
+        state:0,
+        isOfficial:false
       },
       a:[
         {
@@ -296,6 +297,8 @@ export default {
 .internalEng{
   width: 100%;
   height: 100%;
+  overflow-x: hidden;
+  position: relative;
   .engCon{
     width: 98%;
     margin:0 auto;
@@ -458,6 +461,8 @@ export default {
     .order_page{
       width: 98%;
       text-align: right;
+      margin-top: 55px;
+      margin-bottom:60px;
     }
   }
 }

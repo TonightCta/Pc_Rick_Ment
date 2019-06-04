@@ -6,7 +6,12 @@
       <p class="addEng">
         <el-button type="primary" icon="el-icon-plus" size="medium" @click="pushEng()" @keyup.enter.native="abc($event)">添加工程师</el-button>
         <span class="dataLength">共有数据:&nbsp;<span style="color:#eb7a1d;font-weight:bold;">{{dataLength}}</span>&nbsp;条</span>
-        <Reload :reloadData='internalEng' @reloadList="getReloadList"/>
+
+      </p>
+      <p class="admin_reload">
+        <el-tooltip class="item" effect="dark" content="刷新数据" placement="bottom">
+          <i class="el-icon-refresh" @click="getEngList()"></i>
+        </el-tooltip>
       </p>
       <div class="internalEng_title">
         <el-row>
@@ -67,7 +72,7 @@
         <el-dialog
           title="新增工程师"
           :visible.sync="addEng"
-          width="40%">
+          width="45%">
           <div class="addEngBox">
             <ul class="add_title">
               <li>姓名:</li>
@@ -80,8 +85,7 @@
               <li>接单区域:</li>
               <li>技术领域及能力:</li>
               <li style="margin-top:550px;">身份认证文件:</li>
-              <li style="margin-top:70px;">资质证明文件:</li>
-              <li style="margin-top:80px;">技术能力说明:</li>
+              <li style="margin-top:80px;">资质证明文件:</li>
             </ul>
 
             <ul class="add_con">
@@ -131,6 +135,7 @@
                 </span>
               </li>
               <li style="margin-top:25px;padding-bottom:20px;">
+                <span>技术能力说明:</span>
                 <el-input
                   type="textarea"
                   :autosize="{ minRows: 6, maxRows: 15}"
@@ -149,9 +154,9 @@
       <!-- 编辑工程师弹框 -->
       <div class="">
         <el-dialog
-          title="新增工程师"
+          title="编辑工程师"
           :visible.sync="editEngShow"
-          width="40%">
+          width="45%">
           <div class="addEngBox">
             <ul class="add_title">
               <li>姓名:</li>
@@ -164,35 +169,40 @@
               <li>接单区域:</li>
               <li>技术领域及能力:</li>
               <li style="margin-top:550px;">身份认证文件:</li>
-              <li style="margin-top:70px;">资质证明文件:</li>
-              <li style="margin-top:80px;">技术能力说明:</li>
+              <li style="margin-top:88px;">资质证明文件:</li>
             </ul>
 
             <ul class="add_con">
               <li><el-input v-model="editEngMes.name" placeholder="请输入工程师姓名"/></li>
               <li><el-input v-model="editEngMes.phone" placeholder="请输入手机号码"/></li>
               <li><el-input v-model="editEngMes.email" placeholder="请输入电子邮箱"/></li>
-              <li><el-input v-model="editEngMes.workyear" placeholder="请输入工作年限"/></li>
-              <li><el-input v-model="editEngMes.logname" placeholder="请输入登录名"/></li>
+              <li><el-input v-model="editEngMes.workYear" placeholder="请输入工作年限"/></li>
+              <li><el-input v-model="editEngMes.operatorName" placeholder="请输入登录名"/></li>
               <li>
-                <el-radio v-model="isMan" label="1">是</el-radio>
-                <el-radio v-model="isMan" label="2">否</el-radio>
+                <el-radio v-model="editEngMes.manState" label="1" @change="wasMan">是</el-radio>
+                <el-radio v-model="editEngMes.manState" label="2" @change="noMan">否</el-radio>
               </li>
               <li>
-                <el-radio v-model="isInside" label="1">是</el-radio>
-                <el-radio v-model="isInside" label="2">否</el-radio>
+                <el-radio v-model="editEngMes.calState" label="1" @change="wasCal">是</el-radio>
+                <el-radio v-model="editEngMes.calState" label="2" @change="noCal">否</el-radio>
               </li>
               <li style="display:flex;">
                 <PlaceC  ref="PlaceEdit" :editId="editId" :plStr='plStr'  @getPlace="placeID"/>
               </li>
               <li>
-                <p v-for="(engType,index) in skillList" :key="'type'+index">{{engType.name}}
+                <p v-for="(engType,index) in abilityList" :key="'type'+index">{{engType.name}}
                   <el-checkbox-group @change="uccChose"  v-model="ucc">
-                    <el-checkbox-button v-for="(engExp,index) in engType.usingLevelVOList" :label="engExp" :key="engType.name+index">{{engExp.name}}</el-checkbox-button>
+                    <el-checkbox-button v-for="(engExp,index) in engType.usingLevelVOList" :checked="engExp.selected" :label="engExp" :key="engType.name+index">{{engExp.name}}</el-checkbox-button>
                   </el-checkbox-group>
                 </p>
               </li>
               <li class="upCard">
+                <viewer :images="webCard">
+                  <span v-for="(card,index) in webCard" :key="'Card'+index" class="uPpic">
+                    <img :src="url+'/'+card.fileName" alt=""/>
+                    <i class="el-icon-circle-close" @click="deWeclCard(index)"></i>
+                  </span>
+                </viewer>
                 <viewer :images="cardPic">
                   <span v-for="(card,index) in cardPic" :key="'Card'+index" class="uPpic">
                     <img :src="card" alt=""/>
@@ -204,6 +214,12 @@
                 </span>
               </li>
               <li class="upSkills">
+                <viewer :images="webSkill">
+                  <span class="uPpic" v-for="(skill,index) in webSkill" :key="'skill'+index">
+                    <i class="el-icon-circle-close" @click="delWebSkill(index)"></i>
+                    <img :src="url+'/'+skill.fileName" alt=""/>
+                  </span>
+                </viewer>
                 <viewer :images="skillPic">
                   <span class="uPpic" v-for="(skill,index) in skillPic" :key="'skill'+index">
                     <i class="el-icon-circle-close" @click="delSkill(index)"></i>
@@ -214,26 +230,27 @@
                   <input type="file" accept="image/*" @change="upSkill" name="" value="">
                 </span>
               </li>
-              <li style="margin-top:25px;padding-bottom:20px;">
+              <li style="margin-top:30px;padding-bottom:20px;">
+                <span>技术能力说明:</span>
                 <el-input
                   type="textarea"
                   :autosize="{ minRows: 6, maxRows: 15}"
                   placeholder="请输入能力说明"
-                  v-model="skillText">
+                  v-model="editEngMes.remark">
                 </el-input>
               </li>
             </ul>
           </div>
           <span slot="footer" class="dialog-footer">
-            <el-button @click="cancelAdd()">取 消</el-button>
-            <el-button type="primary" @click="subNewEng()">确 定</el-button>
+            <el-button @click="cancelEdit()">取 消</el-button>
+            <el-button type="primary" @click="turnEditEng()">确 定</el-button>
           </span>
         </el-dialog>
       </div>
       <!-- 工程师详情 弹框 -->
       <div class="engMes">
         <el-dialog
-         width="40%"
+         width="45%"
          title="工程师信息"
          :visible.sync="engMesBox"
          append-to-body>
@@ -283,7 +300,10 @@
                </viewer>
              </span>
            </p>
-
+           <p style="font-size:16px;line-height:40px;width:100%;display:flex;">
+             <span style="width:25%;text-align:right;">技术能力说明:</span>
+             <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;">{{engMes.remark}}</span>
+           </p>
        </el-dialog>
      </div>
       <!-- 分页器 -->
@@ -366,21 +386,33 @@ export default {
       noData:false,
       skillID:[],//工程师能力ID
       editEngShow:false,//编辑工程师
+      abilityList:[],//工程师能力列表
+      abilityIDList:[],//修改工程师能力ID
+      webCard:[],//已上传身份证照片
+      webSkill:[],//已上传技能证书
     }
   },
   created(){
     this.getEngList();
   },
+  computed:{
+    publicCardLength(){
+        return this.webCard.length+this.cardFile.length
+    },
+    publicSkillLength(){
+      return this.webSkill.length+this.skillFile.length
+    }
+  },
   watch:{
-    cardPic(val,oldVal){
-      if(val.length>=2){
+    publicCardLength(val,oldVal){
+      if(val>=2){
         this.showCard=false;
       }else{
         this.showCard=true;
       }
     },
-    skillPic(val,oldVal){
-      if(val.length>=5){
+    publicSkillLength(val,oldVal){
+      if(val>=5){
         this.showSkill=false;
       }else{
         this.showSkill=true;
@@ -414,6 +446,40 @@ export default {
       }else{
         this.isInsideBoolean=false;
       }
+    },
+    editEngShow(val,oldVal){
+      if(!val){
+        this.abilityList=[];
+        this.abilityIDList=[];
+        this.plStr=null;
+        this.staging=[];
+        this.cityID=[];
+        this.webCard=[];
+        this.webSkill=[];
+        this.cardPic=[];
+        this.cardFile=[];
+        this.skillPic=[];
+        this.skillFile=[];
+        this.getEngList()
+      }else{
+        console.log(1)
+      }
+    },
+    addEng(val,oldVal){
+      if(!val){
+        this.abilityList=[];
+        this.abilityIDList=[];
+        this.plStr=null;
+        this.staging=[];
+        this.cityID=[];
+        this.webCard=[];
+        this.webSkill=[];
+        this.cardPic=[];
+        this.cardFile=[];
+        this.skillPic=[];
+        this.skillFile=[];
+        this.addEngMes=this.succMes;
+      }
     }
   },
   components:{
@@ -430,13 +496,11 @@ export default {
        // console.log(`每页 ${val} 条`);
     },
     handleCurrentChange(val) {
-        // console.log(`当前页: ${val}`);
         this.page=val-1;
         this.getEngList();
     },
     placeID(vc){//选择地区
       this.cityID=vc;
-      console.log(this.cityID)
     },
     upCard(e){//上传身份证
       let _vc=this;
@@ -464,11 +528,45 @@ export default {
       this.cardFile=[];
       this.skillPic=[];
       this.skillFile=[];
-      this.skillID=[];
+      this.abilityIDList=[];
+    },
+    deWeclCard(index){//删除已上传身份证
+      let _vm=this;
+      let formdata=new FormData();
+      formdata.append('id',this.webCard[index].id);
+      formdata.append('type','identityFile')
+      _vm.$axios.post(_vm.url+'/mobile/deleteEngineerFile',formdata).then((res)=>{
+        if(res.data.code==0){
+          _vm.$message.success('删除当前身份证成功')
+          _vm.webCard.splice(index,1);
+        }else{
+          _vm.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        _vm.$message.error('未知错误,请联系管理员');
+        console.log(err)
+      })
     },
     delCard(index){//删除当前选中身份证照片
       this.cardPic.splice(index,1);
       this.cardFile.splice(index,1);
+    },
+    delWebSkill(index){//删除已上传证书图片
+      let _vm=this;
+      let formdata=new FormData();
+      formdata.append('id',this.webSkill[index].id);
+      formdata.append('type','certificateFile');
+      _vm.$axios.post(_vm.url+'/mobile/deleteEngineerFile',formdata).then((res)=>{
+        if(res.data.code==0){
+          _vm.$message.success('删除当前技能证书成功');
+          _vm.webSkill.splice(index,1)
+        }else{
+          _vm.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        console.log(err);
+        _vm.$message.error('未知错误,请联系管理员')
+      })
     },
     delSkill(index){//删除当前选中证件图片
       this.skillPic.splice(index,1);
@@ -479,7 +577,7 @@ export default {
       value.forEach((e)=>{
         a.push(e.id)
       });
-      this.skillID=a;
+      this.abilityIDList=a;
     },
     getEngList(){//获取所有工程师
       let _vm=this;
@@ -521,11 +619,9 @@ export default {
       this.places=this.staging.join('/')
     },
     isStop(index){//停启用工程师
-      console.log(this.engList[index].id);
       let formdata=new FormData();
       formdata.append('id',this.engList[index].id)
       this.$axios.post(this.url+'/updateEngineerState',formdata).then((res)=>{
-        console.log(res);
         if(res.data.code==0){
           this.$message.success('更新成功')
           this.getEngList()
@@ -574,7 +670,7 @@ export default {
         _vm.$message.error('请确认工程师是否为内部员工')
       }else if(_vm.cityID.length<1){
         _vm.$message.error('请选择至少一个接单区域')
-      }else if(_vm.skillID.length<1){
+      }else if(_vm.abilityIDList.length<1){
         _vm.$message.error('请选择技术能力')
       }else{
         let formdata=new FormData();
@@ -592,7 +688,7 @@ export default {
         _vm.cityID.forEach((e)=>{
           formdata.append('placeIds',e)
         });
-        _vm.skillID.forEach((x)=>{
+        _vm.abilityIDList.forEach((x)=>{
           formdata.append('levelIds',x)
         });
         if(_vm.cardFile.length>0){
@@ -607,7 +703,6 @@ export default {
         };
         setTimeout(()=>{
           _vm.$axios.post(_vm.url+'/saveEngineer_n',formdata).then((res)=>{
-            console.log(res);
             if(res.data.code==0){
               _vm.addEngMes=_vm.succMes;
               _vm.isManBoolean=null;
@@ -626,7 +721,6 @@ export default {
               window.localStorage.clear('editID');
             }else{
               _vm.$message.error(res.data.msg);
-              _vm.addEng=false;
             }
           }).catch((err)=>{
             _vm.$message.error('未知错误,请联系管理员');
@@ -636,25 +730,136 @@ export default {
       }
     },
     editEng(index){//编辑工程师
-      this.editEngMes=this.engList[index];
-      if(this.editEngMes.isManager){
-        this.$set(this.editEngMes,'manState','1')
+      let _vc=this;
+      _vc.editEngMes=_vc.engList[index];
+      _vc.$axios.get(_vc.url+'/usingTechnologyList?engineerId='+_vc.engList[index].id).then((res)=>{
+        if(res.data.code==0){
+          _vc.abilityList=res.data.data;
+          _vc.abilityList.forEach((e)=>{
+            e.usingLevelVOList.forEach((x)=>{
+              if(x.selected){
+                _vc.abilityIDList.push(x.id)
+              }
+            })
+          });
+          if(_vc.editEngMes.isManager){
+            _vc.$set(_vc.editEngMes,'manState','1')
+          }else{
+            _vc.$set(_vc.editEngMes,'manState','2')
+          };
+          if(_vc.editEngMes.isOfficial){
+            _vc.$set(_vc.editEngMes,'calState','1')
+          }else{
+            _vc.$set(_vc.editEngMes,'calState','2')
+          };
+          _vc.editEngMes.childPlaces.forEach((i)=>{
+            this.cityID.push(i.id)
+          });
+          _vc.editEngMes.identityFiles.forEach((g)=>{
+            _vc.webCard.push(g);
+          });
+          _vc.editEngMes.certificateFiles.forEach((h)=>{
+            _vc.webSkill.push(h)
+          });
+          _vc.engMes=_vc.engList[index]
+          _vc.engMes.childPlaces.forEach((e)=>{
+            _vc.staging.push(e.parentPlace.name+'-'+e.name);
+          });
+          _vc.editId=_vc.engList[index].id;
+          _vc.plStr=_vc.staging;
+          setTimeout(()=>{
+            _vc.editEngShow=true;
+            setTimeout(()=>{
+              _vc.$refs.PlaceEdit.editEng();
+            },200)
+          });
+        }else{
+          _vc.changeEng=false;
+          _vc.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        _vc.changeEng=false;
+        _vc.$message.error('未知错误,请联系管理员')
+      });
+    },
+    wasMan(){//是否为项目经理
+      this.editEngMes.isManager=true;
+    },
+    noMan(){//是否为项目经理
+      this.editEngMes.isManager=false;
+    },
+    wasCal(){//是否为内部员工
+      this.editEngMes.isOfficial=true;
+    },
+    noCal(){//是否为内部员工
+      this.editEngMes.isOfficial=false;
+    },
+    cancelEdit(){//取消编辑工程师
+      this.editEngShow=false;
+    },
+    turnEditEng(){//上传修改工程师
+      let vm=this;
+      if(vm.editEngMes.name===''||vm.editEngMes.name==null){
+        vm.$message.error('请输入工程师姓名')
+      }else if(vm.editEngMes.phone==''||vm.editEngMes.phone==null){
+        vm.$message.error('请输入手机号')
+      }else if(vm.editEngMes.email==''||vm.editEngMes.email==null){
+        vm.$message.error('请输入电子邮箱')
+      }else if(vm.editEngMes.workYear==''||vm.editEngMes.workYear==null){
+        vm.$message.error('请输入工作年限')
+      }else if(vm.editEngMes.operatorName==''||vm.editEngMes.operatorName==null){
+        vm.$message.error('请输入登录账号')
+      }else if(vm.cityID.length<1){
+        vm.$message.error('请选择至少一个工作区域')
+      }else if(vm.abilityIDList.length<1){
+        vm.$message.error('请对工程师的能力进行最少一项评定')
       }else{
-        this.$set(this.editEngMes,'manState','2')
+        let formdata=new FormData();
+        formdata.append('id',vm.editEngMes.id);
+        formdata.append('operatorId',window.localStorage.getItem('Uid'));
+        formdata.append('name',vm.editEngMes.name);
+        formdata.append('phone',vm.editEngMes.phone);
+        formdata.append('username',vm.editEngMes.operatorName);
+        formdata.append('email',vm.editEngMes.email);
+        formdata.append('workYear',vm.editEngMes.workYear);
+        formdata.append('isOfficial',vm.editEngMes.isOfficial);
+        formdata.append('isManager',vm.editEngMes.isManager);
+        vm.cityID.forEach((e)=>{
+          formdata.append('placeIds',e)
+        });
+        vm.cardFile.forEach((t)=>{
+          formdata.append('identityUploadFiles',t);
+        });
+        vm.abilityIDList.forEach((y)=>{
+          formdata.append('levelIds',y)
+        });
+        if(vm.skillFile.length>0){
+          vm.skillFile.forEach((a)=>{
+            formdata.append('certificateUploadFiles',a)
+          })
+        };
+        if(vm.editEngMes.remark!=null&&vm.editEngMes!=''){
+          formdata.append('remark',vm.editEngMes.remark)
+        };
+        vm.$axios.post(vm.url+'/saveEngineer_n',formdata).then((res)=>{
+          if(res.data.code==0){
+            vm.$message.success('更新工程师成功');
+            vm.cardFile=[];
+            vm.abilityIDList=[];
+            vm.editEngShow=false;
+            vm.skillFile=[];
+            vm.cardPic=[];
+            vm.skillPic=[];
+            vm.cityID=[];
+            vm.plStr=null;
+          }else{
+            vm.$message.error(res.data.msg);
+          }
+        }).catch((err)=>{
+          vm.$message.error('未知异常,请联系管理员')
+          console.log(err)
+        })
       };
-      this.engMes=this.engList[index]
-      this.engMes.childPlaces.forEach((e)=>{
-        this.staging.push(e.parentPlace.name+'-'+e.name);
-      });
-      this.editId=this.engList[index].id;
-      this.plStr=this.staging;
-      console.log(this.staging)
-      setTimeout(()=>{
-        this.editEngShow=true;
-        setTimeout(()=>{
-          this.$refs.PlaceEdit.editEng();
-        },200)
-      });
     }
   }
 }
@@ -681,6 +886,17 @@ export default {
         text-align: right;
         box-sizing: border-box;
         padding-right: 50px;
+      }
+
+    }
+    .admin_reload{
+      position: absolute;
+      top:124px;
+      right:30px;
+      i{
+        font-size: 32px;
+        color:#eb7a1d;
+        cursor:pointer;
       }
     }
     .internalEng_title{
@@ -756,7 +972,7 @@ export default {
           }
           .upBtn{
             display: inline-block;
-            width: 180px;
+            min-width: 180px;
             height: 103px;
             margin-left: 15px;
             margin-top: 15px;
@@ -776,6 +992,7 @@ export default {
           }
         }
         .upSkills{
+          width: 110%;
           min-height: 120px;
           display: flex;
           flex-wrap: wrap;
@@ -790,7 +1007,7 @@ export default {
           }
           .upBtn{
             display: inline-block;
-            width: 180px;
+            min-width: 180px;
             height: 103px;
             margin-left: 15px;
             margin-top: 15px;
@@ -809,6 +1026,15 @@ export default {
             }
           }
         }
+        li:last-child{
+          position: relative;
+          span{
+            display: inline-block;
+            position: absolute;
+            left:-115px;
+            top:-12px;
+          }
+        }
       }
     }
     // .addEngBox::-webkit-scrollbar {display:none}
@@ -816,7 +1042,7 @@ export default {
       width: 98%;
       text-align: right;
       margin-top: 55px;
-      margin-bottom: 100px;
+      margin-bottom:60px;
     }
   }
 }

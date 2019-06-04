@@ -16,15 +16,16 @@ export default {
   },
   data(){
     return{
-      lenth:0,
-      page:10
+      page:0
     }
   },
   methods:{
     refresh(){
       let _vc=this;
+      console.log(_vc.reloadData)
       let formdata=new FormData();
       formdata.append('size',10);
+      let condition=typeof(_vc.reloadData.state);
       if(_vc.reloadData.state.length){
         _vc.reloadData.state.forEach((e)=>{
           formdata.append('states',e);
@@ -38,13 +39,15 @@ export default {
       if(_vc.engName!=null){
         formdata.append('name',_vc.engName)
       }
+      formdata.append('page',_vc.page);
       _vc.$axios.post(_vc.url+_vc.reloadData.url,formdata).then((res)=>{
+        console.log(res);
         if(res.data.code==0){
-          console.log(res)
           _vc.length=_vc.page*10;
           res.data.data.content.forEach((e)=>{
             _vc.$set(e,'num',_vc.length++);
           });
+          console.log(res.data.data.content)
           _vc.$emit('reloadList',res.data.data.content)
         }
       }).catch((err)=>{

@@ -89,12 +89,10 @@ export default {
   },
   methods:{
     editEng(){//获取服务地址
-      // console.log(this.plStr)
       let _vm=this;
       _vm.placeStr=_vm.plStr.join('/')
       _vm.$axios.get(_vm.url+'/mobile/getUsingPlaceList?engineerId='+this.editId).then((res)=>{
         if(res.data.code==0){
-          console.log(res)
           _vm.cityList=res.data.data.placeList;
           _vm.delArr=_vm.cityList[0].usingChildList;
           _vm.choseVal=_vm.cityList[0].name;
@@ -111,7 +109,6 @@ export default {
               }
             })
           });
-          console.log(_vm.cityID)
           setTimeout(()=>{
             if(b.indexOf(false)>=0){
               console.log(1)
@@ -127,7 +124,7 @@ export default {
                 }
               });
             }
-            _vm.b.push(_vm.cityList[0].usingChildList[0].id)
+            _vm.b.push(_vm.e[0].usingChildList[0].id)
             setTimeout(()=>{
               _vm.cityID.forEach((s)=>{
                 let c=_vm.b.indexOf(s);
@@ -165,8 +162,6 @@ export default {
       this.a=[];//数据暂存数组
       this.b=[];//数据暂存数组2
       this.abbs=false;
-      // this.editEng();
-      // console.log(this.cityID)
     },
     choseInV(index){//选择省份
       let _vm=this;
@@ -252,7 +247,6 @@ export default {
       let indexE=_vm.plStr.indexOf(_vm.choseVal+'-'+_vm.delArr[index].name);
       if(indexE>=0){
         _vm.plStr.splice(indexE,1);
-        console.log(_vm.plStr)
         _vm.choseTurn=_vm.plStr.join('/');
       }
       let indexID=_vm.cityID.indexOf(_vm.cityList[_vm.proID].usingChildList[index].id);
@@ -319,7 +313,6 @@ export default {
       }else{
         vm.$emit('getPlace',vm.cityID);
         vm.placeStr=vm.choseTurn;
-        console.log(vm.placeStr)
         setTimeout(()=>{
           vm.placeBox=false;
         })
