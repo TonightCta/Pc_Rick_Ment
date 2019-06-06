@@ -13,9 +13,9 @@
           <el-col :span="2"><div class="listTitle">序号</div></el-col>
           <el-col :span="3"><div class="listTitle">姓名</div></el-col>
           <el-col :span="3"><div class="listTitle">联系电话</div></el-col>
-          <el-col :span="4"><div class="listTitle">工作年限</div></el-col>
+          <el-col :span="2"><div class="listTitle">工作年限</div></el-col>
           <el-col :span="4"><div class="listTitle">登录账号</div></el-col>
-          <el-col :span="4"><div class="listTitle">邮箱</div></el-col>
+          <el-col :span="6"><div class="listTitle">邮箱</div></el-col>
           <!-- <el-col :span="3"><div class="listTitle">技术能力认证</div></el-col> -->
           <el-col :span="4"><div class="listTitle">操作</div></el-col>
         </el-row>
@@ -27,11 +27,11 @@
           <el-col :span="3"><div class="listCon">{{eng.name}}</div></el-col>
           <el-col :span="3" v-if="eng.phone!=null&&eng.phone!=''&&eng.phone!='null'"><div class="listCon">{{eng.phone}}</div></el-col>
           <el-col :span="3" v-else><div class="listCon">-</div></el-col>
-          <el-col :span="4" v-if="eng.workYear!=null&&eng.workYear!=''&&eng.workYear!='null'"><div class="listCon">{{eng.workYear}}&nbsp;年</div></el-col>
-          <el-col :span="4" v-else><div class="listCon">-&nbsp;年</div></el-col>
+          <el-col :span="2" v-if="eng.workYear!=null&&eng.workYear!=''&&eng.workYear!='null'"><div class="listCon">{{eng.workYear}}&nbsp;年</div></el-col>
+          <el-col :span="2" v-else><div class="listCon">-&nbsp;年</div></el-col>
           <el-col :span="4"><div class="listCon">{{eng.operatorName}}</div></el-col>
-          <el-col :span="4" v-if="eng.email!=null&&eng.email!=''&&eng.email!='null'"><div class="listCon">{{eng.email}}</div></el-col>
-          <el-col :span="4" v-else><div class="listCon">-</div></el-col>
+          <el-col :span="6" v-if="eng.email!=null&&eng.email!=''&&eng.email!='null'"><div class="listCon">{{eng.email}}</div></el-col>
+          <el-col :span="6" v-else><div class="listCon">-</div></el-col>
           <!-- <el-col :span="3"><div class="listCon" style="box-sizing:border-box;padding-top:5px;">
             <i class="el-icon-edit-outline" style="color:#eb7a1d;font-size:23px;cursor:pointer;" @click="operEng=true"></i>
           </div></el-col> -->
@@ -88,8 +88,8 @@
            </p>
 
            <p style="font-size:16px;line-height:40px;width:100%;display:flex;">
-             <span style="width:25%;text-align:right;">技能水平:</span>
-             <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;">{{engMes.levelStr}}</span>
+             <span style="width:25%;text-align:right;">擅长领域:</span>
+             <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;" v-if="engMes.skillTagNames!=null&&engMes.skillTagNames!=''">{{engMes.skillTagNames.join('/')}}</span>
            </p>
            <p style="font-size:16px;line-height:40px;width:100%;display:flex;">
              <span style="width:25%;text-align:right;">身份认证:</span>
@@ -217,7 +217,7 @@ export default {
         this.staging=[];
         this.places=null;
       }else{
-        console.log(1)
+        return 1
       }
     },
     engList(val,oldVal){
@@ -232,6 +232,12 @@ export default {
     Search,
     Place,
     Reload
+  },
+  beforeRouteLeave(to,from,next){
+    window.sessionStorage.clear('eName');
+    window.sessionStorage.clear('beginTime');
+    window.sessionStorage.clear('endTime');
+    next();
   },
   methods:{
     handleSizeChange(val) {
@@ -270,6 +276,7 @@ export default {
         }
       }).catch((err)=>{
         _vm.$message.error('未知异常,请联系管理员');
+        // console.log(err)
       })
     },
     engDetails(index){//工程师详情

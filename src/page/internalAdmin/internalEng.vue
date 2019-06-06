@@ -41,12 +41,15 @@
           <el-col :span="2" v-if="eng.workYear!=null&&eng.workYear!=''"><div class="listCon">{{eng.workYear}}&nbsp;年</div></el-col>
           <el-col :span="2" v-else><div class="listCon">-&nbsp;年</div></el-col>
           <el-col :span="3"><div class="listCon">{{eng.operatorName}}</div></el-col>
-          <el-col :span="3" v-if="eng.email!=null"><div class="listCon">{{eng.email}}</div></el-col>
-          <el-col :span="3" v-else><div class="listCon">-</div></el-col>
-          <el-tooltip class="item" effect="dark" :content="eng.levelStr" placement="bottom">
-            <el-col :span="5" v-if="eng.levelStr!=''&&eng.levelStr!=null"><div class="listCon" style="cursor:pointer;">{{eng.levelStr.substring(0,12)}}...</div></el-col>
-            <el-col :span="5" v-else><div class="listCon">-</div></el-col>
+          <el-col :span="3" v-if="eng.email!=null&&!eng.emailToop"><div class="listCon">{{eng.email}}</div></el-col>
+          <el-tooltip class="item" effect="dark" v-if="eng.email!=null&&eng.emailToop" :content="eng.email" placement="bottom">
+            <el-col :span="3" ><div class="listCon" style="cursor:pointer;">{{eng.email.substring(0,12)}}...</div></el-col>
           </el-tooltip>
+          <el-col :span="3" v-if="eng.email==null||eng.email==''"><div class="listCon">-</div></el-col>
+          <el-tooltip class="item" effect="dark" :content="eng.levelStr" placement="bottom"  v-if="eng.levelStr!=''&&eng.levelStr!=null">
+            <el-col :span="5"><div class="listCon" style="cursor:pointer;">{{eng.levelStr.substring(0,12)}}...</div></el-col>
+          </el-tooltip>
+          <el-col :span="5" v-else><div class="listCon">-</div></el-col>
           <el-col :span="1"><div class="listCon">
             <span v-if="eng.state==2" style="background:green;color:white;border-radius:18px;padding:5px;font-size:12px;">已启用</span>
             <span v-if="eng.state==-1" style="background:red;color:white;border-radius:18px;padding:5px;font-size:12px;">已停用</span>
@@ -129,17 +132,17 @@
                     <i class="el-icon-circle-close" @click="delSkill(index)"></i>
                     <img :src="skill" alt=""/>
                   </span>
+                  <span class="upBtn" v-show="showSkill">
+                    <input type="file" accept="image/*" @change="upSkill" name="" value="">
+                  </span>
                 </viewer>
-                <span class="upBtn" v-show="showSkill">
-                  <input type="file" accept="image/*" @change="upSkill" name="" value="">
-                </span>
               </li>
               <li style="margin-top:25px;padding-bottom:20px;">
-                <span>技术能力说明:</span>
+                <span>评定说明:</span>
                 <el-input
                   type="textarea"
                   :autosize="{ minRows: 6, maxRows: 15}"
-                  placeholder="请输入能力说明"
+                  placeholder="请输入评定说明"
                   v-model="skillText">
                 </el-input>
               </li>
@@ -214,28 +217,32 @@
                 </span>
               </li>
               <li class="upSkills">
-                <viewer :images="webSkill">
+                <!-- <viewer :images="webSkill">
                   <span class="uPpic" v-for="(skill,index) in webSkill" :key="'skill'+index">
                     <i class="el-icon-circle-close" @click="delWebSkill(index)"></i>
                     <img :src="url+'/'+skill.fileName" alt=""/>
                   </span>
-                </viewer>
+                </viewer> -->
                 <viewer :images="skillPic">
+                  <span class="uPpic" v-for="(skillL,index) in webSkill" :key="'skillL'+index">
+                    <i class="el-icon-circle-close" @click="delWebSkill(index)"></i>
+                    <img :src="url+'/'+skillL.fileName" alt=""/>
+                  </span>
                   <span class="uPpic" v-for="(skill,index) in skillPic" :key="'skill'+index">
                     <i class="el-icon-circle-close" @click="delSkill(index)"></i>
                     <img :src="skill" alt=""/>
                   </span>
+                  <span class="upBtn" v-show="showSkill">
+                    <input type="file" accept="image/*" @change="upSkill" name="" value="">
+                  </span>
                 </viewer>
-                <span class="upBtn" v-show="showSkill">
-                  <input type="file" accept="image/*" @change="upSkill" name="" value="">
-                </span>
               </li>
               <li style="margin-top:30px;padding-bottom:20px;">
-                <span>技术能力说明:</span>
+                <span>评定说明:</span>
                 <el-input
                   type="textarea"
                   :autosize="{ minRows: 6, maxRows: 15}"
-                  placeholder="请输入能力说明"
+                  placeholder="请输入评定说明"
                   v-model="editEngMes.remark">
                 </el-input>
               </li>
@@ -273,7 +280,10 @@
              <span style="width:25%;text-align:right;">接单区域:</span>
              <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;">{{places}}</span>
            </p>
-
+           <p style="font-size:16px;line-height:40px;width:100%;display:flex;">
+             <span style="width:25%;text-align:right;">擅长领域:</span>
+             <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;" v-if="engMes.skillTagNames!=null&&engMes.skillTagNames!=''">{{engMes.skillTagNames.join('/')}}</span>
+           </p>
            <p style="font-size:16px;line-height:40px;width:100%;display:flex;">
              <span style="width:25%;text-align:right;">技能水平:</span>
              <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;">{{engMes.levelStr}}</span>
@@ -301,7 +311,7 @@
              </span>
            </p>
            <p style="font-size:16px;line-height:40px;width:100%;display:flex;">
-             <span style="width:25%;text-align:right;">技术能力说明:</span>
+             <span style="width:25%;text-align:right;">评定说明:</span>
              <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;">{{engMes.remark}}</span>
            </p>
        </el-dialog>
@@ -331,6 +341,7 @@ export default {
     return{
       editId:null,//传递工程师ID
       plStr:null,//回显地点
+      length:0,
       internalEng:{
         url:'/findEngineerListByCondition',
         state:['-1','2'],
@@ -423,7 +434,7 @@ export default {
         this.staging=[];
         this.places=null;
       }else{
-        console.log(1)
+        return 1
       }
     },
     engList(val,oldVal){
@@ -462,7 +473,7 @@ export default {
         this.skillFile=[];
         this.getEngList()
       }else{
-        console.log(1)
+        return 1
       }
     },
     addEng(val,oldVal){
@@ -487,6 +498,12 @@ export default {
     Place,
     Reload,
     PlaceC
+  },
+  beforeRouteLeave(to,from,next){
+    window.sessionStorage.clear('eName');
+    window.sessionStorage.clear('beginTime');
+    window.sessionStorage.clear('endTime');
+    next();
   },
   methods:{
     getReloadList(engList){
@@ -544,7 +561,7 @@ export default {
         }
       }).catch((err)=>{
         _vm.$message.error('未知错误,请联系管理员');
-        console.log(err)
+        // console.log(err)
       })
     },
     delCard(index){//删除当前选中身份证照片
@@ -564,7 +581,7 @@ export default {
           _vm.$message.error(res.data.msg)
         }
       }).catch((err)=>{
-        console.log(err);
+        // console.log(err);
         _vm.$message.error('未知错误,请联系管理员')
       })
     },
@@ -589,6 +606,13 @@ export default {
       formdata.append('size',10);
       formdata.append('states',-1);
       formdata.append('states',2);
+      if(window.sessionStorage.getItem('eName')){
+        formdata.append('name',window.sessionStorage.getItem('eName'))
+      }
+      if(window.sessionStorage.getItem('beginTime')){
+        formdata.append('beginTime',window.sessionStorage.getItem('beginTime'));
+        formdata.append('endTime',window.sessionStorage.getItem('endTime'));
+      }
       _vm.$axios.post(_vm.url+'/findEngineerListByCondition',formdata).then((res)=>{
         if(res.data.code==0){
           _vm.engLoad=false;
@@ -596,6 +620,13 @@ export default {
           _vm.pageNum=res.data.data.totalPages*10;
           res.data.data.content.forEach((e)=>{
             _vm.$set(e,'num',_vm.length++);
+            if(e.email!=null&&e.email!=''){
+              if(e.email.length>15){
+                _vm.$set(e,'emailToop',true)
+              }else{
+                _vm.$set(e,'emailToop',false)
+              }
+            }
           });
           _vm.dataLength=res.data.data.totalElements;
           _vm.engList=res.data.data.content;
@@ -605,6 +636,7 @@ export default {
         }
       }).catch((err)=>{
         _vm.$message.error('未知异常,请联系管理员');
+        // console.log(err)
       })
     },
     getSearchData(engList){//获取筛选数据
@@ -630,7 +662,7 @@ export default {
         }
       }).catch((err)=>{
         this.$message.error('未知错误,请联系管理员');
-        console.log(err)
+        // console.log(err)
       })
     },
     pushEng(){//添加工程师
@@ -645,7 +677,7 @@ export default {
       }).catch((err)=>{
         this.addEng=false;
         this.$message.error('未知错误,请联系管理员');
-        console.log(err)
+        // console.log(err)
       })
     },
     subNewEng(){//提交新增工程师
@@ -724,7 +756,7 @@ export default {
             }
           }).catch((err)=>{
             _vm.$message.error('未知错误,请联系管理员');
-            console.log(err)
+            // console.log(err)
           })
         })
       }
@@ -857,7 +889,7 @@ export default {
           }
         }).catch((err)=>{
           vm.$message.error('未知异常,请联系管理员')
-          console.log(err)
+          // console.log(err)
         })
       };
     }

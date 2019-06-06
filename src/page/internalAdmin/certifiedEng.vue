@@ -30,8 +30,10 @@
           <el-col :span="3" v-if="eng.workYear!=null&&eng.workYear!=''&&eng.workYear!='null'"><div class="listCon">{{eng.workYear}}&nbsp;年</div></el-col>
           <el-col :span="3" v-else><div class="listCon">-&nbsp;年</div></el-col>
           <el-col :span="3"><div class="listCon">{{eng.operatorName}}</div></el-col>
-          <el-col :span="3" v-if="eng.email!=null&&eng.email!=''&&eng.email!='null'"><div class="listCon">{{eng.email}}</div></el-col>
-          <el-col :span="3" v-else><div class="listCon">-</div></el-col>
+          <el-col :span="3" v-if="eng.email!=null&&!eng.emailToop"><div class="listCon">{{eng.email}}</div></el-col>
+          <el-tooltip class="item" effect="dark" v-else :content="eng.email" placement="bottom">
+            <el-col :span="3" ><div class="listCon" style="cursor:pointer;">{{eng.email.substring(0,13)}}...</div></el-col>
+          </el-tooltip>
           <el-col :span="5"><div class="listCon" style="box-sizing:border-box;padding-top:5px;">
             <i class="el-icon-edit-outline" style="color:#eb7a1d;font-size:23px;cursor:pointer;" @click="assment(index)"></i>
           </div></el-col>
@@ -55,12 +57,12 @@
                 <el-checkbox-button v-for="(engExp,index) in engType.usingLevelVOList" :label="engExp" :key="engType.name+index">{{engExp.name}}</el-checkbox-button>
               </el-checkbox-group>
             </p>
-            <p class="texrTitle">技术能力说明</p>
+            <p class="texrTitle">评定说明</p>
             <p class="supSkillText">
               <el-input
                 type="textarea"
                 :autosize="{ minRows: 6, maxRows: 15}"
-                placeholder="请输入能力说明"
+                placeholder="请输入评定说明"
                 v-model="skillText">
               </el-input>
             </p>
@@ -99,8 +101,8 @@
            </p>
 
            <p style="font-size:16px;line-height:40px;width:100%;display:flex;">
-             <span style="width:25%;text-align:right;">技能水平:</span>
-             <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;">{{engMes.levelStr}}</span>
+             <span style="width:25%;text-align:right;">擅长领域:</span>
+             <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;" v-if="engMes.skillTagNames!=null&&engMes.skillTagNames!=''">{{engMes.skillTagNames.join('/')}}</span>
            </p>
            <p style="font-size:16px;line-height:40px;width:100%;display:flex;">
              <span style="width:25%;text-align:right;">身份认证:</span>
@@ -176,13 +178,19 @@ export default {
   created(){
     this.getEngList()
   },
+  beforeRouteLeave(to,from,next){
+    window.sessionStorage.clear('eName');
+    window.sessionStorage.clear('beginTime');
+    window.sessionStorage.clear('endTime');
+    next();
+  },
   watch:{
     engMesBox(val,oldVal){
       if(!val){
         this.staging=[];
         this.places=null;
       }else{
-        console.log(1)
+        return 1
       }
     },
     engList(val,oldVal){
@@ -200,7 +208,6 @@ export default {
   },
   methods:{
     handleSizeChange(val) {
-       // console.log(`每页 ${val} 条`);
     },
     handleCurrentChange(val) {
         this.page=val-1;
@@ -222,6 +229,11 @@ export default {
           _vm.pageNum=res.data.data.totalPages*10;
           res.data.data.content.forEach((e)=>{
             _vm.$set(e,'num',_vm.length++);
+            if(e.email.length>15){
+              _vm.$set(e,'emailToop',true)
+            }else{
+              _vm.$set(e,'emailToop',false)
+            }
           });
           _vm.dataLength=res.data.data.totalElements;
           _vm.engList=res.data.data.content;
@@ -268,7 +280,7 @@ export default {
       }).catch((err)=>{
         _vm.operEng=false;
         _vm.$message.error('未知错误,请联系管理员')
-        console.log(err)
+        // console.log(err)
       })
     },
     upSkillID(){//上传工程师认证

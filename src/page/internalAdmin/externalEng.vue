@@ -36,12 +36,15 @@
           <el-col :span="2" v-if="eng.workYear!=null&&eng.workYear!=''&&eng.workYear!='null'"><div class="listCon">{{eng.workYear}}&nbsp;年</div></el-col>
           <el-col :span="2" v-else><div class="listCon">-&nbsp;年</div></el-col>
           <el-col :span="3"><div class="listCon">{{eng.operatorName}}</div></el-col>
-          <el-col :span="3" v-if="eng.email!=null"><div class="listCon">{{eng.email}}</div></el-col>
-          <el-col :span="3" v-else><div class="listCon">-</div></el-col>
-          <el-tooltip class="item" effect="dark" :content="eng.levelStr" placement="bottom">
-            <el-col :span="4" v-if="eng.levelStr!=''"><div class="listCon" style="cursor:pointer;">{{eng.levelStr.substring(0,12)}}...</div></el-col>
-            <el-col :span="4" v-else><div class="listCon">-</div></el-col>
+          <el-col :span="3" v-if="eng.email!=null&&!eng.emailToop"><div class="listCon">{{eng.email}}</div></el-col>
+          <el-tooltip class="item" effect="dark" v-if="eng.email!=null&&eng.emailToop" :content="eng.email" placement="bottom">
+            <el-col :span="3" ><div class="listCon" style="cursor:pointer;">{{eng.email.substring(0,12)}}...</div></el-col>
           </el-tooltip>
+          <el-col :span="3" v-if="eng.email==null||eng.email==''"><div class="listCon">-</div></el-col>
+          <el-tooltip class="item" effect="dark" :content="eng.levelStr" placement="bottom" v-if="eng.levelStr!=''">
+            <el-col :span="4"><div class="listCon" style="cursor:pointer;">{{eng.levelStr.substring(0,12)}}...</div></el-col>
+          </el-tooltip>
+          <el-col :span="4" v-else><div class="listCon">-</div></el-col>
           <el-col :span="3" v-if="eng.recommendCode!=null&&eng.recommendCode!=''&&eng.recommendCode!='null'"><div class="listCon">{{eng.recommendCode}}</div></el-col>
           <el-col :span="3" v-else><div class="listCon">-</div></el-col>
           <el-col :span="1"><div class="listCon">
@@ -90,7 +93,10 @@
              <span style="width:25%;text-align:right;">接单区域:</span>
              <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;">{{places}}</span>
            </p>
-
+           <p style="font-size:16px;line-height:40px;width:100%;display:flex;">
+             <span style="width:25%;text-align:right;">擅长领域:</span>
+             <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;" v-if="engMes.skillTagNames!=null&&engMes.skillTagNames!=''">{{engMes.skillTagNames.join('/')}}</span>
+           </p>
            <p style="font-size:16px;line-height:40px;width:100%;display:flex;">
              <span style="width:25%;text-align:right;">技能水平:</span>
              <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;">{{engMes.levelStr}}</span>
@@ -118,7 +124,7 @@
              </span>
            </p>
            <p style="font-size:16px;line-height:40px;width:100%;display:flex;">
-             <span style="width:25%;text-align:right;">技术能力说明:</span>
+             <span style="width:25%;text-align:right;">评定说明:</span>
              <span style="width:75%;text-align:left;box-sizing:border-box;padding-left:20px;">{{engMes.remark}}</span>
            </p>
        </el-dialog>
@@ -197,28 +203,26 @@
                 </span>
               </li>
               <li class="upSkills">
-                <viewer :images="webSkill">
-                  <span class="uPpic" v-for="(skill,index) in webSkill" :key="'skill'+index">
-                    <i class="el-icon-circle-close" @click="delWebSkill(index)"></i>
-                    <img :src="url+'/'+skill.fileName" alt=""/>
-                  </span>
-                </viewer>
                 <viewer :images="skillPic">
+                  <span class="uPpic" v-for="(skillL,index) in webSkill" :key="'skillL'+index">
+                    <i class="el-icon-circle-close" @click="delWebSkill(index)"></i>
+                    <img :src="url+'/'+skillL.fileName" alt=""/>
+                  </span>
                   <span class="uPpic" v-for="(skill,index) in skillPic" :key="'skill'+index">
-                    <i class="el-icon-circle-close" @click="delSkill(index)"></i>
+                    <i class="el-icon-circle-close" @click="delLocalSkill(index)"></i>
                     <img :src="skill" alt=""/>
                   </span>
+                  <span class="upBtn" v-show="showSkill">
+                    <input type="file" accept="image/*" @change="upSkill" name="" value="">
+                  </span>
                 </viewer>
-                <span class="upBtn" v-show="showSkill">
-                  <input type="file" accept="image/*" @change="upSkill" name="" value="">
-                </span>
               </li>
               <li style="margin-top:25px;padding-bottom:20px;">
-                <span>技术能力说明：</span>
+                <span>评定说明：</span>
                 <el-input
                   type="textarea"
                   :autosize="{ minRows: 6, maxRows: 15}"
-                  placeholder="请输入能力说明"
+                  placeholder="请输入评定说明"
                   v-model="changeEngMes.remark">
                 </el-input>
               </li>
@@ -250,7 +254,6 @@
               <li style="margin-top:550px;">身份认证文件:</li>
               <li style="margin-top:80px;">资质证明文件:</li>
             </ul>
-
             <ul class="add_con">
               <li><el-input v-model="addEngMes.name" placeholder="请输入工程师姓名"/></li>
               <li><el-input v-model="addEngMes.phone" placeholder="请输入手机号码"/></li>
@@ -292,17 +295,17 @@
                     <i class="el-icon-circle-close" @click="delLocalSkill(index)"></i>
                     <img :src="skill" alt=""/>
                   </span>
+                  <span class="upBtn" v-show="showSkill">
+                    <input type="file" accept="image/*" @change="upSkill" name="" value="">
+                  </span>
                 </viewer>
-                <span class="upBtn" v-show="showSkill">
-                  <input type="file" accept="image/*" @change="upSkill" name="" value="">
-                </span>
               </li>
               <li style="margin-top:25px;padding-bottom:20px;">
-                <span>技术能力说明:</span>
+                <span>评定说明:</span>
                 <el-input
                   type="textarea"
                   :autosize="{ minRows: 6, maxRows: 15}"
-                  placeholder="请输入能力说明"
+                  placeholder="请输入评定说明"
                   v-model="skillText">
                 </el-input>
               </li>
@@ -391,6 +394,12 @@ export default {
       skillList:[],//添加工程师能力列表
     }
   },
+  beforeRouteLeave(to,from,next){
+    window.sessionStorage.clear('eName');
+    window.sessionStorage.clear('beginTime');
+    window.sessionStorage.clear('endTime');
+    next();
+  },
   created(){
     this.getEngList()
   },
@@ -400,7 +409,7 @@ export default {
         this.staging=[];
         this.places=null;
       }else{
-        console.log(1)
+        return 1
       }
     },
     engList(val,oldVal){
@@ -417,7 +426,12 @@ export default {
         this.abilityList=[];
         this.abilityIDList=[];
         this.webCard=[];
+        this.webSkill=[];
         this.cityID=[];
+        this.cardPic=[];
+        this.cardFile=[];
+        this.skillPic=[];
+        this.skillFile=[];
         this.getEngList();
       }
     },
@@ -495,12 +509,21 @@ export default {
       let _vm=this;
       _vm.engLoad=true;
       let formdata=new FormData();
-      formdata.append('asc','desc');
       formdata.append('isOfficial',false)
-      formdata.append('page',_vm.page);
-      formdata.append('size',10);
-      formdata.append('states',-1);
-      formdata.append('states',2);
+      // formdata.append('page',_vm.page);
+      // formdata.append('size',10);
+      let statesl=['-1','2'];
+      statesl.forEach((p)=>{
+        formdata.append('states',p);
+      })
+      // formdata.append('states',2);
+      if(window.sessionStorage.getItem('eName')){
+        formdata.append('name',window.sessionStorage.getItem('eName'))
+      }
+      if(window.sessionStorage.getItem('beginTime')){
+        formdata.append('beginTime',window.sessionStorage.getItem('beginTime'));
+        formdata.append('endTime',window.sessionStorage.getItem('endTime'));
+      }
       _vm.$axios.post(_vm.url+'/findEngineerListByCondition',formdata).then((res)=>{
         if(res.data.code==0){
           _vm.engLoad=false;
@@ -508,6 +531,11 @@ export default {
           _vm.pageNum=res.data.data.totalPages*10;
           res.data.data.content.forEach((e)=>{
             _vm.$set(e,'num',_vm.length++);
+            if(e.email.length>15){
+              _vm.$set(e,'emailToop',true)
+            }else{
+              _vm.$set(e,'emailToop',false)
+            }
           });
           _vm.dataLength=res.data.data.totalElements;
           _vm.engList=res.data.data.content;
@@ -541,7 +569,7 @@ export default {
       }).catch((err)=>{
         this.addEng=false;
         this.$message.error('未知错误,请联系管理员');
-        console.log(err)
+        // console.log(err)
       })
     },
     getSearchData(engList){//获取筛选数据
@@ -558,7 +586,7 @@ export default {
           this.$message.error(res.data.msg)
         }
       }).catch((err)=>{
-        console.log(err)
+        // console.log(err)
         this.$message.error('未知错误,请联系管理员')
       })
     },
@@ -678,7 +706,7 @@ export default {
         }
       }).catch((err)=>{
         _vm.$message.error('未知错误,请联系管理员');
-        console.log(err)
+        // console.log(err)
       })
     },
     delLocaCard(index){//删除本地上传身份证文件
@@ -703,7 +731,7 @@ export default {
           _vm.$message.error(res.data.msg)
         }
       }).catch((err)=>{
-        console.log(err);
+        // console.log(err);
         _vm.$message.error('未知错误,请联系管理员')
       })
     },
@@ -772,7 +800,7 @@ export default {
           }
         }).catch((err)=>{
           vm.$message.error('未知异常,请联系管理员')
-          console.log(err)
+          // console.log(err)
         })
       };
     },
@@ -831,7 +859,6 @@ export default {
         };
         setTimeout(()=>{
           _vm.$axios.post(_vm.url+'/saveEngineer_n',formdata).then((res)=>{
-            console.log(res)
             if(res.data.code==0){
               _vm.addEngMes=_vm.succMes;
               _vm.isManBoolean=null;
@@ -854,7 +881,7 @@ export default {
             }
           }).catch((err)=>{
             _vm.$message.error('未知错误,请联系管理员');
-            console.log(err)
+            // console.log(err)
           })
         })
       }

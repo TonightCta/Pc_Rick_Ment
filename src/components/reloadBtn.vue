@@ -22,7 +22,6 @@ export default {
   methods:{
     refresh(){
       let _vc=this;
-      console.log(_vc.reloadData)
       let formdata=new FormData();
       formdata.append('size',10);
       let condition=typeof(_vc.reloadData.state);
@@ -36,22 +35,29 @@ export default {
       if(_vc.reloadData.isOfficial){
         formdata.append('isOfficial',_vc.reloadData.isOfficial);
       }
-      if(_vc.engName!=null){
-        formdata.append('name',_vc.engName)
+      if(window.sessionStorage.getItem('eName')){
+        if(window.sessionStorage.getItem('eName')!=null&&window.sessionStorage.getItem('eName')!=''){
+          formdata.append('name',window.sessionStorage.getItem('eName'))
+        }
+      };
+      if(window.sessionStorage.getItem('beginTime')){
+        formdata.append('beginTime',window.sessionStorage.getItem('beginTime'));
+        formdata.append('endTime',window.sessionStorage.getItem('endTime'));
       }
       formdata.append('page',_vc.page);
       _vc.$axios.post(_vc.url+_vc.reloadData.url,formdata).then((res)=>{
-        console.log(res);
         if(res.data.code==0){
           _vc.length=_vc.page*10;
           res.data.data.content.forEach((e)=>{
             _vc.$set(e,'num',_vc.length++);
           });
-          console.log(res.data.data.content)
           _vc.$emit('reloadList',res.data.data.content)
+        }else{
+          _vc.$message.error(res.data.msg )
         }
       }).catch((err)=>{
-        console.log(err)
+        _vc.$message.error('未知错误,请联系管理员')
+        // console.log(err)
       })
     }
   }
