@@ -18,7 +18,7 @@
         <el-col :span="3"><div class="title">详细地址</div></el-col>
         <el-col :span="3"><div class="title">创建日期</div></el-col>
         <el-col :span="3"><div class="title">任务状态</div></el-col>
-        <el-col :span="4"><div class="title">申请接单记录</div></el-col>
+        <el-col :span="4"><div class="title">操作</div></el-col>
       </el-row>
     </div>
     <p style="text-align:center;color:#666;margin-top:30px;width:90%;" v-show="hasOrder">暂无更多数据</p>
@@ -46,7 +46,12 @@
           </el-select>
         </div></el-col>
         <el-col :span="4"><div class="title_con">
-          <i class="el-icon-tickets" style="font-size:20px;cursor:pointer;" @click="takeDis(index)"></i>
+          <el-tooltip class="item" effect="dark" content="申请接单记录" placement="bottom">
+            <i class="el-icon-tickets" style="font-size:20px;color:#eb7a1d;cursor:pointer;" @click="takeDis(index)"></i>
+          </el-tooltip>
+          <el-tooltip class="item" effect="dark" content="删除当前项目" placement="bottom">
+            <i class="el-icon-delete" style="font-size:20px;cursor:pointer;" @click="moveDis(index)"></i>
+          </el-tooltip>
         </div></el-col>
       </el-row>
     </div>
@@ -577,6 +582,36 @@ export default {
           }
         })
       }
+    },
+    moveDis(index){//删除当前项目
+      console.log(this.msgList[index]);
+      this.$confirm('此操作将删除当前项目, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let formdata=new FormData();
+          formdata.append('id',this.msgList[index].id);
+          this.$axios.post(this.url+'/mission/deleteMissionById',formdata).then((res)=>{
+            if(res.data.code==0){
+              this.getOrderList()
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              });
+            }else{
+              this.$message.error(res.data.msg)
+            }
+          }).catch((err)=>{
+            console.log(err)
+            this.$message.error('未知异常,请联系管理员')
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
     }
   }
 }
@@ -614,7 +649,7 @@ export default {
       height: 40px;
       line-height: 40px;
       font-size: 16px;
-      background: rgba(235,122,29,.8);
+      background: #eb7a1d;
       color:white;
     }
   }
@@ -627,9 +662,10 @@ export default {
       font-size: 15px;
       line-height: 50px;
       max-height: none;
-      i:hover{
-        color:#eb7a1d;
-      }
+    }
+    i{
+      margin-left: 15px;
+      margin-right: 15px;
     }
   }
   .el_con:nth-of-type(even){

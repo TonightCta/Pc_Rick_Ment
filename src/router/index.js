@@ -65,7 +65,22 @@ const router = new Router({
           path:'/admin/skillMent',//技能管理
           name:'skillMent',
           component:resolve=>require(['@/page/skillAdmin/skill_ment'],resolve)
-        }
+        },
+        {
+          path:'/admin/internalCom',//内部企业管理,
+          nameL:'internalCom',
+          component:resolve=>require(['@/page/companyAdmin/internalCom'],resolve)
+        },
+        {
+          path:'/admin/newCom',//新注册企业管理,
+          nameL:'newCom',
+          component:resolve=>require(['@/page/companyAdmin/newCom'],resolve)
+        },
+        {
+          path:'/admin/certifiedCom',//待认证企业管理,
+          nameL:'certifiedCom',
+          component:resolve=>require(['@/page/companyAdmin/certifiedCom'],resolve)
+        },
       ],
       redirect:'/admin/wel'
     }

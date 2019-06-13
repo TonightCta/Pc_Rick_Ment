@@ -106,6 +106,34 @@ export default {
              }
            ]
          },
+         {
+           name:'企业账户管理',
+           in:'1-4',
+           usingChannelVOList:[
+             {
+               name:'新注册企业管理',
+               url:'/admin/newCom'
+             },
+             {
+               name:'待认证企业管理',
+               url:'/admin/certifiedCom'
+             },
+             {
+               name:'已认证企业管理',
+               url:'/admin/internalCom'
+             },
+           ]
+         },
+         {
+           name:'任务管理',
+           in:'1-5',
+           usingChannelVOList:[
+             {
+               name:'任务管理',
+               url:'/admin/order'
+             }
+           ]
+         }
        ],
        closeUrl:null,//暂存页面地址
      }

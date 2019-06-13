@@ -384,7 +384,7 @@
             </p>
             <p class="proContent">工作内容:&nbsp;{{proDay.content}}</p>
             <p>日报附件:
-              <a :href="utl+'/'+dayFile.fileName" v-for="(dayFile,index) in proDay.fileUploads">{{dayFile.fileName}}</a>
+              <a :href="url+'/'+dayFile.fileName" v-for="(dayFile,index) in proDay.fileUploads">{{dayFile.fileName}}</a>
             </p>
             <p>日报图片:
               <viewer :images="proDay.imgUploads">
@@ -581,6 +581,7 @@ export default {
           });
           _vc.loadPro=false;
           _vc.proList=res.data.data.content;
+          console.log(_vc.proList)
         }else{
           _vc.loadPro=false;
           _vc.$message.error(res.data.msg);

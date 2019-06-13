@@ -14,7 +14,7 @@
            :picker-options="pickerOptions2">
          </el-date-picker></li>
        <li>
-         工程师信息:&nbsp;&nbsp;<el-input v-model="engName" placeholder="请输入工程师姓名" style="width:300px;" />
+         工程师信息:&nbsp;&nbsp;<el-input v-model="engName" placeholder="请输入筛选名称" style="width:300px;" />
          <el-button type="primary" size="medium" icon="el-icon-search" style="margin-left:25px;" @click="searchPreEng()">搜索</el-button>
        </li>
     </ul>
@@ -77,14 +77,15 @@ export default {
       }
     }
   },
+  mounted(){
+
+  },
   methods:{
     searchEng(){//搜索工程师
       let _vc=this;
       if(_vc.engName!=null&&_vc.engName!=''){
         window.sessionStorage.setItem('eName',_vc.engName)
       }
-      // _vc.startTime=;
-      // _vc.endTime=this.value7[1];
       let startDate=new Date(this.value7[0]);
       let startYear=startDate.getFullYear();
       let startMonth=startDate.getMonth()+1;
@@ -116,6 +117,9 @@ export default {
       };
       if(_vc.searchUrl.isOfficial){
         formdata.append('isOfficial',_vc.searchUrl.isOfficial);
+      };
+      if(_vc.searchUrl.isCompany){
+        formdata.append('isCompany',_vc.searchUrl.isCompany);
       };
       formdata.append('beginTime',startYear+'-'+startMonth+'-'+startDay);
       formdata.append('endTime',endYear+'-'+endMonth+'-'+endDay);
@@ -162,6 +166,9 @@ export default {
       };
       if(_vc.searchUrl.isOfficial){
         formdata.append('isOfficial',_vc.searchUrl.isOfficial);
+      }
+      if(_vc.searchUrl.isCompany){
+        formdata.append('isCompany',_vc.searchUrl.isCompany);
       }
       if(_vc.engName!=null){
         formdata.append('name',_vc.engName)

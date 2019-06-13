@@ -24,7 +24,6 @@ export default {
       let _vc=this;
       let formdata=new FormData();
       formdata.append('size',10);
-      let condition=typeof(_vc.reloadData.state);
       if(_vc.reloadData.state.length){
         _vc.reloadData.state.forEach((e)=>{
           formdata.append('states',e);
@@ -34,6 +33,9 @@ export default {
       };
       if(_vc.reloadData.isOfficial){
         formdata.append('isOfficial',_vc.reloadData.isOfficial);
+      };
+      if(_vc.reloadData.isCompany){
+        formdata.append('isCompany',_vc.reloadData.isCompany);
       }
       if(window.sessionStorage.getItem('eName')){
         if(window.sessionStorage.getItem('eName')!=null&&window.sessionStorage.getItem('eName')!=''){
@@ -46,6 +48,7 @@ export default {
       }
       formdata.append('page',_vc.page);
       _vc.$axios.post(_vc.url+_vc.reloadData.url,formdata).then((res)=>{
+        console.log(res)
         if(res.data.code==0){
           _vc.length=_vc.page*10;
           res.data.data.content.forEach((e)=>{
