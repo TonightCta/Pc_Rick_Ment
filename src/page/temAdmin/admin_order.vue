@@ -49,6 +49,9 @@
           <el-tooltip class="item" effect="dark" content="申请接单记录" placement="bottom">
             <i class="el-icon-tickets" style="font-size:20px;color:#eb7a1d;cursor:pointer;" @click="takeDis(index)"></i>
           </el-tooltip>
+          <el-tooltip class="item" effect="dark" content="修改项目信息" placement="bottom">
+            <i class="el-icon-edit" style="font-size:20px;color:#eb7a1d;cursor:pointer;" @click="editOrderC(index)"></i>
+          </el-tooltip>
           <el-tooltip class="item" effect="dark" content="删除当前项目" placement="bottom">
             <i class="el-icon-delete" style="font-size:20px;cursor:pointer;" @click="moveDis(index)"></i>
           </el-tooltip>
@@ -216,6 +219,69 @@
         </span>
       </el-dialog>
     </div>
+    <!-- 修改项目弹出框 -->
+    <div class="pushProject">
+      <el-dialog
+        title="修改项目信息"
+        :visible.sync="editOrder"
+        width="40%">
+        <el-row>
+          <el-col :span="6"><div class="proTitle">
+            <ul>
+              <li>项目名称:</li>
+              <li>项目地点:</li>
+              <li>详细地址:</li>
+              <li>项目内容:</li>
+            </ul>
+          </div></el-col>
+          <el-col :span="16"><div class="proCon">
+            <ul>
+              <li>
+                <el-input placeholder="请输入项目名称" v-model="editName"></el-input>
+              </li>
+              <li>
+                <p>
+                  <el-select v-model="editProName" @change="chosePro">
+                    <el-option
+                    v-for="(placePro,index) in placeList"
+                    :key="'Pro'+index"
+                    :label="placePro.name"
+                    :value="placePro.name"
+                    >
+                    </el-option>
+                  </el-select>
+                </p>
+                <p>
+                  <el-select v-model="editCityName" @change="choseCity">
+                    <el-option
+                    v-for="(placePro,index) in cityList"
+                    :key="'City'+index"
+                    :label="placePro.name"
+                    :value="placePro.name"
+                    >
+                    </el-option>
+                  </el-select>
+                </p>
+              </li>
+              <li>
+                <el-input placeholder="请输入详细地址" v-model="editAddress"></el-input>
+              </li>
+              <li>
+                <el-input v-model="editContent" type="textarea" :autosize="{minRows:8}" resize="none" placeholder="请输入项目内容"></el-input>
+              </li>
+            </ul>
+          </div></el-col>
+        </el-row>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="placeProName='';placeCityName='';projectName='';placeID=null;addRess='';projectCon='';editOrder = false">取 消</el-button>
+          <el-button type="primary" @click="subedit()" v-loading="hasSub"
+          element-loading-spinner="el-icon-loading"
+          element-loading-background="rgba(255, 255, 255, .9)"
+          :disabled="hasSub"
+          >确 定</el-button>
+        </span>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -235,6 +301,7 @@ export default {
         }
       ],
       value:null,
+      editOrder:false,//修改项目信息
       length:0,//数据排序
       pageNum:10,//总页码
       loadOrder:false,//是否启用loading
@@ -244,6 +311,12 @@ export default {
       noEng:false,//是否有申请人
       placeProName:null,//省级名称
       placeCityName:null,//市级名称
+      editName:'',//修改项目名称
+      editAddress:'',//修改详细地址
+      editContent:'',//修改项目内容
+      editProName:null,//修改省级名称
+      editCityName:null,//修改市级名称
+      proID:null,//项目ID
       placeID:null,//城市ID
       placeList:[],//省级列表
       cityList:[],//城市列表
@@ -262,6 +335,7 @@ export default {
         places:null,//接单区域
       },
       staging:[],//暂存数据
+      editMes:{},//修改项目暂存数据
     }
   },
   watch:{
@@ -272,6 +346,11 @@ export default {
       }else{
         console.log(1)
       }
+    },
+    editOrder(val,oldVal){
+      if(!val){
+        this.editMes=this.editMesDone
+      }
     }
   },
   mounted(){
@@ -279,7 +358,6 @@ export default {
   },
   methods:{
     viewEng(index){
-      console.log(this.engList[index]);
       this.engMes.name=this.engList[index].engineerVO.name;
       this.engMes.phone=this.engList[index].engineerVO.phone;
       this.engMes.workyear=this.engList[index].engineerVO.workYear;
@@ -287,7 +365,6 @@ export default {
       this.engMes.skillPic=this.engList[index].engineerVO.certificateFiles;
       this.engList[index].engineerVO.childPlaces.forEach((e)=>{
         this.staging.push(e.parentPlace.name+'-'+e.name);
-        console.log(this.staging)
       });
       setTimeout(()=>{
         this.engMes.places=this.staging.join('/')
@@ -299,7 +376,6 @@ export default {
       _vm.pushOrder=true;
       _vm.$axios.get(_vm.url+'/mobile/getUsingPlaceList').then((res)=>{
         if(res.data.code==0){
-          console.log(res)
           _vm.placeList=res.data.data.placeList
         }else{
           _vm.pushOrder=false;
@@ -309,6 +385,72 @@ export default {
         _vm.pushOrder=false;
         _vm.$message.error('未知错误,请联系管理员')
       })
+    },
+    editOrderC(index){//修改当前项目信息
+      let _vm=this;
+      _vm.$axios.get(_vm.url+'/mobile/getUsingPlaceList').then((res)=>{
+        if(res.data.code==0){
+          _vm.placeList=res.data.data.placeList
+        }else{
+          _vm.pushOrder=false;
+          _vm.$message.error(res.data.msg);
+        }
+      }).catch((err)=>{
+        _vm.pushOrder=false;
+        _vm.$message.error('未知错误,请联系管理员')
+      })
+      this.editName=this.msgList[index].name;
+      this.editAddress=this.msgList[index].address;
+      this.editContent=this.msgList[index].content;
+      this.proID=this.msgList[index].id;
+      this.editProName=this.msgList[index].placeVO.parentName
+      this.editCityName=this.msgList[index].placeVO.name
+      this.placeID=this.msgList[index].placeVO.id
+      this.editOrder=true;
+    },
+    subedit(){//上传修改信息
+      console.log(this.placeID);
+      let _vm=this;
+      let formdata=new FormData;
+      if(_vm.editName==''){
+        _vm.$message.error('请输入项目名称')
+      }else if(_vm.placeID==null){
+        _vm.$message.error('请选择项目地点')
+      }else if(_vm.editAddress==''){
+        _vm.$message.error('请输入项目详细地址')
+      }else if(_vm.editContent==''){
+        _vm.$message.error('请输入项目内容')
+      }else{
+        _vm.hasSub=true;
+        formdata.append('name',_vm.editName);
+        formdata.append('content',_vm.editContent);
+        formdata.append('address',_vm.editAddress);
+        formdata.append('placeId',_vm.placeID);
+        formdata.append('id',_vm.proID)
+        _vm.$axios.post(_vm.url+'/mission/saveMission',formdata).then((res)=>{
+          console.log(res);
+          if(res.data.code==0){
+            _vm.editName='';
+            _vm.placeID=null;
+            _vm.editAddress='';
+            _vm.editContent='';
+            _vm.editProName='';
+            _vm.editCityName='';
+            _vm.hasSub=false;
+            _vm.editOrder=false;
+            _vm.getOrderList();
+            _vm.$message.success('修改成功')
+          }else{
+            _vm.$message.error(res.data.msg);
+            _vm.hasSub=false;
+            _vm.editOrder=false;
+          }
+        }).catch((err)=>{
+          _vm.$message.error('未知异常,请联系管理员');
+          _vm.hasSub=false;
+          _vm.editOrder=false;
+        })
+      }
     },
     chosePro(index){//选择省
       this.placeCityName=''
@@ -322,7 +464,6 @@ export default {
       this.cityList.forEach((e)=>{
         if(index===e.name){
           this.placeID=e.id;
-          console.log(this.placeID)
         }
       })
     },
@@ -338,10 +479,6 @@ export default {
       }else if(_vm.projectCon==''){
         _vm.$message.error('请输入项目内容')
       }else{
-        console.log(_vm.projectName)
-        console.log(_vm.projectCon)
-        console.log(_vm.addRess)
-        console.log(_vm.placeID)
         _vm.hasSub=true;
         formdata.append('name',_vm.projectName);
         formdata.append('content',_vm.projectCon);
@@ -360,7 +497,6 @@ export default {
             _vm.placeID=null;
             _vm.addRess='';
             _vm.projectCon='';
-            console.log(this.placeID)
             _vm.placeProName=null;
             _vm.placeCityName=null;
           }else{
@@ -664,8 +800,8 @@ export default {
       max-height: none;
     }
     i{
-      margin-left: 15px;
-      margin-right: 15px;
+      margin-left: 8px;
+      margin-right: 8px;
     }
   }
   .el_con:nth-of-type(even){

@@ -68,17 +68,17 @@ const router = new Router({
         },
         {
           path:'/admin/internalCom',//内部企业管理,
-          nameL:'internalCom',
+          name:'internalCom',
           component:resolve=>require(['@/page/companyAdmin/internalCom'],resolve)
         },
         {
           path:'/admin/newCom',//新注册企业管理,
-          nameL:'newCom',
+          name:'newCom',
           component:resolve=>require(['@/page/companyAdmin/newCom'],resolve)
         },
         {
           path:'/admin/certifiedCom',//待认证企业管理,
-          nameL:'certifiedCom',
+          name:'certifiedCom',
           component:resolve=>require(['@/page/companyAdmin/certifiedCom'],resolve)
         },
       ],

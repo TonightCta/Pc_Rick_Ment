@@ -1,8 +1,8 @@
-<!-- 项目进度查询 -->
+<!-- 项目数据展示页 -->
 <template lang="html">
   <div class="gress_project">
     <p>
-      <el-date-picker
+      <!-- <el-date-picker
          v-model="value7"
          type="daterange"
          align="right"
@@ -12,7 +12,7 @@
          end-placeholder="结束日期"
          @blur="chanceTime"
          :picker-options="pickerOptions2">
-       </el-date-picker>
+       </el-date-picker> -->
     </p>
     <div class="" style="display:flex;overflow:hidden;background:white;">
       <div class="gress_left" ref="gress_left" id="gress_leftT">
@@ -30,34 +30,10 @@ import echarts from 'echarts'
 export default {
   data(){
     return{
-      value7:[],
-      pickerOptions2: {
-          shortcuts: [{
-            text: '最近一周',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近一个月',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近三个月',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-              picker.$emit('pick', [start, end]);
-            }
-          }]
-        },
+      leftTitle:[],//饼标题
+      leftCon:[],//饼内容
+      rightTitle:[],//梯标题
+      rightCon:[],//梯内容
       left_option:{
         backgroundColor: 'white',
         //弹窗，响应鼠标指向，显示具体细节
@@ -95,40 +71,6 @@ export default {
             },
             label: { //饼图图形的文本标签
               normal: {  //下同，normal指在普通情况下样式，而非高亮时样式
-                formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
-                    backgroundColor: '#eee',
-                    borderColor: '#aaa',
-                    borderWidth: 1,
-                    borderRadius: 4,
-                    // shadowBlur:3,,
-                    // shadowOffsetX: 2,
-                    // shadowOffsetY: 2,
-                    // shadowColor: '#999',
-                    // padding: [0, 7],
-                    rich: {
-                        a: {
-                            color: 'black',
-                            lineHeight: 22,
-                            align: 'center'
-                        },
-                        hr: {
-                            borderColor: '#aaa',
-                            width: '100%',
-                            borderWidth: 0.5,
-                            height: 0
-                        },
-                        b: {
-                            fontSize: 16,
-                            lineHeight: 33,
-                            color:'black'
-                        },
-                        per: {
-                            color: '#eee',
-                            backgroundColor: '#334455',
-                            padding: [2, 4],
-                            borderRadius: 2
-                        }
-                    },
                 textStyle: {
                   color: 'black',
                   fontSize:'15'
@@ -304,8 +246,7 @@ export default {
   p{
     width: 100%;
     text-align: center;
-    line-height: 100px;
-    border-bottom:1px solid #ccc;
+    height: 50px;
   }
   .gress_left{
     width: 50%;

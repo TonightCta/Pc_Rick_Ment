@@ -29,7 +29,9 @@
               </el-option>
             </el-select>
           </p>
-          <p></p>
+          <p>合同单号:
+            <el-input type="primary" v-model="searchMes.conNumber" style="width:70%;" placeholder="请输入合同单号"></el-input/>
+          </p>
         </li>
         <li style="padding-left:25px;">
           <span style="width:160px;display:inline-block;">
@@ -94,7 +96,7 @@
       <div class="project_con" v-loading="loadPro">
         <el-row class="el_con" v-for="(pro,index) in proList" :key="index">
           <el-col :span="1"><div class="projectCon">{{pro.num+1}}</div></el-col>
-          <el-tooltip class="item" effect="dark" :content="pro.name" placement="bottom">
+          <el-tooltip class="item" effect="dark" :content="pro.name+'['+pro.contractNumber+']'" placement="bottom">
             <el-col :span="5" v-if="pro.name!=null&&pro.name!='null'"><div class="projectCon" style="cursor:pointer;">{{pro.name.substring(0,10)}}...</div></el-col>
             <el-col :span="5" v-else><div class="projectCon" style="cursor:pointer;">-</div></el-col>
           </el-tooltip>
@@ -139,6 +141,9 @@
             <li class="flex">
               <p>项目名称:&nbsp;&nbsp;&nbsp;<span>{{projectMes.name}}</span></p>
               <p>项目类型:&nbsp;&nbsp;&nbsp;<span v-if="projectMes.projectType">{{projectMes.projectType.name}}</span><span v-else>-</span></p>
+            </li>
+            <li>
+              <p>项目合同单号:&nbsp;&nbsp;&nbsp;<span>{{projectMes.contractNumber}}</span></p>
             </li>
             <li>项目内容:&nbsp;&nbsp;&nbsp;<span>{{projectMes.content}}</span></li>
             <li class="flex">
@@ -425,6 +430,7 @@ export default {
         dateChoose:null,//时间选择
         startTime:null,//筛选开始时间
         endTime:null,//筛选结束时间
+        conNumber:null,//合同号
       },
       length:0,//列表排序
       lengthNum:0,
@@ -508,7 +514,7 @@ export default {
     handleCurrentChange(val) {
         // console.log(`当前页: ${val}`);
         this.page=val-1;
-        if(this.searchMes.proName!=null||this.searchMes.cusName!=null||this.searchMes.manName!=null||this.searchMes.lineID!=null||this.searchMes.proStatusNum!=null||this.searchMes.proStatusNum!=null||this.searchMes.startTime!=null){
+        if(this.searchMes.proName!=null||this.searchMes.cusName!=null||this.searchMes.manName!=null||this.searchMes.lineID!=null||this.searchMes.proStatusNum!=null||this.searchMes.proStatusNum!=null||this.searchMes.startTime!=null||this.searchMes.conNumber){
           this.serchPro()
         }else{
           this.getProjectList()
@@ -753,22 +759,25 @@ export default {
     },
     serchPro(){//筛选项目
       let formdata=new FormData()
-      if(this.searchMes.proName!=null){
+      if(this.searchMes.proName!=null&&this.searchMes.proName!=''){
         formdata.append('name',this.searchMes.proName)
       };
-      if(this.searchMes.cusName!=null){
+      if(this.searchMes.cusName!=null&&this.searchMes.cusName!=''){
         formdata.append('customerName',this.searchMes.cusName)
       };
-      if(this.searchMes.manName!=null){
+      if(this.searchMes.manName!=null&&this.searchMes.manName!=''){
         formdata.append('managerName',this.searchMes.manName)
       };
-      if(this.searchMes.lineID!=null){
+      if(this.searchMes.lineID!=null&&this.searchMes.lineID!=''){
         formdata.append('technologyId',this.searchMes.lineID)
       };
-      if(this.searchMes.proStatusNum!=null){
+      if(this.searchMes.proStatusNum!=null&&this.searchMes.proStatusNum!=''){
         formdata.append('state',this.searchMes.proStatusNum)
       };
-      if(this.searchMes.dateUpText!=null&&this.searchMes.startTime!=null){
+      if(this.searchMes.conNumber!=null&&this.searchMes.conNumber!=''){
+        formdata.append('contractNumber',this.searchMes.conNumber)
+      };
+      if(this.searchMes.dateUpText!=null&&this.searchMes.startTime!=null&&this.searchMes.dateUpText!=''&&this.searchMes.startTime!=''){
         formdata.append('dateType',this.searchMes.dateUpText);
         formdata.append('beginTime',this.searchMes.startTime);
         formdata.append('endTime',this.searchMes.endTime);
@@ -836,7 +845,6 @@ export default {
           });
           this.loadPro=false;
           this.proList=res.data.data.content;
-          console.log(res)
           this.proList=res.data.data.content
         }else{
           this.$message.error(res.data.msg)
@@ -861,6 +869,7 @@ export default {
       this.searchMes.dateText=null;
       this.searchMes.proStatus=null;
       this.searchMes.dateChoose=null;
+      this.searchMes.conNumber=null;
     },
     getLineList(){//获取产品线选项
       this.$axios.get(this.url+'/usingTechnologyList').then((res)=>{
