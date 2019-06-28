@@ -93,7 +93,6 @@ export default {
            });
            window.sessionStorage.setItem('adminMes',JSON.stringify(res.data.data));
            _vm.$router.push('/admin')
-           console.log(res);
            window.localStorage.setItem('Uid',res.data.data.id)
            setTimeout(()=>{
              // this.$refs.loginCanv.style.display='none';

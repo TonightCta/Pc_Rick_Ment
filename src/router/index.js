@@ -81,6 +81,11 @@ const router = new Router({
           name:'certifiedCom',
           component:resolve=>require(['@/page/companyAdmin/certifiedCom'],resolve)
         },
+        {
+          path:'/admin/creatPro',//项目搭建
+          name:'CreatPro',
+          component:resolve=>require(['@/page/managerAdmin/creatPro'],resolve)
+        }
       ],
       redirect:'/admin/wel'
     }

@@ -18,7 +18,7 @@ body{
 		background: #e86521!important;
 }
 .el-menu{
-	min-width: 205px!important;
+	/* min-width: 205px!important; */
 	/* overflow: auto!important;
 	max-height: 800px; */
 }
@@ -55,4 +55,13 @@ body{
 }
 .viewer-title,.viewer-zoom-in,.viewer-zoom-out,.viewer-one-to-one,.viewer-reset,.viewer-rotate-left,.viewer-rotate-right,.viewer-flip-horizontal,.viewer-flip-vertical{
 	display: none!important;
+}
+.el-textarea .el-textarea__inner{ // 然后找到对应的类名，在这里将拉伸去掉即可
+  resize: none!important;
+}
+.el-select--mini{
+	margin-top: 10px!important;
+}
+.el-table{
+	z-index: -1!important;
 }
