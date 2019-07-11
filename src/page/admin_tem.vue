@@ -255,7 +255,10 @@ export default {
         width: 100%;
         height: 100%;
         display: flex;
+        overflow-y: hidden;
         li{
+          min-width: 120px;
+          text-align: center;
           float: none;
           line-height: 30px;
           max-width: none;

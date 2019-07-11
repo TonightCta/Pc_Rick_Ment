@@ -76,16 +76,16 @@
             <i class="el-icon-edit" @click="threeStep(index)"></i>
           </div></el-col>
           <el-col :span="2"><div class="pro_oper">
-            <i class="el-icon-upload"></i>
+            <i class="el-icon-upload" @click="fileUp(index)"></i>
           </div></el-col>
           <el-col :span="1"><div class="pro_oper">
-            <i class="el-icon-document"></i>
+            <i class="el-icon-document" @click="insUp(index)"></i>
           </div></el-col>
           <el-col :span="1"><div class="pro_oper">
-            <i class="el-icon-document"></i>
+            <i class="el-icon-document" @click="hasDetials(index)"></i>
           </div></el-col>
           <el-col :span="2"><div class="pro_oper">
-            <i class="el-icon-edit-outline" style="margin-right:15px;"></i>
+            <i class="el-icon-edit-outline" style="margin-right:15px;" @click="editProject(index)"></i>
             <i class="el-icon-delete" style="color:black;" @click="delPro(index)"></i>
           </div></el-col>
         </el-row>
@@ -118,8 +118,8 @@
             <li><span style="color:red;">*</span>联系电话:</li>
             <li><span style="color:red;">*</span>项目人数:</li>
             <li><span style="color:red;">*</span>工期(天):</li>
-            <li>成本预算:</li>
-            <li>合同金额:</li>
+            <!-- <li>成本预算:</li>
+            <li>合同金额:</li> -->
             <li><span style="color:red;">*</span>交付标准:</li>
             <li><span style="color:red;">*</span>项目类型:</li>
             <li><span style="color:red;">*</span>产品线:</li>
@@ -154,8 +154,8 @@
             <li><el-input type="primary" style="width:350px;" placeholder="请输入联系电话" v-model="addProMes.proPhone"></el-input></li>
             <li><el-input type="number" style="width:350px;" placeholder="请输入项目人数" v-model="addProMes.proPeople"></el-input></li>
             <li><el-input type="number" style="width:350px;" placeholder="请输入工期" v-model="addProMes.proDay"></el-input></li>
-            <li><el-input type="number" style="width:350px;" placeholder="请输入成本预算" v-model="addProMes.proMount"></el-input></li>
-            <li><el-input type="number" style="width:350px;" placeholder="请输入合同金额" v-model="addProMes.proCusMount"></el-input></li>
+            <!-- <li><el-input type="number" style="width:350px;" placeholder="请输入成本预算" v-model="addProMes.proMount"></el-input></li>
+            <li><el-input type="number" style="width:350px;" placeholder="请输入合同金额" v-model="addProMes.proCusMount"></el-input></li> -->
             <li><el-input type="primary" style="width:350px;" placeholder="请输入交付标准" v-model="addProMes.proText"></el-input></li>
             <li>
               <el-select v-model="addProMes.proType" placeholder="请选择" @blur="choseType">
@@ -193,92 +193,166 @@
         </span>
       </el-dialog>
     </div>
+    <!-- 编辑项目 -->
+    <div class="" v-if="isDown">
+      <el-dialog
+        title="编辑项目"
+        :visible.sync="editPro"
+        width="45%">
+        <div class="addProBox">
+          <ul>
+            <li><span style="color:red;">*</span>客户名称:</li>
+            <li><span style="color:red;">*</span>项目名称:</li>
+            <li><span style="color:red;">*</span>合同号:</li>
+            <li><span style="color:red;">*</span>项目内容:</li>
+            <li style="margin-top:100px;"><span style="color:red;">*</span>联系人:</li>
+            <li><span style="color:red;">*</span>联系电话:</li>
+            <li><span style="color:red;">*</span>项目人数:</li>
+            <li><span style="color:red;">*</span>工期(天):</li>
+            <!-- <li>成本预算:</li>
+            <li>合同金额:</li> -->
+            <li><span style="color:red;">*</span>交付标准:</li>
+            <li><span style="color:red;">*</span>项目类型:</li>
+            <li><span style="color:red;">*</span>产品线:</li>
+            <li><span style="color:red;">*</span>技术要求:</li>
+          </ul>
+          <ul>
+            <li>
+              <el-select
+                v-model="editProMes.customerName"
+                filterable
+                remote
+                reserve-keyword
+                size="medium"
+                style="width:350px;"
+                placeholder="请输入客户名称"
+                @blur="choseCus"
+                :remote-method="remoteMethod"
+                :loading="cusLoading">
+                <el-option
+                  v-for="item in restaurants"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </li>
+            <li><el-input type="primary" style="width:350px;" placeholder="请输入项目名称" v-model="editProMes.customerName"></el-input></li>
+            <li><el-input type="primary" style="width:350px;" placeholder="请输入合同号" v-model="editProMes.contractNumber"></el-input></li>
+            <!-- <li><el-input type="textarea" style="width:350px;" :autosize="{maxRows:6}" placeholder="请输入项目内容" v-model="addProMes.proContent"></el-input></li> -->
+            <li style="height:150px;"><textarea v-model="editProMes.content" @focus="getTear" @blur="clearTear" ref="proTear" placeholder="请输入项目内容"></textarea></li>
+            <li><el-input type="primary" style="width:350px;" placeholder="请输入联系人" v-model="editProMes.linkman"></el-input></li>
+            <li><el-input type="primary" style="width:350px;" placeholder="请输入联系电话" v-model="editProMes.phone"></el-input></li>
+            <li><el-input type="number" style="width:350px;" placeholder="请输入项目人数" v-model="editProMes.peopleNumber"></el-input></li>
+            <li><el-input type="number" style="width:350px;" placeholder="请输入工期" v-model="editProMes.dayNumber"></el-input></li>
+            <!-- <li><el-input type="number" style="width:350px;" placeholder="请输入成本预算" v-model="editProMes.proMount"></el-input></li>
+            <li><el-input type="number" style="width:350px;" placeholder="请输入合同金额" v-model="editProMes.contractPrice"></el-input></li> -->
+            <li><el-input type="primary" style="width:350px;" placeholder="请输入交付标准" v-model="editProMes.standard"></el-input></li>
+            <li>
+              <el-select v-model="editProMes.projectType.name" placeholder="请选择" @change="editType">
+                <el-option
+                  v-for="item in editProMes.typeList"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.name">
+                </el-option>
+              </el-select>
+            </li>
+            <li>
+              <el-select v-model="editProMes.technologyName" placeholder="请选择" @change="editDuct">
+                <el-option
+                  v-for="item in editProMes.skillList"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.name">
+                </el-option>
+              </el-select>
+            </li>
+            <li>
+              <p v-for="(engType,index) in editProMes.skillList" :key="'type'+index" style="">
+                <span style="">{{engType.name}}</span>
+                <el-checkbox-group @change="editChoose"  v-model="ucc">
+                  <el-checkbox-button v-for="(engExp,index) in engType.usingLevelVOList" :checked="engExp.selected" :label="engExp" :key="engType.name+index">{{engExp.name}}</el-checkbox-button>
+                </el-checkbox-group>
+              </p>
+            </li>
+          </ul>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="editPro = false" size="medium">取 消</el-button>
+          <el-button type="primary" @click="turnEditPro()" size="medium">提 交</el-button>
+        </span>
+      </el-dialog>
+    </div>
     <!-- 第一步实施节点及计划 -->
-    <div class="firstPerBox" ref="firstPerBox" v-show="firstBox">
+    <div class="firstPerBox" ref="firstPerBox" v-if="firstBox">
       <p class="mes_close"><i class="el-icon-close" @click="closeFirstBox()"></i></p>
       <p class="mes_titleOne">
         <span>局点编辑</span>
       </p>
-      <el-table
-       ref="multipleTable"
-       :data="tableData3"
-       tooltip-effect="dark"
-       style="width: 100%"
-       @selection-change="handleSelectionChange">
-       <el-table-column
-         label="序号"
-         width="50"
-         align="center"
-         prop="num"
-         >
-       </el-table-column>
-       <el-table-column
-         label="地点"
-         width="150"
-         align="center"
-         >
-         <template slot-scope="scope">
-           <el-select v-model="value" size="mini">
-            <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          <el-select v-model="value" size="mini">
-             <el-option
-              style="marginTop:10px;"
-                 v-for="item in options"
-                 :key="item.value"
-                 :label="item.label"
-                 :value="item.value">
-              </el-option>
-          </el-select>
-         </template>
-       </el-table-column>
-       <el-table-column
-         label="施工详细地址"
-         align="center"
-         width="180">
-         <template slot-scope="scope">
-           <el-input type="primary" size="small" placeholder="请输入详细地址"></el-input>
-         </template>
-       </el-table-column>
-       <el-table-column
-         label="备注"
-         align="center"
-         width="180">
-         <template slot-scope="scope">
-           <el-input type="primary" size="small" placeholder="请输入备注信息"></el-input>
-         </template>
-       </el-table-column>
-       <el-table-column
-         label="加电单调"
-         align="center"
-         width="50"
-         >
-         <template slot-scope="scope">
-           <span>{{scope.row.children.name}}</span>
-         </template>
-       </el-table-column>
-       <el-table-column
-         label="删除"
-         align="center"
-         show-overflow-tooltip>
-         <template slot-scope="scope">
-           <i class="el-icon-delete"></i>
-         </template>
-       </el-table-column>
-     </el-table>
+      <div class="" v-if="firstConBox">
+        <div class="" style="width:100%;overflow:auto;">
+          <ul class="mes_titleTwo">
+            <li>序号</li>
+            <li>地点</li>
+            <li>施工详细地址</li>
+            <li>备注</li>
+            <li class="loadMes" v-for="(chosePoint,index) in planList" :key="'ChosePoint'+index">
+              <input type="checkbox" name="" value="" id="" :ref="'PointCheck'+index" @click="allChoosePoint(index)">
+              <span :ref="'MaskTitle'+index" @click="cancelAll(index)"></span>
+              {{chosePoint.name}}
+            </li>
+            <li>删除</li>
+          </ul>
+          <ul class="mes_titleTwo operTwo" v-for="(operTwo,indexOper) in operTwoList" ref="ChosePointParent">
+            <li>{{operTwo.num}}</li>
+            <li>
+              <el-select v-model="value" placeholder="请选择" style="width:100px;" size="medium">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+              <el-select v-model="value" placeholder="请选择" style="width:100px;" size="medium">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </li>
+            <li>
+              <el-input type="primary" size="small" placeholder="请输入施工详细地址"></el-input>
+            </li>
+            <li>
+              <el-input type="primary" size="small" placeholder="请输入备注信息"></el-input>
+            </li>
+            <li class="loadMes" v-for="(chosePoint,index) in planList" :key="'ChosePoint'+index" ref="ChosePointBox">
+              <input type="checkbox" name="" value="" id="" :ref="'PointCheck'+index" @click="choosePoint(indexOper,index)">
+              <span :ref="'MaskTitle'+index" @click="cancelPoint(indexOper,index)"></span>
+              {{chosePoint.name}}
+            </li>
+            <li>
+              <i class="el-icon-delete" style="cursor:pointer;" @click="delOperTwo(indexOper)"></i>
+            </li>
+          </ul>
+        </div>
+        <p class="firstPoer">
+          <el-button type="primary" icon="el-icon-circle-plus-outline" size="small" @click="pushPoint()">添加局点</el-button>
+          <el-button type="primary" icon="el-icon-upload" size="small">提交</el-button>
+        </p>
+      </div>
     </div>
     <!-- 第二步人员委派 -->
-    <div class="firstPerBox" ref="secondPerBox" v-show="secondBox">
+    <div class="firstPerBox" ref="secondPerBox" v-if="secondBox">
       <p class="mes_close"><i class="el-icon-close" @click="closeSecondtBox()"></i></p>
       <p class="mes_titleOne">
         <span>人员委派</span>
       </p>
-      <div class="" style="margin-top:15px;">
+      <div class="" style="margin-top:15px;" v-if="secondConBox">
         <el-row>
           <el-col :span="2"><div class="gate_title">序号</div></el-col>
           <el-col :span="3"><div class="gate_title">地点</div></el-col>
@@ -316,165 +390,518 @@
 
       </div>
     <!-- 第三步进程管理 -->
-    <div class="firstPerBox" ref="threePerBox" v-show="threeBox">
+    <div class="firstPerBox" ref="threePerBox" v-if="threeBox">
       <p class="mes_close"><i class="el-icon-close" @click="closeThreetBox()"></i></p>
       <p class="mes_titleOne">
         <span>进程管理</span>
       </p>
-      <div class="pro_cess">
-        <p class="cess_title">项目进程</p>
-        <div class="cess_box">
-          <ul>
-            <li>
-              <span>项目状态</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <el-select v-model="value" placeholder="请选择" style="width:220px;" size="medium">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
-            </li>
-            <li>
-              <span>预警时间</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <el-date-picker
-                v-model="value1"
-                type="date"
-                size="medium"
-                placeholder="选择日期">
-              </el-date-picker>
-            </li>
-            <li>
-              <span>计划完工时间</span>
-              <el-date-picker
-                v-model="value1"
-                type="date"
-                size="medium"
-                placeholder="选择日期">
-              </el-date-picker>
-            </li>
-            <li>
-              <span>计划验收时间</span>
-              <el-date-picker
-                v-model="value1"
-                type="date"
-                size="medium"
-                placeholder="选择日期">
-              </el-date-picker>
-            </li>
-          </ul>
-          <ul>
-            <li>
-              <span>项目进度</span>
-              <el-input type="primary" size="medium" style="width:220px;" placeholder="请输入项目进度"></el-input>%
-            </li>
-            <li>
-              <span>入场时间</span>
-              <el-date-picker
-                v-model="value1"
-                type="date"
-                size="medium"
-                placeholder="选择日期">
-              </el-date-picker>
-            </li>
-            <li>
-              <span>完工时间</span>
-              <el-date-picker
-                v-model="value1"
-                type="date"
-                size="medium"
-                placeholder="选择日期">
-              </el-date-picker>
-            </li>
-            <li>
-              <span>验收时间</span>
-              <el-date-picker
-                v-model="value1"
-                type="date"
-                size="medium"
-                placeholder="选择日期">
-              </el-date-picker>
-            </li>
-          </ul>
+      <div class="" v-if="threeConBox">
+        <div class="pro_cess">
+          <p class="cess_title">项目进程</p>
+          <div class="cess_box">
+            <ul>
+              <li>
+                <span>项目状态</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <el-select v-model="value" placeholder="请选择" style="width:220px;" size="medium">
+                  <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </li>
+              <li>
+                <span>预警时间</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <el-date-picker
+                  v-model="value1"
+                  type="date"
+                  size="medium"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </li>
+              <li>
+                <span>计划完工时间</span>
+                <el-date-picker
+                  v-model="value1"
+                  type="date"
+                  size="medium"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </li>
+              <li>
+                <span>计划验收时间</span>
+                <el-date-picker
+                  v-model="value1"
+                  type="date"
+                  size="medium"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </li>
+            </ul>
+            <ul>
+              <li>
+                <span>项目进度</span>
+                <el-input type="primary" size="medium" style="width:220px;" placeholder="请输入项目进度"></el-input>%
+              </li>
+              <li>
+                <span>入场时间</span>
+                <el-date-picker
+                  v-model="value1"
+                  type="date"
+                  size="medium"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </li>
+              <li>
+                <span>完工时间</span>
+                <el-date-picker
+                  v-model="value1"
+                  type="date"
+                  size="medium"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </li>
+              <li>
+                <span>验收时间</span>
+                <el-date-picker
+                  v-model="value1"
+                  type="date"
+                  size="medium"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </li>
+            </ul>
+          </div>
+          <p class="cess_btn">
+            <el-button type="primary" size="medium">保存</el-button>
+          </p>
         </div>
-        <p class="cess_btn">
-          <el-button type="primary" size="medium">保存</el-button>
+        <div class="pro_point" v-for="(point,index) in pointList" :key="'Point'+index">
+          <p class="point_title">局点信息</p>
+          <p class="point_place">
+            地点:{{point.place}}&nbsp;&nbsp;&nbsp;详细地址:{{point.address}}
+          </p>
+          <!-- <p class="point_title" style="margin-top:10px;">局点状态</p>
+          <p class="change_point">
+            <el-select v-model="value" placeholder="请选择" style="width:220px;" size="medium">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+            <el-date-picker
+              v-model="value1"
+              type="date"
+              size="medium"
+              placeholder="选择日期">
+            </el-date-picker>
+            <el-button type="primary" size="medium">保存</el-button>
+          </p> -->
+          <p class="point_title" style="margin-top:10px;">局点进程</p>
+          <div class="">
+            <el-row>
+              <el-col :span="3"><div class="edit_title">节点</div></el-col>
+              <el-col :span="4"><div class="edit_title">计划开始时间</div></el-col>
+              <el-col :span="4"><div class="edit_title">计划结束时间</div></el-col>
+              <el-col :span="4"><div class="edit_title">实际开始时间</div></el-col>
+              <el-col :span="4"><div class="edit_title">实际完成时间</div></el-col>
+              <el-col :span="5"><div class="edit_title">备注</div></el-col>
+            </el-row>
+            <el-row class="proMes" v-for="(editMes,index) in pointMesList" :key="'EditMes'+index">
+              <el-col :span="3"><div class="edit_mes">{{editMes.name}}</div></el-col>
+              <el-col :span="4"><div class="edit_mes">
+                <el-date-picker
+                  v-model="value1"
+                  type="date"
+                  size="medium"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </div></el-col>
+              <el-col :span="4"><div class="edit_mes">
+                <el-date-picker
+                  v-model="value1"
+                  type="date"
+                  size="medium"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </div></el-col>
+              <el-col :span="4"><div class="edit_mes">
+                <el-date-picker
+                  v-model="value1"
+                  type="date"
+                  size="medium"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </div></el-col>
+              <el-col :span="4"><div class="edit_mes">
+                <el-date-picker
+                  v-model="value1"
+                  type="date"
+                  size="medium"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </div></el-col>
+              <el-col :span="5"><div class="edit_mes">
+                <el-input type="primary" size="small" placeholder="请输入备注信息"></el-input>
+              </div></el-col>
+            </el-row>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 项目文档上传 -->
+    <div class="firstPerBox" ref="filePerBox" v-if="fileBox">
+      <p class="mes_close"><i class="el-icon-close" @click="closeFileBox()"></i></p>
+      <p class="mes_titleOne">
+        <span>项目文档</span>
+      </p>
+      <div class="file_point" v-for="(pointFile,index) in pointFileList" :key="'PointFile'+index" v-if="fileConBox">
+        <p class="file_title">局点信息</p>
+        <p class="file_place">地点:&nbsp;&nbsp;{{pointFile.place}}</p>
+        <p class="file_place">详细地址:&nbsp;&nbsp;{{pointFile.address}}</p>
+        <ul>
+          <li v-for="(fileUp,index) in pointFile.children" :key="'FileUp'+index">
+            <span>{{fileUp}}:</span>
+            <el-input type="primary" style="width:600px;"></el-input>
+            <input type="file" name="" value="">
+            <el-button type="primary" icon="el-icon-search" size="small">浏览文件</el-button>
+            <el-button type="primary" icon="el-icon-upload" size="small">上传</el-button>
+            <a href="http://www.baidu.com">
+              <el-button type="primary" icon="el-icon-download" size="small">下载模板</el-button>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!-- 验货单上传 -->
+    <div class="firstPerBox" ref="insPerBox" v-if="insBox">
+      <p class="mes_close"><i class="el-icon-close" @click="closeInsBox()"></i></p>
+      <p class="mes_titleOne">
+        <span>验货单</span>
+      </p>
+      <div class="ins_point"  v-for="(pointIns,key) in pointInsList" v-if="insConBox">
+        <p class="file_title">局点信息</p>
+        <p class="file_place">地点:&nbsp;&nbsp;{{pointIns.place}}</p>
+        <p class="file_place">详细地址:&nbsp;&nbsp;{{pointIns.address}}</p>
+        <p class="file_place">Excel导入:
+          <el-input type="primary" size='small' style="width:500px;" disab></el-input>
+          <el-button type="primary" size="small" icon="el-icon-search">浏览文件</el-button>
+          <el-button type="primary" size="small" icon="el-icon-d-arrow-left">导入Excel</el-button>
+          <a href="http://www.baidu.com">
+            <el-button type="primary" size="small" icon="el-icon-download">下载模板</el-button>
+          </a>
+          <el-button type="primary" size="small" icon="el-icon-d-arrow-right">导出Excel</el-button>
+          <span class="place_mask"></span>
+          <input type="file" name="" value="" class="upBtnPlace">
+        </p>
+        <ul>
+          <li v-for="(tableMes,index) in pointIns.children">
+            <p class="table_title"><span>设备{{tableMes.num}}</span><el-button type="primary" icon="el-icon-delete" size="small" style="margin-left:100px;" @click="delIns(key,index)">删除</el-button></p>
+            <p class="table_mes">
+              <span>网元名<font style="color:red;">*</font></span>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入网元名" v-model="tableMes.unitName"></el-input>
+              <span>设备型号</span>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入设备型号" v-model="tableMes.modelName"></el-input>
+              <span>整机、机框条码</span>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入整机、机框条码" v-model="tableMes.barCodeName"></el-input>
+            </p>
+            <p class="table_mes">
+              <span>省份</span>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入省份" v-model="tableMes.vinceName"></el-input>
+              <span>城市</span>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入城市" v-model="tableMes.cityName"></el-input>
+              <span>地址</span>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入详细地址" v-model="tableMes.address"></el-input>
+            </p>
+            <p class="table_mes">
+              <span>主机版本</span>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入主机版本" v-model="tableMes.hostName"></el-input>
+              <span>补丁版本</span>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入补丁版本" v-model="tableMes.patchName"></el-input>
+              <span>槽位号及单板名称</span>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入槽位号及单板名称" v-model="tableMes.soltName"></el-input>
+            </p>
+            <p class="table_mes">
+              <span>单板型号</span>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入单板型号" v-model="tableMes.vennerName"></el-input>
+              <span>单板条码</span>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入单板条码" v-model="tableMes.vCodeName"></el-input>
+              <span>单板版本(软件)</span>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入单板版本(软件)" v-model="tableMes.appliName"></el-input>
+            </p>
+            <p style="width:95%;margin:0 auto;margin-top:15px;">
+              <span style="fontSize:13px;width:110px;textAlign:center;display:inline-block;">备注</span>
+              <el-input type="primary" style="width:90.5%;" size="small" placeholder="请输入备注" v-model="tableMes.remark"></el-input>
+            </p>
+          </li>
+        </ul>
+        <p class="table_oper">
+          <el-button type="primary" icon="el-icon-circle-plus-outline" size="small" @click="pushTable(key)">添加</el-button>
+          <el-button type="primary" icon="el-icon-upload" size="small">提交</el-button>
         </p>
       </div>
-      <div class="pro_point" v-for="(point,index) in pointList" :key="'Point'+index">
-        <p class="point_title">局点信息</p>
-        <p class="point_place">
-          地点:{{point.place}}&nbsp;&nbsp;&nbsp;详细地址:{{point.address}}
+    </div>
+    <!-- 项目详情 -->
+    <div class="project_mes" v-show="openDetils" ref="project_mes">
+      <p class="mes_close"><i class="el-icon-close" @click="closeMes()"></i></p>
+      <p class="mes_titleOne bigTitle">
+        <span>项目信息</span>
+      </p>
+      <div class="" v-show="showMes" style="min-height:650px;">
+        <ul class="con_mes">
+          <li>客户名称:&nbsp;&nbsp;&nbsp;<span>{{projectMes.customerName}}</span></li>
+          <li class="flex">
+            <p>项目名称:&nbsp;&nbsp;&nbsp;<span>{{projectMes.name}}</span></p>
+            <p>项目类型:&nbsp;&nbsp;&nbsp;<span v-if="projectMes.projectType">{{projectMes.projectType.name}}</span><span v-else>-</span></p>
+          </li>
+          <li>
+            <p>项目合同单号:&nbsp;&nbsp;&nbsp;<span>{{projectMes.contractNumber}}</span></p>
+          </li>
+          <li>项目内容:&nbsp;&nbsp;&nbsp;<span>{{projectMes.content}}</span></li>
+          <li class="flex">
+            <p>联系人:&nbsp;&nbsp;&nbsp;<span>{{projectMes.linkman}}</span></p>
+            <p>联系电话:&nbsp;&nbsp;&nbsp;<span>{{projectMes.phone}}</span></p>
+          </li>
+          <li class="flex">
+            <p>项目人数:&nbsp;&nbsp;&nbsp;<span>{{projectMes.peopleNumber}}人</span></p>
+            <p>工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.dayNumber}}天</span></p>
+          </li>
+          <li class="flex">
+            <p>交付标准:&nbsp;&nbsp;&nbsp;<span>{{projectMes.standard}}</span></p>
+            <p>技能要求:&nbsp;&nbsp;&nbsp;<span>{{projectMes.levelStr}}</span></p>
+          </li>
+          <li class="flex">
+            <p>项目状态:&nbsp;&nbsp;&nbsp;<span>{{projectMes.stateStr}}</span></p>
+            <p>项目进度:&nbsp;&nbsp;&nbsp;<span>{{projectMes.schedule}}%</span></p>
+          </li>
+          <li class="flex">
+            <p>预警时间:&nbsp;&nbsp;&nbsp;
+              <span v-if="projectMes.warnTime!=null&&projectMes.warnTime!='null'">{{projectMes.warnTimeSec}}</span>
+              <span v-else>-</span>
+            </p>
+            <p>入场时间:&nbsp;&nbsp;&nbsp;
+              <span v-if="projectMes.startTime!=null&&projectMes.startTime!='null'">{{projectMes.startTimeSec}}</span>
+              <span v-else>-</span>
+            </p>
+          </li>
+          <li class="flex">
+            <p>计划完工时间:&nbsp;&nbsp;&nbsp;
+              <span v-if="projectMes.planFinishTime!=null&&projectMes.planFinishTime!='null'">{{projectMes.planFTimeSec}}</span>
+              <span v-else>-</span>
+            </p>
+            <p>完工时间:&nbsp;&nbsp;&nbsp;
+              <span v-if="projectMes.finishTime!=null&&projectMes.finishTime!='null'">{{projectMes.finishTimeSec}}</span>
+              <span v-else>-</span>
+            </p>
+          </li>
+          <li class="flex">
+            <p>计划验收时间:&nbsp;&nbsp;&nbsp;
+              <span v-if="projectMes.planAcceptTime!=null&&projectMes.planAcceptTime!='null'">{{projectMes.planATimeSec}}</span>
+              <span v-else>-</span>
+            </p>
+            <p>验收时间:&nbsp;&nbsp;&nbsp;
+              <span v-if="projectMes.acceptTime!=null&&projectMes.acceptTime!='null'">{{projectMes.acceptTimeSec}}</span>
+              <span v-else>-</span>
+            </p>
+          </li>
+        </ul>
+      </div>
+      <div class="" v-show="showMes" v-for="(point,key) in projectMes.projectPointVOList" :key="'point'+key" style="minHeight:450px;maxHeight:none;margin-top:20px;">
+        <p class="mes_titleOne">
+          <span>局点信息</span>
         </p>
-        <p class="point_title" style="margin-top:10px;">局点状态</p>
-        <p class="change_point">
-          <el-select v-model="value" placeholder="请选择" style="width:220px;" size="medium">
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-          <el-date-picker
-            v-model="value1"
-            type="date"
-            size="medium"
-            placeholder="选择日期">
-          </el-date-picker>
-          <el-button type="primary" size="medium">保存</el-button>
-        </p>
-        <p class="point_title" style="margin-top:10px;">局点进程</p>
-        <div class="">
-          <el-row>
-            <el-col :span="3"><div class="edit_title">节点</div></el-col>
-            <el-col :span="4"><div class="edit_title">计划开始时间</div></el-col>
-            <el-col :span="4"><div class="edit_title">计划结束时间</div></el-col>
-            <el-col :span="4"><div class="edit_title">实际开始时间</div></el-col>
-            <el-col :span="4"><div class="edit_title">实际完成时间</div></el-col>
-            <el-col :span="5"><div class="edit_title">备注</div></el-col>
-          </el-row>
-          <el-row class="proMes" v-for="(editMes,index) in pointMesList" :key="'EditMes'+index">
-            <el-col :span="3"><div class="edit_mes">{{editMes.name}}</div></el-col>
-            <el-col :span="4"><div class="edit_mes">
-              <el-date-picker
-                v-model="value1"
-                type="date"
-                size="medium"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div></el-col>
-            <el-col :span="4"><div class="edit_mes">
-              <el-date-picker
-                v-model="value1"
-                type="date"
-                size="medium"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div></el-col>
-            <el-col :span="4"><div class="edit_mes">
-              <el-date-picker
-                v-model="value1"
-                type="date"
-                size="medium"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div></el-col>
-            <el-col :span="4"><div class="edit_mes">
-              <el-date-picker
-                v-model="value1"
-                type="date"
-                size="medium"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div></el-col>
-            <el-col :span="5"><div class="edit_mes">
-              <el-input type="primary" size="small" placeholder="请输入备注信息"></el-input>
-            </div></el-col>
-          </el-row>
+        <ul class="con_mes">
+          <li>地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点:&nbsp;&nbsp;&nbsp;<span>{{point.placeName}}</span></li>
+          <li>详细地址:&nbsp;&nbsp;&nbsp;<span>{{point.address}}</span></li>
+          <li>备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注:&nbsp;&nbsp;&nbsp;<span>{{point.remark}}</span></li>
+          <li>人员组成:&nbsp;&nbsp;&nbsp;<span>{{point.engineerNameListStr}}</span></li>
+
+        </ul>
+        <div class="coll">
+          <el-collapse v-model="activeNames" @change="handleChange">
+            <el-collapse-item :name="point.openKey">
+                <template slot="title">
+                 <span style="color:rgba(235,122,29,1);fontSize:16px;">项目进程【点击展开】</span>
+                </template>
+                <el-row>
+                  <el-col :span="4"><div class="gress_title">进程节点</div></el-col>
+                  <el-col :span="5"><div class="gress_title">实际开始时间</div></el-col>
+                  <el-col :span="5"><div class="gress_title">实际完成时间</div></el-col>
+                  <el-col :span="6"><div class="gress_title">项目说明</div></el-col>
+                  <el-col :span="4"><div class="gress_title">项目日报</div></el-col>
+                </el-row>
+                <el-row v-for="(gress,index) in point.usingProjectCourseNodeVOList" :key="'gress'+index">
+                  <el-col :span="4"><div class="gress_con">{{gress.courseNodeName}}</div></el-col>
+                  <el-col :span="5"><div class="gress_con">
+                    <span v-if="gress.startTime!=null&&gress.startTime!='null'">{{gress.startTimeSec}}</span>
+                    <span v-else>-</span>
+                  </div></el-col>
+                  <el-col :span="5"><div class="gress_con">
+                    <span v-if="gress.endTime!=null&&gress.endTime!='null'">{{gress.endTimeSec}}</span>
+                    <span v-else>-</span>
+                  </div></el-col>
+                  <el-col :span="6"><div class="gress_con">
+                    <span v-if="gress.remark!=null&&gress.remark!=''">{{gress.remark}}</span>
+                    <span v-else>-</span>
+                  </div></el-col>
+                  <el-col :span="4"><div class="gress_con">
+                    <span class="el-icon-tickets"
+                    @click="proDay(key,index)" style="fontSize:18px;color:rgba(235,122,29,1);cursor:pointer;"
+                    v-if="gress.workRecordVOList!=null&&gress.workRecordVOList!=''"
+                    ></span>
+                    <span v-else>-</span>
+                  </div></el-col>
+                </el-row>
+            </el-collapse-item>
+            <el-collapse-item :name="point.openKey">
+                <template slot="title">
+                 <span style="color:rgba(235,122,29,1);fontSize:16px;">项目文档【点击展开】</span>
+                </template>
+                <p v-for="(file,index) in point.projectFileVOList" :key="'file'+index" style="line-height:40px;">
+                  <span v-show="file.fileType==0">【项目经理任命】</span>
+                  <span v-show="file.fileType==1">【开会检查项】</span>
+                  <span v-show="file.fileType==2">【会议纪要】</span>
+                  <span v-show="file.fileType==3">【技术方案】</span>
+                  <span v-show="file.fileType==4">【安装报告】</span>
+                  <span v-show="file.fileType==5">【加电测试】</span>
+                  <span v-show="file.fileType==6">【割接调测】</span>
+                  <span v-show="file.fileType==7">【完工报告】</span>
+                  <span v-show="file.fileType==8">【验收报告】</span>
+                  <span v-show="file.fileType==9">【进场报告】</span>
+                  <span v-show="file.fileType==10">【离场报告】</span>
+                  <a :href="url+'/'+file.fileName">{{file.fileName}}</a>
+                </p>
+            </el-collapse-item>
+            <el-collapse-item :name="point.openKey">
+                <template slot="title">
+                 <span style="color:rgba(235,122,29,1);fontSize:16px;">验&nbsp;&nbsp;货&nbsp;&nbsp;单【点击展开】</span>
+                </template>
+                <div class="" v-for="(ins,index) in point.inspectionVOList" :key="'ins'+index">
+                  <p style="width:100%;text-align:center;fontSize:16px;marginTop:15px;marginBottom:15px;">设备</p>
+                  <el-row>
+                    <el-col :span="3"><div class="insTitle">网元名称<span style="color:red;">*</span></div></el-col>
+                    <el-col :span="5"><div class="insTitle">
+                      <span v-if="ins.name!=null&&ins.name!=''">{{ins.name}}</span>
+                      <span v-else>-</span>
+                    </div></el-col>
+                    <el-col :span="3"><div class="insTitle">设备型号</div></el-col>
+                    <el-col :span="5"><div class="insTitle">
+                      <span v-if="ins.model!=null&&ins.model!=''">{{ins.model}}</span>
+                      <span v-else>-</span>
+                    </div></el-col>
+                    <el-col :span="3"><div class="insTitle">整机、机框条码</div></el-col>
+                    <el-col :span="5"><div class="insTitle">
+                      <span v-if="ins.code!=null&&ins.code!=''">{{ins.code}}</span>
+                      <span v-else>-</span>
+                    </div></el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="3"><div class="insTitle">省份</div></el-col>
+                    <el-col :span="5"><div class="insTitle">
+                      <span v-if="ins.province!=null&&ins.province!=''">{{ins.province}}</span>
+                      <span v-else>-</span>
+                    </div></el-col>
+                    <el-col :span="3"><div class="insTitle">城市</div></el-col>
+                    <el-col :span="5"><div class="insTitle">
+                      <span v-if="ins.city!=null&&ins.city!=''">{{ins.city}}</span>
+                      <span v-else>-</span>
+                    </div></el-col>
+                    <el-col :span="3"><div class="insTitle">地址</div></el-col>
+                    <el-col :span="5"><div class="insTitle">
+                      <span v-if="ins.address!=null&&ins.address!=''">{{ins.address}}</span>
+                      <span v-else>-</span>
+                    </div></el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="3"><div class="insTitle">主机版本</div></el-col>
+                    <el-col :span="5"><div class="insTitle">
+                      <span v-if="ins.hostVersion!=null&&ins.hostVersion!=''">{{ins.hostVersion}}</span>
+                      <span v-else>-</span>
+                    </div></el-col>
+                    <el-col :span="3"><div class="insTitle">补丁版本</div></el-col>
+                    <el-col :span="5"><div class="insTitle">
+                      <span v-if="ins.patchVersion!=null&&ins.patchVersion!=''">{{ins.patchVersion}}</span>
+                      <span v-else>-</span>
+                    </div></el-col>
+                    <el-col :span="3"><div class="insTitle">槽位号及单板名称</div></el-col>
+                    <el-col :span="5"><div class="insTitle">
+                      <span v-if="ins.boardName!=null&&ins.boardName!=''">{{ins.boardName}}</span>
+                      <span v-else>-</span>
+                    </div></el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="3"><div class="insTitle">单板型号</div></el-col>
+                    <el-col :span="5"><div class="insTitle">
+                      <span v-if="ins.boardModel!=null&&ins.boardModel!=''">{{ins.boardModel}}</span>
+                      <span>-</span>
+                    </div></el-col>
+                    <el-col :span="3"><div class="insTitle">单板条码</div></el-col>
+                    <el-col :span="5"><div class="insTitle">
+                      <span v-if="ins.boardCode!=null&&ins.boardCode!=''">{{ins.boardCode}}</span>
+                      <span v-else>-</span>
+                    </div></el-col>
+                    <el-col :span="3"><div class="insTitle">单板版本(软件)</div></el-col>
+                    <el-col :span="5"><div class="insTitle">
+                      <span v-if="ins.boardVersion!=null&&ins.boardVersion!=''">{{ins.boardVersion}}</span>
+                      <span v-else>-</span>
+                    </div></el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="3"><div class="insTitle">备注</div></el-col>
+                    <el-col :span="21"><div class="insTitle">
+                      <span v-if="ins.remark!=null&&ins.remark!=''">{{ins.remark}}</span>
+                      <span v-else>-</span>
+                    </div></el-col>
+                  </el-row>
+                </div>
+            </el-collapse-item>
+            <el-collapse-item :name="point.openKey">
+              <template slot="title">
+               <span style="color:rgba(235,122,29,1);fontSize:16px;">潜在风险【点击展开】</span>
+              </template>
+              <el-row>
+                <el-col :span="20"><div class="warnTitle" style="text-align:left;box-sizing:border-box;padding-left:30px;background:rgba(235,122,29,1);">潜在风险描述</div></el-col>
+                <el-col :span="2"><div class="warnTitle" style="text-align:center;background:rgba(235,122,29,1);">提交人员</div></el-col>
+                <el-col :span="2"><div class="warnTitle" style="text-align:center;background:rgba(235,122,29,1);">创建时间</div></el-col>
+              </el-row>
+              <el-row class="el_con" v-for="(warnMes,indexWarn) in point.warnRecordVOList" :key="indexWarn">
+                <el-col :span="20"><div class="warnCon" style="text-align:left;box-sizing:border-box;padding-left:30px;">{{warnMes.content}}</div></el-col>
+                <el-col :span="2"><div class="warnCon" style="text-align:center;">{{warnMes.engineerName}}</div></el-col>
+                <el-col :span="2"><div class="warnCon" style="text-align:center;">{{warnMes.warnTimeCreat}}</div></el-col>
+              </el-row>
+            </el-collapse-item>
+          </el-collapse>
         </div>
       </div>
+    </div>
+    <!-- 项目日报 -->
+    <div class="project_day" ref="project_day" v-show="showProDay">
+      <p class="close_day">
+        <span class="day_title">项目日报</span>
+        <span class="el-icon-close close" @click="closeProDay()"></span>
+      </p>
+      <ul>
+        <li v-for="(proDay,index) in dayList" :key="'DayWork'+index">
+          <p class="engName">{{proDay.engineerName}}&nbsp;<span>[{{proDay.workTimeSec}}]</span></p>
+          <p class="proName">项目名称:&nbsp;{{proDay.projectName}}</p>
+          <p class="nodeTime">
+            <span>进程节点:&nbsp;{{proDay.projectCourseNodeName}}</span>
+            <span>工作时长:&nbsp;{{proDay.workDay}}天 [<span>{{proDay.startTime}}:00</span>-<span>{{proDay.endTime}}:00</span>]</span>
+          </p>
+          <p class="proContent">工作内容:&nbsp;{{proDay.content}}</p>
+          <p>日报附件:
+            <a :href="url+'/'+dayFile.fileName" v-for="(dayFile,index) in proDay.fileUploads">{{dayFile.fileName}}</a>
+          </p>
+          <p>日报图片:
+            <viewer :images="proDay.imgUploads">
+              <img alt="" v-for="(dayPic,index) in proDay.imgUploads" :key="'DayPic'+index" :src="url+'/'+dayPic.fileName">
+            </viewer>
+          </p>
+        </li>
+      </ul>
     </div>
   </div>
 </div>
@@ -484,53 +911,51 @@
 export default {
   data(){
     return{
-      value1:'',
-      tableData3: [
+      proList:[
         {
-          num:'1',
-          children:[
-            {
-              name:'进场开工'
-            },
-            {
-              name:'硬件安装'
-            },
-          ]
+          num:1,
+          name:'集运教育',
+          technologyName:'UCC',
+          state:1,
+          schedule:50,
+          creatorName:'阿明',
+          createTimeSec:'2019/07/09'
         }
       ],
-
-
-
-
-
-
-        multipleSelection: [],
-        options: [{
+      value1:'',
+      multipleSelection: [],
+      options: [{
          value: '选项1',
          label: '黄金糕'
-       }, {
-         value: '选项2',
-         label: '双皮奶'
-       }, {
-         value: '选项3',
-         label: '蚵仔煎'
-       }, {
-         value: '选项4',
-         label: '龙须面'
-       }, {
-         value: '选项5',
-         label: '北京烤鸭'
+         }, {
+           value: '选项2',
+           label: '双皮奶'
+         }, {
+           value: '选项3',
+           label: '蚵仔煎'
+         }, {
+           value: '选项4',
+           label: '龙须面'
+         }, {
+           value: '选项5',
+           label: '北京烤鸭'
        }],
        value: '',
 
 
-
-
-
+      planList:[
+        {name:'进场开工',id:'01'},
+        {name:'硬件安装',id:'02'},
+        {name:'加电单调',id:'03'},
+        {name:'联调割接',id:'04'},
+        {name:'培训',id:'05'},
+        {name:'完工',id:'06'},
+        {name:'验收',id:'07'}
+      ],
       value7:[],//筛选日期数组
       proName:null,//搜索项目名称
       dataLength:88,//共有数据条数
-      proList:[],//项目列表
+      // proList:[],//项目列表
       page:0,//页码
       proLoad:false,//是否启用Loading
       length:0,//数据排序
@@ -567,6 +992,7 @@ export default {
       cusName:null,//客户名称
       cusLoading:false,//筛选Loading
       restaurants:[],//客户名称筛选列表
+      editPro:false,//编辑项目信息
       list:[],
       addProMes:{
         cusID:null,//客户ID
@@ -610,8 +1036,21 @@ export default {
       },
       ucc:[],
       firstBox:false,//第一步实施计划
+      firstConBox:false,//第一步实施计划内容盒子
       secondBox:false,//第二步人员委派
+      secondConBox:false,//第二步人员委派内容盒子
       threeBox:false,//第三步进程管理
+      threeConBox:false,//第三步进程管理内容盒子
+      fileBox:false,//项目文档上传
+      fileConBox:false,//项目文档上传内容盒子
+      insBox:false,//验货单上传
+      insConBox:false,//验货单内容盒子
+      openDetils:false,//项目详情
+      showProDay:false,//项目日报projectMes
+      showMes:false,//项目详情内容显示
+      projectMes:{},//项目详情内容
+      dayList:[],//项目日报列表
+      activeNames:[],//折叠面板参数
       gateList:[
         {
           num:'1',
@@ -652,7 +1091,62 @@ export default {
         {
           name:'联调割接'
         },
-      ]
+      ],
+      pointFileList:[
+        {
+          place:'国外/国外',
+          address:'纽约市',
+          children:[
+            '项目经理认命','开工检查项','会议纪要','技术方案'
+          ]
+        },
+        {
+          place:'中国/北京',
+          address:'海淀区马连洼北路8号',
+          children:[
+            '项目经理认命','开工检查项','会议纪要'
+          ]
+        }
+      ],
+      pointInsList:[
+        {
+          place:'国外/国外',
+          address:'纽约市',
+          children:[
+            {
+              num:1,
+              unitName:null,//网元名称
+              modelName:null,//设备型号
+              barCodeName:null,//整机条码
+              vinceName:null,//省份
+              cityName:null,//城市
+              address:null,//详细地址
+              hostName:null,//主机版本
+              patchName:null,//补丁版本
+              soltName:null,//槽位号
+              vennerName:null,//单板型号
+              vCodeName:null,//单板条码
+              appliName:null,//软件版本
+              remark:null,//备注
+            },
+          ]
+        }
+      ],
+      operTwoList:[
+        {
+          num:1,
+          oneID:null,//进场开工
+          twoID:null,//硬件安装
+          threeID:null,//加电单调
+          fourID:null,//联调割接
+          fiveID:null,//培训
+          sixID:null,//完工
+          sevenID:null,//验收
+        },
+      ],
+      editProMes:{},//编辑项目内容
+      isDown:false,//编辑项目信息是否数据加载完毕
+      abilityIDList:[],//技能评定ID列表
     }
   },
   created(){
@@ -666,6 +1160,13 @@ export default {
       if(!val){
         this.addProMes=this.addProMesEnd;
         this.cusName=null;
+      }
+    },
+    editPro(val,oldVal){
+      if(!val){
+        this.editProMes={};
+        this.isDown=false;
+        // console.log(this.editProMes)
       }
     }
   },
@@ -838,6 +1339,13 @@ export default {
       });
       this.addProMes.skillIDList=a;
     },
+    editChoose(value){
+      let a=[];
+      value.forEach((e)=>{
+        a.push(e.id)
+      });
+      this.editProMes.skillIDList=a;
+    },
     choseType(){//项目类型选择
       this.addProMes.typeList.forEach((e)=>{
         if(e.name===this.addProMes.proType){
@@ -927,6 +1435,9 @@ export default {
     firstStep(index){//第一步实施计划
       this.firstBox=true;
       setTimeout(()=>{
+        this.firstConBox=true;
+      },100)
+      setTimeout(()=>{
         this.$refs.firstPerBox.style.width='100%';
         this.$refs.firstPerBox.style.minHeight='100%';
       })
@@ -935,11 +1446,17 @@ export default {
       this.$refs.firstPerBox.style.width='300px';
       this.$refs.firstPerBox.style.minHeight='200px';
       setTimeout(()=>{
+        this.firstConBox=false;
+      },100)
+      setTimeout(()=>{
         this.firstBox=false;
       },300)
     },
     secondStep(index){//第二步人员委派
       this.secondBox=true;
+      setTimeout(()=>{
+        this.secondConBox=true;
+      },200)
       setTimeout(()=>{
         this.$refs.secondPerBox.style.width='100%';
         this.$refs.secondPerBox.style.minHeight='100%';
@@ -949,11 +1466,17 @@ export default {
       this.$refs.secondPerBox.style.width='300px';
       this.$refs.secondPerBox.style.minHeight='200px';
       setTimeout(()=>{
+        this.secondConBox=false;
+      },100)
+      setTimeout(()=>{
         this.secondBox=false;
       },300)
     },
     threeStep(index){//第三步进程管理
       this.threeBox=true;
+      setTimeout(()=>{
+        this.threeConBox=true;
+      },150)
       setTimeout(()=>{
         this.$refs.threePerBox.style.width='100%';
         this.$refs.threePerBox.style.minHeight='100%';
@@ -963,7 +1486,50 @@ export default {
       this.$refs.threePerBox.style.width='300px';
       this.$refs.threePerBox.style.minHeight='200px';
       setTimeout(()=>{
+        this.threeConBox=false;
+      },100)
+      setTimeout(()=>{
         this.threeBox=false;
+      },300)
+    },
+    fileUp(index){//项目文档
+      this.fileBox=true;
+      setTimeout(()=>{
+        this.fileConBox=true;
+      },250)
+      setTimeout(()=>{
+        this.$refs.filePerBox.style.width='100%';
+        this.$refs.filePerBox.style.minHeight='100%';
+      })
+    },
+    closeFileBox(){//关闭项目文档
+      this.$refs.filePerBox.style.width='300px';
+      this.$refs.filePerBox.style.minHeight='200px';
+      setTimeout(()=>{
+        this.fileConBox=false;
+      },100)
+      setTimeout(()=>{
+        this.fileBox=false;
+      },300)
+    },
+    insUp(index){//验货单
+      this.insBox=true;
+      setTimeout(()=>{
+        this.insConBox=true;
+      },250)
+      setTimeout(()=>{
+        this.$refs.insPerBox.style.width='100%';
+        this.$refs.insPerBox.style.minHeight='100%';
+      });
+    },
+    closeInsBox(){//关闭验货单
+      this.$refs.insPerBox.style.width='300px';
+      this.$refs.insPerBox.style.minHeight='200px';
+      setTimeout(()=>{
+        this.insConBox=false
+      },100)
+      setTimeout(()=>{
+        this.insBox=false;
       },300)
     },
     remoteEng(query) {//远程查询客户列表
@@ -974,7 +1540,6 @@ export default {
           formdata.append('size',20);
           formdata.append('page',0);
           this.$axios.post(this.url+'/findCustomerListByCondition',formdata).then((res)=>{
-            console.log(res)
             if(res.data.code==0){
               this.searchEngList=res.data.data.content.map(item=>{
                 return {value:item.name,label:item.name,id:item.id}
@@ -1000,18 +1565,510 @@ export default {
           this.searchEngList = [];
         }
     },
-    delPro(index){
+    delPro(index){//删除当前项目
       console.log(this.proList[index].id)
+    },
+    delOperTwo(indexOper){//删除当前局点
+      this.operTwoList.splice(indexOper,1)
     },
     handleSelectionChange(val) {//全选
       this.multipleSelection = val;
       console.log(this.multipleSelection)
+    },
+    hasDetials(index){//查看项目详情
+      let _vc=this;
+      _vc.$axios.get(_vc.url+'/projectInfo?projectId='+_vc.proList[index].id).then((res)=>{
+        if(res.data.code==0){
+          //入场时间
+          let startDate=new Date(res.data.data.startTime);
+          let sYear=startDate.getFullYear();
+          let sMon=startDate.getMonth()+1;
+          if(sMon<10){
+            sMon='0'+sMon
+          };
+          let sDay=startDate.getDate();
+          if(sDay<10){
+            sDay='0'+sDay
+          }
+          let sTime=sYear+'-'+sMon+'-'+sDay;
+          _vc.$set(res.data.data,'startTimeSec',sTime);
+          //完工时间
+          let finishDate=new Date(res.data.data.finishTime);
+          let fYear=finishDate.getFullYear();
+          let fMon=finishDate.getMonth()+1;
+          if(fMon<10){
+            fMon='0'+fMon
+          };
+          let fDay=finishDate.getDate();
+          if(fDay<10){
+            fDay='0'+fDay
+          }
+          let fTime=fYear+'-'+fMon+'-'+fDay;
+          _vc.$set(res.data.data,'finishTimeSec',fTime);
+          //验收时间
+          let acceptDate=new Date(res.data.data.acceptTime);
+          let aYear=acceptDate.getFullYear();
+          let aMon=acceptDate.getMonth()+1;
+          if(aMon<10){
+            aMon='0'+aMon
+          };
+          let aDay=acceptDate.getDate();
+          if(aDay<10){
+            aDay='0'+aDay
+          }
+          let aTime=aYear+'-'+aMon+'-'+aDay;
+          _vc.$set(res.data.data,'acceptTimeSec',aTime);
+          //预警时间
+          let warnDate=new Date(res.data.data.warnTime );
+          let wYear=warnDate.getFullYear();
+          let wMon=warnDate.getMonth()+1;
+          if(wMon<10){
+            wMon='0'+wMon
+          };
+          let wDay=warnDate.getDate();
+          if(wDay<10){
+            wDay='0'+wDay
+          }
+          let wTime=wYear+'-'+wMon+'-'+wDay;
+          _vc.$set(res.data.data,'warnTimeSec',wTime);
+          //计划完工时间
+          let planFDate=new Date(res.data.data.planFinishTime);
+          let pfYear=planFDate.getFullYear();
+          let pfMon=planFDate.getMonth()+1;
+          if(pfMon<10){
+            pfMon='0'+pfMon
+          };
+          let pfDay=planFDate.getDate();
+          if(pfDay<10){
+            pfDay='0'+pfDay
+          }
+          let pfTime=pfYear+'-'+pfMon+'-'+pfDay;
+          _vc.$set(res.data.data,'planFTimeSec',pfTime);
+          //计划验收时间
+          let planADate=new Date(res.data.data.planAcceptTime);
+          let paYear=planADate.getFullYear();
+          let paMon=planADate.getMonth()+1;
+          if(paMon<10){
+            paMon='0'+paMon
+          };
+          let paDay=planADate.getDate();
+          if(paDay<10){
+            paDay='0'+paDay
+          }
+          let paTime=paYear+'-'+paMon+'-'+paDay;
+          _vc.$set(res.data.data,'planATimeSec',paTime);
+          for(let i in res.data.data.projectPointVOList){
+            for(let x in res.data.data.projectPointVOList[i].usingProjectCourseNodeVOList){
+              //开始时间
+              let startDate=new Date(res.data.data.projectPointVOList[i].usingProjectCourseNodeVOList[x].startTime);
+              let sYear=startDate.getFullYear();
+              let sMon=startDate.getMonth()+1;
+              if(sMon<10){
+                sMon='0'+sMon
+              };
+              let sDay=startDate.getDate();
+              if(sDay<10){
+                sDay='0'+sDay
+              };
+              let sTime=sYear+'-'+sMon+'-'+sDay
+              _vc.$set(res.data.data.projectPointVOList[i].usingProjectCourseNodeVOList[x],'startTimeSec',sTime)
+              //结束时间
+              let endDate=new Date(res.data.data.projectPointVOList[i].usingProjectCourseNodeVOList[x].endTime);
+              let eYear=endDate.getFullYear();
+              let eMon=endDate.getMonth()+1;
+              if(eMon<10){
+                eMon='0'+eMon
+              };
+              let eDay=endDate.getDate();
+              if(eDay<10){
+                eDay='0'+eDay
+              };
+              let eTime=eYear+'-'+eMon+'-'+eDay
+              _vc.$set(res.data.data.projectPointVOList[i].usingProjectCourseNodeVOList[x],'endTimeSec',eTime);
+              _vc.$set(res.data.data.projectPointVOList[i].usingProjectCourseNodeVOList[x],'openKey',_vc.lengthNum++);
+            }
+            for(let y in res.data.data.projectPointVOList[i].warnRecordVOList){
+              //风险创建时间
+              let startDate=new Date(res.data.data.projectPointVOList[i].warnRecordVOList[y].createTime);
+              let sYear=startDate.getFullYear();
+              let sMon=startDate.getMonth()+1;
+              if(sMon<10){
+                sMon='0'+sMon
+              };
+              let sDay=startDate.getDate();
+              if(sDay<10){
+                sDay='0'+sDay
+              };
+              let sTime=sYear+'-'+sMon+'-'+sDay
+              _vc.$set(res.data.data.projectPointVOList[i].warnRecordVOList[y],'warnTimeCreat',sTime)
+            }
+          }
+          _vc.projectMes=res.data.data;
+          console.log(_vc.projectMes)
+          _vc.openDetils=true;
+          setTimeout(()=>{
+            _vc.$refs.project_mes.style.width='100%'
+            _vc.$refs.project_mes.style.minHeight='100%';
+            setTimeout(()=>{
+              _vc.showMes=true;
+            },200)
+          })
+        }else{
+          this.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        this.$message.error('未知错误,请联系管理员')
+        console.log(err)
+      })
+    },
+    closeMes(){//关闭项目详情
+      this.$refs.project_mes.style.width='300px'
+      this.$refs.project_mes.style.height='200px'
+      setTimeout(()=>{
+        this.showMes=false;
+      },100)
+      setTimeout(()=>{
+        this.openDetils=false;
+      },200)
+    },
+    proDay(key,index){//显示项目日报
+      this.dayList=this.projectMes.projectPointVOList[key].usingProjectCourseNodeVOList[index].workRecordVOList;
+      this.dayList.forEach((e)=>{
+        let crDate=new Date(e.workTime);
+        let cYear=crDate.getFullYear();
+        let cMon=crDate.getMonth()+1;
+        if(cMon<10){
+          cMon='0'+cMon
+        };
+        let cDay=crDate.getDate();
+        if(cDay<10){
+          cDay='0'+cDay
+        }
+        let cTime=cYear+'-'+cMon+'-'+cDay;
+        this.$set(e,'workTimeSec',cTime);
+      })
+      this.showProDay=true;
+      setTimeout(()=>{
+        this.$refs.project_day.style.opacity='1'
+      },10)
+    },
+    closeProDay(){//关闭项目日报
+      this.$refs.project_day.style.opacity='0';
+      setTimeout(()=>{
+        this.showProDay=false;
+      },500)
+    },
+    handleChange(val) {//折叠面板
+       // console.log(val);
+    },
+    pushTable(key){//添加验货单设备
+      this.pointInsList[key].children.push({
+        num:this.pointInsList[key].children.length+1,
+        unitName:null,//网元名称
+        modelName:null,//设备型号
+        barCodeName:null,//整机条码
+        vinceName:null,//省份
+        cityName:null,//城市
+        address:null,//详细地址
+        hostName:null,//主机版本
+        patchName:null,//补丁版本
+        soltName:null,//槽位号
+        vennerName:null,//单板型号
+        vCodeName:null,//单板条码
+        appliName:null,//软件版本
+        remark:null,//备注
+      });
+    },
+    delIns(key,index){//删除验货单设备
+      this.pointInsList[key].children.splice(index,1)
+    },
+    pushPoint(){//添加实施地点
+      this.operTwoList.push({
+        num:this.operTwoList.length+1,
+        oneID:null,//进场开工
+        twoID:null,//硬件安装
+        threeID:null,//加电单调
+        fourID:null,//联调割接
+        fiveID:null,//培训
+        sixID:null,//完工
+        sevenID:null,//验收
+      })
+    },
+    editProject(index){//编辑项目信息
+      let _vm=this;
+      _vm.editProMes=this.proList[index];
+      _vm.$set(_vm.editProMes,'skillList',[]);
+      _vm.$set(_vm.editProMes,'skillIDList',[]);
+      _vm.$set(_vm.editProMes,'typeList',[]);
+      _vm.$set(_vm.editProMes,'ductList',[]);
+      _vm.$axios.get(_vm.url+'/usingTechnologyList').then((res)=>{
+        if(res.data.code==0){
+          _vm.editProMes.skillList=res.data.data;
+          _vm.$axios.get(_vm.url+'/projectInfo?projectId='+_vm.proList[index].id).then((res)=>{
+            // console.log(res)
+            if(res.data.code==0){
+              let a=res.data.data.levelVOList;
+              _vm.editProMes.skillList.forEach((e)=>{
+                for(let x in a){
+                  _vm.editProMes.skillIDList.push(a[x].id);
+                  for(let i in e.usingLevelVOList){
+                    if(a[x].id===e.usingLevelVOList[i].id){
+                      _vm.$set(e.usingLevelVOList[i],'selected',true)
+                    }
+                  }
+                }
+
+              });
+              _vm.$axios.get(_vm.url+'/getProjectTypeList').then((res)=>{
+                if(res.data.code==0){
+                  _vm.editProMes.typeList=res.data.data;
+                  _vm.editPro=true;
+                  _vm.isDown=true;
+                }
+              })
+            }else{
+              _vm.$message.error(res.data.msg)
+            }
+          }).catch((err)=>{
+            _vm.$message.error('未知错误,请联系管理员')
+          })
+        }else{
+          _vm.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        _vm.$message.error('未知错误,请联系管理员')
+        // console.log(err)
+      });
+
+    },
+    editType(value){//编辑项目修改项目类型
+      this.editProMes.typeList.forEach((e)=>{
+        if(e.name===value){
+          this.editProMes.projectType.id=e.id;
+        }
+      });
+    },
+    editDuct(value){//编辑项目修改产品线
+      this.editProMes.skillList.forEach((e)=>{
+        if(e.name===value){
+          this.editProMes.technologyId=e.id;
+        }
+      });
+    },
+    turnEditPro(){//确认修改项目
+      console.log(this.editProMes)
+    },
+    allChoosePoint(index){//局点全选
+      if(index==0){
+        this.$refs.PointCheck0.forEach((e)=>{
+          e.checked=true;
+        });
+        this.$refs.MaskTitle0.forEach((x)=>{
+          x.style.display='block'
+        });
+        this.operTwoList.forEach((a)=>{
+          a.oneID=this.planList[index].id
+        });
+        console.log(this.operTwoList)
+      }else if(index==1){
+        this.$refs.PointCheck1.forEach((e)=>{
+          e.checked=true;
+        });
+        this.$refs.MaskTitle1.forEach((x)=>{
+          x.style.display='block'
+        });
+        this.operTwoList.forEach((a)=>{
+          a.twoID=this.planList[index].id
+        });
+      }else if(index==2){
+        this.$refs.PointCheck2.forEach((e)=>{
+          e.checked=true;
+        });
+        this.$refs.MaskTitle2.forEach((x)=>{
+          x.style.display='block'
+        });
+        this.operTwoList.forEach((a)=>{
+          a.threeID=this.planList[index].id
+        });
+      }else if(index==3){
+        this.$refs.PointCheck3.forEach((e)=>{
+          e.checked=true;
+        });
+        this.$refs.MaskTitle3.forEach((x)=>{
+          x.style.display='block'
+        });
+        this.operTwoList.forEach((a)=>{
+          a.fourID=this.planList[index].id
+        });
+      }else if(index==4){
+        this.$refs.PointCheck4.forEach((e)=>{
+          e.checked=true;
+        });
+        this.$refs.MaskTitle4.forEach((x)=>{
+          x.style.display='block'
+        });
+        this.operTwoList.forEach((a)=>{
+          a.fiveID=this.planList[index].id
+        });
+      }else if(index==5){
+        this.$refs.PointCheck5.forEach((e)=>{
+          e.checked=true;
+        });
+        this.$refs.MaskTitle5.forEach((x)=>{
+          x.style.display='block'
+        });
+        this.operTwoList.forEach((a)=>{
+          a.sixID=this.planList[index].id
+        });
+      }else if(index==6){
+        this.$refs.PointCheck6.forEach((e)=>{
+          e.checked=true;
+        });
+        this.$refs.MaskTitle6.forEach((x)=>{
+          x.style.display='block'
+        });
+        this.operTwoList.forEach((a)=>{
+          a.sevenID=this.planList[index].id
+        });
+      }
+    },
+    cancelAll(index){//取消全选
+      if(index==0){
+        this.$refs.MaskTitle0.forEach((x)=>{
+          x.style.display='none'
+        });
+        this.$refs.PointCheck0.forEach((e)=>{
+          e.checked=false;
+        });
+        this.operTwoList.forEach((a)=>{
+          a.oneID=null;
+        });
+      }else if(index==1){
+        this.$refs.MaskTitle1.forEach((x)=>{
+          x.style.display='none'
+        });
+        this.$refs.PointCheck1.forEach((e)=>{
+          e.checked=false;
+        });
+        this.operTwoList.forEach((a)=>{
+          a.twoID=null;
+        });
+      }else if(index==2){
+        this.$refs.MaskTitle2.forEach((x)=>{
+          x.style.display='none'
+        });
+        this.$refs.PointCheck2.forEach((e)=>{
+          e.checked=false;
+        });
+        this.operTwoList.forEach((a)=>{
+          a.threeID=null;
+        });
+      }else if(index==3){
+        this.$refs.MaskTitle3.forEach((x)=>{
+          x.style.display='none'
+        });
+        this.$refs.PointCheck3.forEach((e)=>{
+          e.checked=false;
+        });
+        this.operTwoList.forEach((a)=>{
+          a.fourID=null;
+        });
+      }else if(index==4){
+        this.$refs.MaskTitle4.forEach((x)=>{
+          x.style.display='none'
+        });
+        this.$refs.PointCheck4.forEach((e)=>{
+          e.checked=false;
+        });
+        this.operTwoList.forEach((a)=>{
+          a.fiveID=null;
+        });
+      }else if(index==5){
+        this.$refs.MaskTitle5.forEach((x)=>{
+          x.style.display='none'
+        });
+        this.$refs.PointCheck5.forEach((e)=>{
+          e.checked=false;
+        });
+        this.operTwoList.forEach((a)=>{
+          a.sixID=null;
+        });
+      }else if(index==6){
+        this.$refs.MaskTitle6.forEach((x)=>{
+          x.style.display='none'
+        });
+        this.$refs.PointCheck6.forEach((e)=>{
+          e.checked=false;
+        });
+        this.operTwoList.forEach((a)=>{
+          a.sevenID=null;
+        });
+      }
+    },
+    choosePoint(indexOper,index){//选择当前局点
+      if(this.planList[index].name==='进场开工'){
+        this.operTwoList[indexOper].oneID=this.planList[index].id
+      }else if(this.planList[index].name==='硬件安装'){
+        this.operTwoList[indexOper].towID=this.planList[index].id
+      }else if(this.planList[index].name==='加电单调'){
+        this.operTwoList[indexOper].threeID=this.planList[index].id
+      }else if(this.planList[index].name==='联调割接'){
+        this.operTwoList[indexOper].fourID=this.planList[index].id
+      }else if(this.planList[index].name==='培训'){
+        this.operTwoList[indexOper].fiveID=this.planList[index].id
+      }else if(this.planList[index].name==='完工'){
+        this.operTwoList[indexOper].sixID=this.planList[index].id
+      }else if(this.planList[index].name==='验收'){
+        this.operTwoList[indexOper].sevenID=this.planList[index].id
+      }
+      this.$refs.ChosePointParent[indexOper].children[index+4].children[1].style.display='block';
+    },
+    cancelPoint(indexOper,index){//取消选择局点
+      alert(1)
+      if(this.planList[index].name==='进场开工'){
+        this.operTwoList[indexOper].oneID=null;
+      }else if(this.planList[index].name==='硬件安装'){
+        this.operTwoList[indexOper].towID=null;
+      }else if(this.planList[index].name==='加电单调'){
+        this.operTwoList[indexOper].threeID=null;
+      }else if(this.planList[index].name==='联调割接'){
+        this.operTwoList[indexOper].fourID=null;
+      }else if(this.planList[index].name==='培训'){
+        this.operTwoList[indexOper].fiveID=null;
+      }else if(this.planList[index].name==='完工'){
+        this.operTwoList[indexOper].sixID=null;
+      }else if(this.planList[index].name==='验收'){
+        this.operTwoList[indexOper].sevenID=null;
+      };
+      this.$refs.ChosePointParent[indexOper].children[index+4].children[1].style.display='none';
+      this.$refs.ChosePointParent[indexOper].children[index+4].children[0].checked=false;
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+
+input[type=checkbox]:after {
+  position: absolute;
+  width: 10px;
+  height: 15px;
+  top: 0;
+  content: " ";
+  background-color: white;
+  color: white;
+  display: inline-block;
+  visibility: visible;
+  padding: 0px 3px;
+  border-radius: 3px;
+}
+
+input[type=checkbox]:checked:after {
+  content: "✓";
+  font-size: 14px;
+  background-color:#00b034;
+}
+
 .crestPro{
   width: 98%;
   margin:0 auto;
@@ -1163,18 +2220,116 @@ export default {
     padding-bottom:70px;
     box-sizing: border-box;
     .mes_titleOne{
-      width: 100%;
+      width:200px;
       height: 40px;
       line-height: 40px;
       box-sizing: border-box;
       padding-left: 30px;
-      // z-index: 8888;
+      position: fixed;
+      top:10px;
+      z-index: 1000;
       span{
         font-size: 20px;
         font-weight: bold;
         color: rgba(235,122,29,1);
         border-bottom:2px solid  rgba(235,122,29,1);
       }
+    }
+    .mes_titleTwo{
+      width: 95%;
+      height: 40px;
+      display: flex;
+      margin:0 auto;
+      background: #eb7a1d;
+      color:white;
+      line-height: 40px;
+      li{
+        text-align: center;
+        box-sizing: border-box;
+        border-right: 1px solid white;
+      }
+      li:nth-child(1){
+        min-width: 60px;
+        width: 10%;
+      }
+      li:nth-child(2){
+        min-width: 130px;
+        width: 21%;
+      }
+      li:nth-child(3){
+        min-width: 188px;
+        width: 31%;
+      }
+      li:nth-child(4){
+        width: 31%;
+        min-width: 188px;
+      }
+      li:last-child{
+        min-width: 60px;
+        width: 10%;
+      }
+      .loadMes{
+        min-width: 105px;
+        width: 17.5%;
+        position: relative;
+        padding-left: 18px;
+        span{
+          display: inline-block;
+          width: 20px;
+          height: 20px;
+          background: red;
+          position: absolute;
+          left: 10px;
+          top:10px;
+          display: none;
+          opacity: 0;
+        }
+        input{
+          position: absolute;
+          left:10%;
+          top:32%;
+        }
+      }
+    }
+    .operTwo{
+      height: 80px;
+      li{
+        line-height: 80px;
+        color:black;
+      }
+      li:nth-child(2){
+        line-height: 40px;
+      }
+      .loadMes{
+        position: relative;
+        span{
+          display: inline-block;
+          width: 20px;
+          height: 20px;
+          background: red;
+          position: absolute;
+          left: 10px;
+          top:30px;
+          display: none;
+          // opacity: 0;
+        }
+        input{
+          position: absolute;
+          left:10%;
+          top:40%;
+        }
+      }
+    }
+    .operTwo:nth-of-type(even){
+      background:#eee;
+    }
+    .operTwo:nth-of-type(odd){
+      background:#e5e4e4;
+    }
+    .firstPoer{
+      width: 100%;
+      text-align: center;
+      margin-top: 15px;
     }
     .mes_close{
       width: 100%;
@@ -1186,6 +2341,7 @@ export default {
       top:0;
       border-bottom:1px solid #eee;
       background: white;
+      z-index: 999;
       i{
         font-size: 35px;
         color: rgba(235,122,29,1);
@@ -1279,6 +2435,337 @@ export default {
         text-align: center;
         line-height: 40px;
         font-size: 14px;
+      }
+    }
+    .file_point{
+      width: 95%;
+      box-shadow: 0px 0px 5px #666;
+      padding-bottom: 30px;
+      margin:0 auto;
+      margin-top: 10px;
+      .file_title{
+        box-sizing: border-box;
+        padding-left: 10px;
+        line-height: 40px;
+        font-size: 20px;
+        color:#eb7a1d;
+        text-decoration: underline;
+      }
+      .file_place{
+        box-sizing: border-box;
+        padding-left: 10px;
+        font-size: 14px;
+        line-height: 30px;
+      }
+      ul{
+        box-sizing: border-box;
+        padding-left: 10px;
+        border-top:1px solid #eee;
+        padding-top: 10px;
+        li{
+          font-size: 14px;
+          position: relative;
+          height: 50px;
+          line-height: 50px;
+          border-bottom: 1px solid #eee;
+          input{
+            width: 730px;
+            background: red;
+            position: absolute;
+            height: 100%;
+            left:120px;
+            outline: none;
+            opacity: 0;
+            cursor: pointer;
+          }
+          span{
+            width: 120px;
+            text-align: center;
+            display: inline-block;
+          }
+        }
+      }
+    }
+    .ins_point{
+      width: 95%;
+      box-shadow: 0px 0px 5px #666;
+      padding-bottom: 30px;
+      margin:0 auto;
+      margin-top: 10px;
+      .file_title{
+        box-sizing: border-box;
+        padding-left: 10px;
+        line-height: 40px;
+        font-size: 20px;
+        color:#eb7a1d;
+        text-decoration: underline;
+      }
+      .file_place{
+        box-sizing: border-box;
+        padding-left: 10px;
+        font-size: 14px;
+        line-height: 30px;
+        position: relative;
+        .place_mask{
+          display: inline-block;
+          width: 500px;
+          height:40px;
+          opacity: 0;
+          position: absolute;
+          left:80px;
+          top:-5px;
+        }
+        .upBtnPlace{
+          width: 100px;
+          height: 40px;
+          cursor: pointer;
+          position: absolute;
+          top:-5px;
+          left:585px;
+          outline: none;
+          opacity: 0;
+        }
+      }
+      ul{
+        li{
+          width: 95%;
+          margin:0 auto;
+          box-sizing: border-box;
+          padding: 10px;
+          border:1px solid #eee;
+          margin-top:20px;
+          .table_title{
+            width: 100%;
+            text-align: center;
+            line-height: 60px;
+            position: relative;
+            span{
+              font-size: 20px;
+              box-sizing: border-box;
+              position: absolute;
+              left:46.5%;
+              bottom: -2px;
+            }
+          }
+          .table_mes{
+            width: 95%;
+            margin:0 auto;
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-around;
+            line-height: 40px;
+            span{
+              width: 120px;
+              text-align: center;
+              font-size: 13px;
+            }
+          }
+        }
+      }
+      .table_oper{
+        width: 100%;
+        text-align: center;
+        margin-top: 15px;
+      }
+    }
+  }
+  .project_mes{
+    width: 300px;
+    height: 200px;
+    position: fixed;
+    background: white;
+    overflow: auto;
+    top:0;
+    left:0;
+    z-index: 667;
+    transition: .5s all;
+    padding-top: 30px;
+    padding-bottom:70px;
+    box-sizing: border-box;
+    .mes_close{
+      width: 100%;
+      height: 60px;
+      line-height: 60px;
+      text-align: right;
+      box-sizing: border-box;
+      position: fixed;
+      top:0;
+      border-bottom:1px solid #eee;
+      background: white;
+      i{
+        font-size: 35px;
+        color: rgba(235,122,29,1);
+        cursor:pointer;
+        top: 12px;
+        right:30px;
+        position: absolute;
+      }
+    }
+    .mes_titleOne{
+      width: 100%;
+      height: 40px;
+      line-height: 40px;
+      box-sizing: border-box;
+      padding-left: 30px;
+      span{
+        font-size: 20px;
+        font-weight: bold;
+        color: rgba(235,122,29,1);
+        border-bottom:2px solid  rgba(235,122,29,1);
+      }
+    }
+    .bigTitle{
+      width: 200px;
+      position: fixed;
+      top:10px;
+      z-index: 1000;
+    }
+    .con_mes{
+      width: 100%;
+      box-sizing: border-box;
+      padding-left: 40px;
+      margin-top: 40px;
+      li{
+        width: 100%;
+        text-align: left;
+        line-height: 55px;
+        min-height: 55px;
+        max-height: none;
+        font-weight: bold;
+        span{
+          font-weight:normal;
+        }
+        .insTitle{
+          text-align: center;
+          line-height: 40px;
+          border:1px solid #eee;
+        }
+      }
+      .flex{
+        width: 100%;
+        display: flex;
+        p:first-child{
+          width: 55%;
+        }
+        p:last-child{
+          width: 35%;
+        }
+      }
+    }
+    .coll{
+      box-sizing: border-box;
+      padding-left: 40px;
+      .gress_title{
+        text-align: center;
+        line-height: 40px;
+        background: rgba(235,122,29,1);
+        color:white;
+        font-size: 16px;
+      }
+      .gress_con{
+        font-size: 15px;
+        line-height: 50px;
+        text-align: center;
+      }
+      .warnTitle{
+        line-height: 40px;
+        color:white;
+        font-size: 16px;
+      }
+      .warnCon{
+        line-height: 60px;
+        font-size: 15px;
+      }
+    }
+  }
+  .project_day{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    top:0;
+    left:0;
+    z-index: 668;
+    background: white;
+    opacity: 0;
+    transition: .5s all;
+    box-sizing: border-box;
+    padding-top:70px;
+    .close_day{
+      width: 100%;
+      height: 60px;
+      line-height: 60px;
+      box-sizing: border-box;
+      position: fixed;
+      top:0;
+      border-bottom:1px solid #eee;
+      background: white;
+      padding-left: 30px;
+      text-align: left;
+      .day_title{
+        font-size: 20px;
+        font-weight: bold;
+        color: rgba(235,122,29,1);
+        position: static;
+      }
+      .close{
+        font-size: 35px;
+        color: rgba(235,122,29,1);
+        cursor:pointer;
+        top: 12px;
+        right:30px;
+        position: absolute;
+      }
+
+    }
+    ul{
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      li{
+        min-height: 200px;
+        width: 97%;
+        margin:0 auto;
+        box-shadow: 0px 0px 10px #999;
+        margin-top: 15px;
+        p{
+          line-height: 50px;
+          box-sizing: border-box;
+          padding-left: 15px;
+          a{
+            display: inline-block;
+            width: 80%;
+            color:#e86521;
+            padding-left: 70px;
+          }
+          a:first-child{
+            padding-left: 0;
+          }
+          img:first-child{
+            margin-left: 70px;
+          }
+          img{
+            margin-left: 15px;
+          }
+        }
+        .engName{
+          width: 100%;
+          font-weight: bold;
+          font-size: 18px;
+          color:#e86521;
+          span{
+            color:black;
+          }
+        }
+        .nodeTime{
+          display: flex;
+          span:first-child{
+            width: 15%;
+          }
+        }
+      }
+      li:last-child{
+        margin-bottom: 70px;
       }
     }
   }

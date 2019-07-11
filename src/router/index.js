@@ -92,13 +92,13 @@ const router = new Router({
   ]
 });
 //全局拦截
-router.beforeEach((to,from,next)=>{
-  const adminList=['Admin','Wel','Order'];
-  if(adminList.indexOf(to.name)>-1){
-    if(!window.sessionStorage.getItem('adminMes')){
-      next('/')
-    }
-  };
-  next();
-})
+// router.beforeEach((to,from,next)=>{
+//   const adminList=['Admin','Wel','Order'];
+//   if(adminList.indexOf(to.name)>-1){
+//     if(!window.sessionStorage.getItem('adminMes')){
+//       next('/')
+//     }
+//   };
+//   next();
+// })
 export default router;
