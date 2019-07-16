@@ -139,8 +139,30 @@ export default {
            in:'1-6',
            usingChannelVOList:[
              {
-               name:'项目搭建',
+               name:'项目管理',
                url:'/admin/creatPro'
+             },
+             {
+               name:'客户管理',
+               url:'/admin/custTion'
+             }
+           ]
+         },
+         {
+           name:'工程师相关',
+           in:'1-7',
+           usingChannelVOList:[
+             {
+               name:'工作内容管理',
+               url:'/admin/workContent'
+             },
+             {
+               name:'潜在风险记录列表',
+               url:'/admin/riskRcord',
+             },
+             {
+               name:'项目相关文档管理',
+               url:'/admin/projectFile'
              }
            ]
          }

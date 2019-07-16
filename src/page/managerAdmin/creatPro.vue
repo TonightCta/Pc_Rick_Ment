@@ -67,7 +67,7 @@
           <el-col :span="1"><div class="pro_oper">{{pro.creatorName}}</div></el-col>
           <el-col :span="3"><div class="pro_oper">{{pro.createTimeSec}}</div></el-col>
           <el-col :span="2"><div class="pro_oper">
-            <i class="el-icon-edit" @click="firstStep(index)"></i>
+            <i class="el-icon-edit" @click="firstStep(index)" v-loading.fullscreen.lock="fullscreenLoading"></i>
           </div></el-col>
           <el-col :span="2"><div class="pro_oper">
             <i class="el-icon-edit" @click="secondStep(index)"></i>
@@ -305,30 +305,30 @@
             <li>删除</li>
           </ul>
           <ul class="mes_titleTwo operTwo" v-for="(operTwo,indexOper) in operTwoList" ref="ChosePointParent">
-            <li>{{operTwo.num}}</li>
+            <li>{{operTwo.num+1}}</li>
             <li>
-              <el-select v-model="value" placeholder="请选择" style="width:100px;" size="medium">
+              <el-select v-model="operTwo.viceName" @change="chooseVince(indexOper)" placeholder="请选择"   style="width:100px;" size="medium">
                 <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  v-for="item in placeList"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.name">
                 </el-option>
               </el-select>
-              <el-select v-model="value" placeholder="请选择" style="width:100px;" size="medium">
+              <el-select v-model="operTwo.cityName" @change="chooseCity(indexOper)" placeholder="请选择" style="width:100px;" size="medium">
                 <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  v-for="item in operTwo.cityList"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.name">
                 </el-option>
               </el-select>
             </li>
             <li>
-              <el-input type="primary" size="small" placeholder="请输入施工详细地址"></el-input>
+              <el-input type="primary" size="small" v-model="operTwo.address" placeholder="请输入施工详细地址"></el-input>
             </li>
             <li>
-              <el-input type="primary" size="small" placeholder="请输入备注信息"></el-input>
+              <el-input type="primary" size="small" v-model="operTwo.remark" placeholder="请输入备注信息"></el-input>
             </li>
             <li class="loadMes" v-for="(chosePoint,index) in planList" :key="'ChosePoint'+index" ref="ChosePointBox">
               <input type="checkbox" name="" value="" id="" :ref="'PointCheck'+index" @click="choosePoint(indexOper,index)">
@@ -342,7 +342,7 @@
         </div>
         <p class="firstPoer">
           <el-button type="primary" icon="el-icon-circle-plus-outline" size="small" @click="pushPoint()">添加局点</el-button>
-          <el-button type="primary" icon="el-icon-upload" size="small">提交</el-button>
+          <el-button type="primary" icon="el-icon-upload" size="small" @click="submitPoint()">提交</el-button>
         </p>
       </div>
     </div>
@@ -924,23 +924,8 @@ export default {
       ],
       value1:'',
       multipleSelection: [],
-      options: [{
-         value: '选项1',
-         label: '黄金糕'
-         }, {
-           value: '选项2',
-           label: '双皮奶'
-         }, {
-           value: '选项3',
-           label: '蚵仔煎'
-         }, {
-           value: '选项4',
-           label: '龙须面'
-         }, {
-           value: '选项5',
-           label: '北京烤鸭'
-       }],
-       value: '',
+      placeList: [],
+      value: '',
 
 
       planList:[
@@ -1135,18 +1120,29 @@ export default {
       operTwoList:[
         {
           num:1,
-          oneID:null,//进场开工
-          twoID:null,//硬件安装
-          threeID:null,//加电单调
-          fourID:null,//联调割接
-          fiveID:null,//培训
-          sixID:null,//完工
-          sevenID:null,//验收
+          placeID:null,//地址ID
+          address:null,//详细地址
+          remark:null,//备注
+          chooseMes:[
+            {pointID:false,id:'04c10200-88c1-4c5a-a831-43a4b78f9789'},//进场开工
+            {pointID:false,id:'ea0e6c9b-a014-484b-8a36-442a53b07438'},//硬件安装
+            {pointID:false,id:'84f9bbab-dfbb-4326-bf49-05fff21dd6d0'},//加电单调
+            {pointID:false,id:'60a95b32-59c9-4b15-ad25-5d74e577592f'},//联调割接
+            {pointID:false,id:'03c3fa6b-5440-45c6-855a-ee4cc7a739b8'},//培训
+            {pointID:false,id:'8ded2067-2ffe-47d0-959c-d1bd994c5dfd'},//完工
+            {pointID:false,id:'c93bc808-f703-4c86-b124-5fac8319504d'},//验收
+          ],
+          viceName:null,//省级名称
+          cityName:null,//城市名称
+          cityList:[],
         },
       ],
       editProMes:{},//编辑项目内容
       isDown:false,//编辑项目信息是否数据加载完毕
       abilityIDList:[],//技能评定ID列表
+      proID:null,//项目ID
+      length:0,
+      fullscreenLoading:false,//全屏Loading
     }
   },
   created(){
@@ -1433,18 +1429,90 @@ export default {
       }
     },
     firstStep(index){//第一步实施计划
-      this.firstBox=true;
-      setTimeout(()=>{
-        this.firstConBox=true;
-      },100)
-      setTimeout(()=>{
-        this.$refs.firstPerBox.style.width='100%';
-        this.$refs.firstPerBox.style.minHeight='100%';
+      let _vm=this;
+      _vm.fullscreenLoading=true;
+      _vm.proID=_vm.proList[index].id;
+      _vm.$axios.get(_vm.url+'/projectInfo?projectId='+_vm.proID).then((res)=>{
+        console.log(res);
+        if(res.data.code==0){
+          if(res.data.data.projectPointVOList!=0){
+            _vm.operTwoList=[];
+            for(let i in res.data.data.projectPointVOList){
+              _vm.operTwoList.push({
+                placeID:res.data.data.projectPointVOList[i].placeId,
+                address:res.data.data.projectPointVOList[i].address,
+                remark:res.data.data.projectPointVOList[i].remark,
+                chooseMes:[
+
+                ],
+                viceName:res.data.data.projectPointVOList[i].placeVO.parentName,//省级名称
+                cityName:res.data.data.projectPointVOList[i].placeVO.name,//城市名称
+                cityList:[],
+              })
+              for(let x in res.data.data.projectPointVOList[i].projectCourseNodeVOList){
+                _vm.operTwoList.forEach((e)=>{
+                  e.chooseMes.push(
+                    {
+                      pointID:res.data.data.projectPointVOList[i].projectCourseNodeVOList[x].isUsed,
+                      id:res.data.data.projectPointVOList[i].projectCourseNodeVOList[x].courseNodeId
+                    },
+                  )
+                })
+              };
+              _vm.length=0;
+              for(let u in _vm.operTwoList){
+                _vm.$set(_vm.operTwoList[u],'num',_vm.length++);
+                _vm.operTwoList[u].chooseMes.splice(7,14);
+                console.log(_vm.$refs.ChosePointParent[u])
+              };
+              console.log(_vm.operTwoList)
+            }
+            _vm.$axios.get(_vm.url+'/getUsingCourseNodeList').then((res)=>{
+              if(res.data.code==0){
+                _vm.planList=res.data.data;
+                _vm.$axios.get(_vm.url+'/mobile/getUsingPlaceList').then((res)=>{
+                  if(res.data.code==0){
+                    _vm.placeList=res.data.data.placeList;
+                    _vm.firstBox=true;
+                    _vm.fullscreenLoading=false;
+                    setTimeout(()=>{
+                      _vm.firstConBox=true;
+                    },100)
+                    setTimeout(()=>{
+                      _vm.$refs.firstPerBox.style.width='100%';
+                      _vm.$refs.firstPerBox.style.minHeight='100%';
+                    })
+                  }else{
+                    _vm.fullscreenLoading=false;
+                    _vm.$message.error(res.data.msg);
+                  }
+                }).catch((err)=>{
+                  _vm.fullscreenLoading=false;
+                  _vm.$message.error('未知错误,请联系管理员')
+                })
+              }else{
+                _vm.fullscreenLoading=false;
+                _vm.$message.error(res.data.msg)
+              }
+            }).catch((err)=>{
+              _vm.fullscreenLoading=false;
+              _vm.$message.error('未知错误,请联系管理员')
+            })
+          }
+        }else{
+          _vm.fullscreenLoading=false;
+          _vm.$message.error(res.data.msdg)
+        }
+      }).catch((err)=>{
+        _vm.fullscreenLoading=false;
+        _vm.$message.error('未知错误,请联系管理员')
       })
+
     },
     closeFirstBox(){//关闭第一步实施计划
       this.$refs.firstPerBox.style.width='300px';
       this.$refs.firstPerBox.style.minHeight='200px';
+      this.proID=null;
       setTimeout(()=>{
         this.firstConBox=false;
       },100)
@@ -1784,14 +1852,22 @@ export default {
     },
     pushPoint(){//添加实施地点
       this.operTwoList.push({
-        num:this.operTwoList.length+1,
-        oneID:null,//进场开工
-        twoID:null,//硬件安装
-        threeID:null,//加电单调
-        fourID:null,//联调割接
-        fiveID:null,//培训
-        sixID:null,//完工
-        sevenID:null,//验收
+        num:this.operTwoList.length,
+        placeID:null,//地址ID
+        address:null,//详细地址
+        remark:null,//备注
+        chooseMes:[
+          {pointID:false,id:'04c10200-88c1-4c5a-a831-43a4b78f9789'},//进场开工
+          {pointID:false,id:'ea0e6c9b-a014-484b-8a36-442a53b07438'},//硬件安装
+          {pointID:false,id:'84f9bbab-dfbb-4326-bf49-05fff21dd6d0'},//加电单调
+          {pointID:false,id:'60a95b32-59c9-4b15-ad25-5d74e577592f'},//联调割接
+          {pointID:false,id:'03c3fa6b-5440-45c6-855a-ee4cc7a739b8'},//培训
+          {pointID:false,id:'8ded2067-2ffe-47d0-959c-d1bd994c5dfd'},//完工
+          {pointID:false,id:'c93bc808-f703-4c86-b124-5fac8319504d'},//验收
+        ],
+        viceName:null,//省级名称
+        cityName:null,//城市名称
+        cityList:[],
       })
     },
     editProject(index){//编辑项目信息
@@ -1867,9 +1943,8 @@ export default {
           x.style.display='block'
         });
         this.operTwoList.forEach((a)=>{
-          a.oneID=this.planList[index].id
+          a.chooseMes[0].pointID=true;
         });
-        console.log(this.operTwoList)
       }else if(index==1){
         this.$refs.PointCheck1.forEach((e)=>{
           e.checked=true;
@@ -1878,7 +1953,7 @@ export default {
           x.style.display='block'
         });
         this.operTwoList.forEach((a)=>{
-          a.twoID=this.planList[index].id
+          a.chooseMes[1].pointID=true
         });
       }else if(index==2){
         this.$refs.PointCheck2.forEach((e)=>{
@@ -1888,7 +1963,7 @@ export default {
           x.style.display='block'
         });
         this.operTwoList.forEach((a)=>{
-          a.threeID=this.planList[index].id
+          a.chooseMes[2].pointID=true
         });
       }else if(index==3){
         this.$refs.PointCheck3.forEach((e)=>{
@@ -1898,7 +1973,7 @@ export default {
           x.style.display='block'
         });
         this.operTwoList.forEach((a)=>{
-          a.fourID=this.planList[index].id
+          a.chooseMes[3].pointID=true
         });
       }else if(index==4){
         this.$refs.PointCheck4.forEach((e)=>{
@@ -1908,7 +1983,7 @@ export default {
           x.style.display='block'
         });
         this.operTwoList.forEach((a)=>{
-          a.fiveID=this.planList[index].id
+          a.chooseMes[4].pointID=true
         });
       }else if(index==5){
         this.$refs.PointCheck5.forEach((e)=>{
@@ -1918,7 +1993,7 @@ export default {
           x.style.display='block'
         });
         this.operTwoList.forEach((a)=>{
-          a.sixID=this.planList[index].id
+          a.chooseMes[5].pointID=true
         });
       }else if(index==6){
         this.$refs.PointCheck6.forEach((e)=>{
@@ -1928,9 +2003,9 @@ export default {
           x.style.display='block'
         });
         this.operTwoList.forEach((a)=>{
-          a.sevenID=this.planList[index].id
+          a.chooseMes[6].pointID=true
         });
-      }
+      };
     },
     cancelAll(index){//取消全选
       if(index==0){
@@ -1941,7 +2016,7 @@ export default {
           e.checked=false;
         });
         this.operTwoList.forEach((a)=>{
-          a.oneID=null;
+          a.chooseMes[0].pointID=false;
         });
       }else if(index==1){
         this.$refs.MaskTitle1.forEach((x)=>{
@@ -1951,7 +2026,7 @@ export default {
           e.checked=false;
         });
         this.operTwoList.forEach((a)=>{
-          a.twoID=null;
+          a.chooseMes[1].pointID=false;
         });
       }else if(index==2){
         this.$refs.MaskTitle2.forEach((x)=>{
@@ -1961,7 +2036,7 @@ export default {
           e.checked=false;
         });
         this.operTwoList.forEach((a)=>{
-          a.threeID=null;
+          a.chooseMes[2].pointID=false;
         });
       }else if(index==3){
         this.$refs.MaskTitle3.forEach((x)=>{
@@ -1971,7 +2046,7 @@ export default {
           e.checked=false;
         });
         this.operTwoList.forEach((a)=>{
-          a.fourID=null;
+          a.chooseMes[3].pointID=false;
         });
       }else if(index==4){
         this.$refs.MaskTitle4.forEach((x)=>{
@@ -1981,7 +2056,7 @@ export default {
           e.checked=false;
         });
         this.operTwoList.forEach((a)=>{
-          a.fiveID=null;
+          a.chooseMes[4].pointID=false;
         });
       }else if(index==5){
         this.$refs.MaskTitle5.forEach((x)=>{
@@ -1991,7 +2066,7 @@ export default {
           e.checked=false;
         });
         this.operTwoList.forEach((a)=>{
-          a.sixID=null;
+          a.chooseMes[5].pointID=false;
         });
       }else if(index==6){
         this.$refs.MaskTitle6.forEach((x)=>{
@@ -2001,47 +2076,91 @@ export default {
           e.checked=false;
         });
         this.operTwoList.forEach((a)=>{
-          a.sevenID=null;
+          a.chooseMes[6].pointID=false;
         });
       }
     },
     choosePoint(indexOper,index){//选择当前局点
       if(this.planList[index].name==='进场开工'){
-        this.operTwoList[indexOper].oneID=this.planList[index].id
+        this.operTwoList[indexOper].chooseMes[0].pointID=true;
       }else if(this.planList[index].name==='硬件安装'){
-        this.operTwoList[indexOper].towID=this.planList[index].id
+        this.operTwoList[indexOper].chooseMes[1].pointID=true
       }else if(this.planList[index].name==='加电单调'){
-        this.operTwoList[indexOper].threeID=this.planList[index].id
+        this.operTwoList[indexOper].chooseMes[2].pointID=true
       }else if(this.planList[index].name==='联调割接'){
-        this.operTwoList[indexOper].fourID=this.planList[index].id
+        this.operTwoList[indexOper].chooseMes[3].pointID=true
       }else if(this.planList[index].name==='培训'){
-        this.operTwoList[indexOper].fiveID=this.planList[index].id
+        this.operTwoList[indexOper].chooseMes[4].pointID=true
       }else if(this.planList[index].name==='完工'){
-        this.operTwoList[indexOper].sixID=this.planList[index].id
+        this.operTwoList[indexOper].chooseMes[5].pointID=true
       }else if(this.planList[index].name==='验收'){
-        this.operTwoList[indexOper].sevenID=this.planList[index].id
+        this.operTwoList[indexOper].chooseMes[6].pointID=true
       }
       this.$refs.ChosePointParent[indexOper].children[index+4].children[1].style.display='block';
     },
     cancelPoint(indexOper,index){//取消选择局点
-      alert(1)
       if(this.planList[index].name==='进场开工'){
-        this.operTwoList[indexOper].oneID=null;
+        this.operTwoList[indexOper].chooseMes[0].pointID=false;
       }else if(this.planList[index].name==='硬件安装'){
-        this.operTwoList[indexOper].towID=null;
+        this.operTwoList[indexOper].chooseMes[1].pointID=false
       }else if(this.planList[index].name==='加电单调'){
-        this.operTwoList[indexOper].threeID=null;
+        this.operTwoList[indexOper].chooseMes[2].pointID=false
       }else if(this.planList[index].name==='联调割接'){
-        this.operTwoList[indexOper].fourID=null;
+        this.operTwoList[indexOper].chooseMes[3].pointID=false
       }else if(this.planList[index].name==='培训'){
-        this.operTwoList[indexOper].fiveID=null;
+        this.operTwoList[indexOper].chooseMes[4].pointID=false
       }else if(this.planList[index].name==='完工'){
-        this.operTwoList[indexOper].sixID=null;
+        this.operTwoList[indexOper].chooseMes[5].pointID=false
       }else if(this.planList[index].name==='验收'){
-        this.operTwoList[indexOper].sevenID=null;
-      };
+        this.operTwoList[indexOper].chooseMes[6].pointID=false
+      }
       this.$refs.ChosePointParent[indexOper].children[index+4].children[1].style.display='none';
       this.$refs.ChosePointParent[indexOper].children[index+4].children[0].checked=false;
+    },
+    chooseVince(indexOper){//选择省
+      this.operTwoList[indexOper].cityName=null;
+      this.placeList.forEach((e)=>{
+        if(this.operTwoList[indexOper].viceName===e.name){
+          this.operTwoList[indexOper].cityList=e.usingChildList
+        }
+      })
+    },
+    chooseCity(indexOper){//选择市
+      this.operTwoList[indexOper].cityList.forEach((e)=>{
+        if(this.operTwoList[indexOper].cityName===e.name){
+          this.operTwoList[indexOper].placeID=e.id;
+        }
+      })
+    },
+    submitPoint(){//提交局点编辑
+      let vc=this;
+      let formdata=new FormData();
+      formdata.append('operatorId',window.localStorage.getItem('Uid'));
+      formdata.append('projectId',vc.proID);
+      for(let i in vc.operTwoList){
+        if(vc.operTwoList[i].placeID==null||vc.operTwoList[i].address==null){
+          vc.$message.error('请补全局点信息')
+        }else{
+          formdata.append('projectPointDTOList['+i+'].placeId',vc.operTwoList[i].placeID);
+          formdata.append('projectPointDTOList['+i+'].address',vc.operTwoList[i].address);
+          if(vc.operTwoList[i].remark!=null&&vc.operTwoList[i].remark!=''){
+            formdata.append('projectPointDTOList['+i+'].remark',vc.operTwoList[i].remark);
+          }
+          for(let x in vc.operTwoList[i].chooseMes){
+            formdata.append('projectPointDTOList['+i+'].projectCourseNodeDTOList['+x+'].courseNodeId',vc.operTwoList[i].chooseMes[x].id);
+            formdata.append('projectPointDTOList['+i+'].projectCourseNodeDTOList['+x+'].isUsed',vc.operTwoList[i].chooseMes[x].pointID);
+          }
+        }
+      };
+      vc.$axios.post(vc.url+'/saveProjectPoint_n',formdata).then((res)=>{
+        if(res.data.code==0){
+          vc.$message.success('提交局点成功')
+        }else{
+          vc.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        vc.$message.error('未知异常,请联系管理员')
+      })
     }
   }
 }
@@ -2311,7 +2430,7 @@ input[type=checkbox]:checked:after {
           left: 10px;
           top:30px;
           display: none;
-          // opacity: 0;
+          opacity: 1;
         }
         input{
           position: absolute;

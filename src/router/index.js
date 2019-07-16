@@ -85,6 +85,26 @@ const router = new Router({
           path:'/admin/creatPro',//项目搭建
           name:'CreatPro',
           component:resolve=>require(['@/page/managerAdmin/creatPro'],resolve)
+        },
+        {
+          path:'/admin/custTion',//客户列表管理
+          name:'CustTion',
+          component:resolve=>require(['@/page/managerAdmin/customer'],resolve)
+        },
+        {
+          path:'/admin/workContent',//工作内容管理
+          name:'WorkContent',
+          component:resolve=>require(['@/page/internalAbout/workContent'],resolve)
+        },
+        {
+          path:'/admin/riskRcord',//潜在风险记录列表
+          name:'RiskRecord',
+          component:resolve=>require(['@/page/internalAbout/riskRcord'],resolve)
+        },
+        {
+          path:'/admin/projectFile',//项目相关文档管理
+          name:'ProjectFile',
+          component:resolve=>require(['@/page/internalAbout/projectFile'],resolve)
         }
       ],
       redirect:'/admin/wel'
