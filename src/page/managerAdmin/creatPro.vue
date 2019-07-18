@@ -135,7 +135,7 @@
                 size="medium"
                 style="width:350px;"
                 placeholder="请输入客户名称"
-                @blur="choseCus"
+                @change="choseCus"
                 :remote-method="remoteMethod"
                 :loading="cusLoading">
                 <el-option
@@ -158,7 +158,7 @@
             <li><el-input type="number" style="width:350px;" placeholder="请输入合同金额" v-model="addProMes.proCusMount"></el-input></li> -->
             <li><el-input type="primary" style="width:350px;" placeholder="请输入交付标准" v-model="addProMes.proText"></el-input></li>
             <li>
-              <el-select v-model="addProMes.proType" placeholder="请选择" @blur="choseType">
+              <el-select v-model="addProMes.proType" placeholder="请选择" @change="choseType">
                 <el-option
                   v-for="item in addProMes.typeList"
                   :key="item.name"
@@ -168,7 +168,7 @@
               </el-select>
             </li>
             <li>
-              <el-select v-model="addProMes.ductType" placeholder="请选择" @blur="choseDuct">
+              <el-select v-model="addProMes.ductType" placeholder="请选择" @change="choseDuct">
                 <el-option
                   v-for="item in addProMes.skillList"
                   :key="item.name"
@@ -226,7 +226,7 @@
                 size="medium"
                 style="width:350px;"
                 placeholder="请输入客户名称"
-                @blur="choseCus"
+                @change="editCus"
                 :remote-method="remoteMethod"
                 :loading="cusLoading">
                 <el-option
@@ -237,7 +237,7 @@
                 </el-option>
               </el-select>
             </li>
-            <li><el-input type="primary" style="width:350px;" placeholder="请输入项目名称" v-model="editProMes.customerName"></el-input></li>
+            <li><el-input type="primary" style="width:350px;" placeholder="请输入项目名称" v-model="editProMes.name"></el-input></li>
             <li><el-input type="primary" style="width:350px;" placeholder="请输入合同号" v-model="editProMes.contractNumber"></el-input></li>
             <!-- <li><el-input type="textarea" style="width:350px;" :autosize="{maxRows:6}" placeholder="请输入项目内容" v-model="addProMes.proContent"></el-input></li> -->
             <li style="height:150px;"><textarea v-model="editProMes.content" @focus="getTear" @blur="clearTear" ref="proTear" placeholder="请输入项目内容"></textarea></li>
@@ -304,41 +304,43 @@
             </li>
             <li>删除</li>
           </ul>
-          <ul class="mes_titleTwo operTwo" v-for="(operTwo,indexOper) in operTwoList" ref="ChosePointParent">
-            <li>{{operTwo.num+1}}</li>
-            <li>
-              <el-select v-model="operTwo.viceName" @change="chooseVince(indexOper)" placeholder="请选择"   style="width:100px;" size="medium">
-                <el-option
-                  v-for="item in placeList"
-                  :key="item.name"
-                  :label="item.name"
-                  :value="item.name">
-                </el-option>
-              </el-select>
-              <el-select v-model="operTwo.cityName" @change="chooseCity(indexOper)" placeholder="请选择" style="width:100px;" size="medium">
-                <el-option
-                  v-for="item in operTwo.cityList"
-                  :key="item.name"
-                  :label="item.name"
-                  :value="item.name">
-                </el-option>
-              </el-select>
-            </li>
-            <li>
-              <el-input type="primary" size="small" v-model="operTwo.address" placeholder="请输入施工详细地址"></el-input>
-            </li>
-            <li>
-              <el-input type="primary" size="small" v-model="operTwo.remark" placeholder="请输入备注信息"></el-input>
-            </li>
-            <li class="loadMes" v-for="(chosePoint,index) in planList" :key="'ChosePoint'+index" ref="ChosePointBox">
-              <input type="checkbox" name="" value="" id="" :ref="'PointCheck'+index" @click="choosePoint(indexOper,index)">
-              <span :ref="'MaskTitle'+index" @click="cancelPoint(indexOper,index)"></span>
-              {{chosePoint.name}}
-            </li>
-            <li>
-              <i class="el-icon-delete" style="cursor:pointer;" @click="delOperTwo(indexOper)"></i>
-            </li>
-          </ul>
+          <div class="" v-loading="loadPoint">
+            <ul class="mes_titleTwo operTwo" v-for="(operTwo,indexOper) in operTwoList" ref="ChosePointParent">
+              <li>{{operTwo.num+1}}</li>
+              <li>
+                <el-select v-model="operTwo.viceName" @change="chooseVince(indexOper)" placeholder="请选择"   style="width:100px;" size="medium">
+                  <el-option
+                    v-for="item in placeList"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name">
+                  </el-option>
+                </el-select>
+                <el-select v-model="operTwo.cityName" @change="chooseCity(indexOper)" placeholder="请选择" style="width:100px;" size="medium">
+                  <el-option
+                    v-for="item in operTwo.cityList"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name">
+                  </el-option>
+                </el-select>
+              </li>
+              <li>
+                <el-input type="primary" size="small" v-model="operTwo.address" placeholder="请输入施工详细地址"></el-input>
+              </li>
+              <li>
+                <el-input type="primary" size="small" v-model="operTwo.remark" placeholder="请输入备注信息"></el-input>
+              </li>
+              <li class="loadMes" v-for="(chosePoint,index) in planList" :key="'ChosePoint'+index" ref="ChosePointBox">
+                <input type="checkbox" name="" value="" id="" :ref="'PointCheck'+index" @click="choosePoint(indexOper,index)">
+                <span :ref="'MaskTitle'+index" @click="cancelPoint(indexOper,index)"></span>
+                {{chosePoint.name}}
+              </li>
+              <li>
+                <i class="el-icon-delete" style="cursor:pointer;" @click="delOperTwo(indexOper)"></i>
+              </li>
+            </ul>
+          </div>
         </div>
         <p class="firstPoer">
           <el-button type="primary" icon="el-icon-circle-plus-outline" size="small" @click="pushPoint()">添加局点</el-button>
@@ -1119,8 +1121,8 @@ export default {
       ],
       operTwoList:[
         {
-          num:1,
-          placeID:null,//地址ID
+          num:0,
+          placeID:110100,//地址ID
           address:null,//详细地址
           remark:null,//备注
           chooseMes:[
@@ -1132,8 +1134,8 @@ export default {
             {pointID:false,id:'8ded2067-2ffe-47d0-959c-d1bd994c5dfd'},//完工
             {pointID:false,id:'c93bc808-f703-4c86-b124-5fac8319504d'},//验收
           ],
-          viceName:null,//省级名称
-          cityName:null,//城市名称
+          viceName:'北京',//省级名称
+          cityName:'北京市',//城市名称
           cityList:[],
         },
       ],
@@ -1143,6 +1145,15 @@ export default {
       proID:null,//项目ID
       length:0,
       fullscreenLoading:false,//全屏Loading
+      tem:[],//临时数据
+      temTwo:[],//临时数据
+      temThree:[],//临时数据
+      temFour:[],//临时数据
+      temFive:[],//临沭数据
+      temSix:[],//临时数据
+      temSeven:[],//临时数据
+      loadPoint:false,//据点加载Loading
+      callIndex:null,//调用Index
     }
   },
   created(){
@@ -1308,22 +1319,30 @@ export default {
           _vm.$axios.get(_vm.url+'/getProjectTypeList').then((res)=>{
             if(res.data.code==0){
               _vm.addProMes.typeList=res.data.data;
+              _vm.addPro=true;
+            }else{
+              _vm.$message.error(res.data.msg)
             }
+          }).catch((err)=>{
+            _vm.$message.error('未知错误,请联系管理员')
           })
         }else{
           _vm.$message.error(res.data.msg)
         }
       }).catch((err)=>{
         _vm.$message.error('未知错误,请联系管理员')
-        // console.log(err)
       });
-      setTimeout(()=>{
-        _vm.addPro=true;
-      })
     },
     choseCus(){//选择客户
       this.restaurants.forEach((e)=>{
         if(e.value===this.cusName){
+          this.addProMes.cusID=e.id;
+        }
+      });
+    },
+    editCus(){//编辑项目信息选择客户
+      this.restaurants.forEach((e)=>{
+        if(e.value===this.editProMes.customerName){
           this.addProMes.cusID=e.id;
         }
       });
@@ -1430,12 +1449,13 @@ export default {
     },
     firstStep(index){//第一步实施计划
       let _vm=this;
+      _vm.loadPoint=true;
+      _vm.callIndex=index;
       _vm.fullscreenLoading=true;
       _vm.proID=_vm.proList[index].id;
       _vm.$axios.get(_vm.url+'/projectInfo?projectId='+_vm.proID).then((res)=>{
-        console.log(res);
         if(res.data.code==0){
-          if(res.data.data.projectPointVOList!=0){
+          if(res.data.data.projectPointVOList!=null){
             _vm.operTwoList=[];
             for(let i in res.data.data.projectPointVOList){
               _vm.operTwoList.push({
@@ -1448,25 +1468,119 @@ export default {
                 viceName:res.data.data.projectPointVOList[i].placeVO.parentName,//省级名称
                 cityName:res.data.data.projectPointVOList[i].placeVO.name,//城市名称
                 cityList:[],
+                projectPointId:res.data.data.projectPointVOList[i].id
               })
               for(let x in res.data.data.projectPointVOList[i].projectCourseNodeVOList){
                 _vm.operTwoList.forEach((e)=>{
                   e.chooseMes.push(
                     {
                       pointID:res.data.data.projectPointVOList[i].projectCourseNodeVOList[x].isUsed,
-                      id:res.data.data.projectPointVOList[i].projectCourseNodeVOList[x].courseNodeId
+                      id:res.data.data.projectPointVOList[i].projectCourseNodeVOList[x].courseNodeId,
+                      pointId:res.data.data.projectPointVOList[i].projectCourseNodeVOList[x].id
                     },
                   )
                 })
               };
-              _vm.length=0;
-              for(let u in _vm.operTwoList){
-                _vm.$set(_vm.operTwoList[u],'num',_vm.length++);
-                _vm.operTwoList[u].chooseMes.splice(7,14);
-                console.log(_vm.$refs.ChosePointParent[u])
-              };
-              console.log(_vm.operTwoList)
             }
+            _vm.length=0;
+            for(let u in _vm.operTwoList){
+              _vm.$set(_vm.operTwoList[u],'num',_vm.length++);
+              _vm.operTwoList[u].chooseMes.splice(7,14);
+              setTimeout(()=>{
+                for(let o in _vm.operTwoList[u].chooseMes){
+                  if(_vm.operTwoList[u].chooseMes[o].pointID){
+                    _vm.$refs.ChosePointParent[u].children[Number(o)+4].children[0].checked=true;
+                    _vm.$refs.ChosePointParent[u].children[Number(o)+4].children[1].style.display='block';
+                  }
+                }
+              },500);
+            };
+            _vm.operTwoList.forEach((t)=>{
+                _vm.tem.push(t.chooseMes[0].pointID);
+                if(_vm.tem.indexOf(false)>-1){
+                  setTimeout(()=>{
+                    _vm.$refs.PointCheck0[0].checked=false;
+                    _vm.$refs.MaskTitle0[0].style.display='none';
+                  },500);
+                }else{
+                  setTimeout(()=>{
+                    _vm.$refs.PointCheck0[0].checked=true;
+                    _vm.$refs.MaskTitle0[0].style.display='block';
+                  },500)
+                };
+                _vm.temTwo.push(t.chooseMes[1].pointID);
+                if(_vm.temTwo.indexOf(false)>-1){
+                  setTimeout(()=>{
+                    _vm.$refs.PointCheck1[0].checked=false;
+                    _vm.$refs.MaskTitle1[0].style.display='none';
+                  },500);
+                }else{
+                  setTimeout(()=>{
+                    _vm.$refs.PointCheck1[0].checked=true;
+                    _vm.$refs.MaskTitle1[0].style.display='block';
+                  },500)
+                };
+                _vm.temThree.push(t.chooseMes[2].pointID);
+                if(_vm.temThree.indexOf(false)>-1){
+                  setTimeout(()=>{
+                    _vm.$refs.PointCheck2[0].checked=false;
+                    _vm.$refs.MaskTitle2[0].style.display='none';
+                  },500);
+                }else{
+                  setTimeout(()=>{
+                    _vm.$refs.PointCheck2[0].checked=true;
+                    _vm.$refs.MaskTitle2[0].style.display='block';
+                  },500)
+                };
+                _vm.temFour.push(t.chooseMes[3].pointID);
+                if(_vm.temFour.indexOf(false)>-1){
+                  setTimeout(()=>{
+                    _vm.$refs.PointCheck3[0].checked=false;
+                    _vm.$refs.MaskTitle3[0].style.display='none';
+                  },500);
+                }else{
+                  setTimeout(()=>{
+                    _vm.$refs.PointCheck3[0].checked=true;
+                    _vm.$refs.MaskTitle3[0].style.display='block';
+                  },500)
+                };
+                _vm.temFive.push(t.chooseMes[4].pointID);
+                if(_vm.temFive.indexOf(false)>-1){
+                  setTimeout(()=>{
+                    _vm.$refs.PointCheck4[0].checked=false;
+                    _vm.$refs.MaskTitle4[0].style.display='none';
+                  },500);
+                }else{
+                  setTimeout(()=>{
+                    _vm.$refs.PointCheck4[0].checked=true;
+                    _vm.$refs.MaskTitle4[0].style.display='block';
+                  },500)
+                };
+                _vm.temSix.push(t.chooseMes[5].pointID);
+                if(_vm.temSix.indexOf(false)>-1){
+                  setTimeout(()=>{
+                    _vm.$refs.PointCheck5[0].checked=false;
+                    _vm.$refs.MaskTitle5[0].style.display='none';
+                  },500);
+                }else{
+                  setTimeout(()=>{
+                    _vm.$refs.PointCheck5[0].checked=true;
+                    _vm.$refs.MaskTitle5[0].style.display='block';
+                  },500)
+                };
+                _vm.temSeven.push(t.chooseMes[6].pointID);
+                if(_vm.temSeven.indexOf(false)>-1){
+                  setTimeout(()=>{
+                    _vm.$refs.PointCheck6[0].checked=false;
+                    _vm.$refs.MaskTitle6[0].style.display='none';
+                  },500);
+                }else{
+                  setTimeout(()=>{
+                    _vm.$refs.PointCheck6[0].checked=true;
+                    _vm.$refs.MaskTitle6[0].style.display='block';
+                  },500)
+                };
+              });
             _vm.$axios.get(_vm.url+'/getUsingCourseNodeList').then((res)=>{
               if(res.data.code==0){
                 _vm.planList=res.data.data;
@@ -1475,6 +1589,7 @@ export default {
                     _vm.placeList=res.data.data.placeList;
                     _vm.firstBox=true;
                     _vm.fullscreenLoading=false;
+                    _vm.loadPoint=false;
                     setTimeout(()=>{
                       _vm.firstConBox=true;
                     },100)
@@ -1483,27 +1598,58 @@ export default {
                       _vm.$refs.firstPerBox.style.minHeight='100%';
                     })
                   }else{
+                    _vm.loadPoint=false;
                     _vm.fullscreenLoading=false;
                     _vm.$message.error(res.data.msg);
                   }
                 }).catch((err)=>{
+                  _vm.loadPoint=false;
                   _vm.fullscreenLoading=false;
                   _vm.$message.error('未知错误,请联系管理员')
                 })
               }else{
+                _vm.loadPoint=false;
                 _vm.fullscreenLoading=false;
                 _vm.$message.error(res.data.msg)
               }
             }).catch((err)=>{
+              _vm.loadPoint=false;
               _vm.fullscreenLoading=false;
               _vm.$message.error('未知错误,请联系管理员')
             })
+          }else{
+            _vm.$axios.get(_vm.url+'/mobile/getUsingPlaceList').then((res)=>{
+              if(res.data.code==0){
+                _vm.placeList=res.data.data.placeList;
+                _vm.firstBox=true;
+                _vm.fullscreenLoading=false;
+                _vm.loadPoint=false;
+                setTimeout(()=>{
+                  _vm.firstConBox=true;
+                },100)
+                setTimeout(()=>{
+                  _vm.$refs.firstPerBox.style.width='100%';
+                  _vm.$refs.firstPerBox.style.minHeight='100%';
+                })
+              }else{
+                _vm.loadPoint=false;
+                _vm.fullscreenLoading=false;
+                _vm.$message.error(res.data.msg);
+              }
+            }).catch((err)=>{
+              _vm.loadPoint=false;
+              _vm.fullscreenLoading=false;
+              _vm.$message.error('未知错误,请联系管理员')
+            })
+            // alert(1)
           }
         }else{
+          _vm.loadPoint=false;
           _vm.fullscreenLoading=false;
           _vm.$message.error(res.data.msdg)
         }
       }).catch((err)=>{
+        _vm.loadPoint=false;
         _vm.fullscreenLoading=false;
         _vm.$message.error('未知错误,请联系管理员')
       })
@@ -1513,10 +1659,37 @@ export default {
       this.$refs.firstPerBox.style.width='300px';
       this.$refs.firstPerBox.style.minHeight='200px';
       this.proID=null;
+      this.tem=[];//临时数据
+      this.temTwo=[];//临时数据
+      this.temThree=[];//临时数据
+      this.temFour=[];//临时数据
+      this.temFive=[];//临沭数据
+      this.temSix=[];//临时数据
+      this.temSeven=[];//临时数据
       setTimeout(()=>{
         this.firstConBox=false;
       },100)
       setTimeout(()=>{
+        this.operTwoList=[
+          {
+            num:0,
+            placeID:110100,//地址ID
+            address:null,//详细地址
+            remark:null,//备注
+            chooseMes:[
+              {pointID:false,id:'04c10200-88c1-4c5a-a831-43a4b78f9789'},//进场开工
+              {pointID:false,id:'ea0e6c9b-a014-484b-8a36-442a53b07438'},//硬件安装
+              {pointID:false,id:'84f9bbab-dfbb-4326-bf49-05fff21dd6d0'},//加电单调
+              {pointID:false,id:'60a95b32-59c9-4b15-ad25-5d74e577592f'},//联调割接
+              {pointID:false,id:'03c3fa6b-5440-45c6-855a-ee4cc7a739b8'},//培训
+              {pointID:false,id:'8ded2067-2ffe-47d0-959c-d1bd994c5dfd'},//完工
+              {pointID:false,id:'c93bc808-f703-4c86-b124-5fac8319504d'},//验收
+            ],
+            viceName:'北京',//省级名称
+            cityName:'北京市',//城市名称
+            cityList:[],
+          },
+        ]
         this.firstBox=false;
       },300)
     },
@@ -1628,7 +1801,6 @@ export default {
                 .indexOf(query.toLowerCase()) > -1;
             });
           }, 200);
-          console.log(this.searchEngList)
         } else {
           this.searchEngList = [];
         }
@@ -1637,11 +1809,26 @@ export default {
       console.log(this.proList[index].id)
     },
     delOperTwo(indexOper){//删除当前局点
-      this.operTwoList.splice(indexOper,1)
+      if(this.operTwoList[indexOper].projectPointId!=undefined){
+        let formdata=new FormData();
+        formdata.append('projectPointId',this.operTwoList[indexOper].projectPointId)
+        this.$axios.post(this.url+'/deleteProjectPoint',formdata).then((res)=>{
+          if(res.data.code==0){
+            this.$message.success('删除局点成功');
+            this.firstStep(this.callIndex)
+          }else{
+            this.$message.error(res.data.msg)
+          }
+        }).catch((err)=>{
+          this.$message.error('未知错误,请联系管理员')
+        })
+      }else{
+        this.operTwoList.splice(indexOper,1)
+      }
     },
     handleSelectionChange(val) {//全选
       this.multipleSelection = val;
-      console.log(this.multipleSelection)
+      // console.log(this.multipleSelection)
     },
     hasDetials(index){//查看项目详情
       let _vc=this;
@@ -1772,7 +1959,7 @@ export default {
             }
           }
           _vc.projectMes=res.data.data;
-          console.log(_vc.projectMes)
+          // console.log(_vc.projectMes)
           _vc.openDetils=true;
           setTimeout(()=>{
             _vc.$refs.project_mes.style.width='100%'
@@ -1786,7 +1973,7 @@ export default {
         }
       }).catch((err)=>{
         this.$message.error('未知错误,请联系管理员')
-        console.log(err)
+        // console.log(err)
       })
     },
     closeMes(){//关闭项目详情
@@ -1853,7 +2040,7 @@ export default {
     pushPoint(){//添加实施地点
       this.operTwoList.push({
         num:this.operTwoList.length,
-        placeID:null,//地址ID
+        placeID:110100,//地址ID
         address:null,//详细地址
         remark:null,//备注
         chooseMes:[
@@ -1865,13 +2052,14 @@ export default {
           {pointID:false,id:'8ded2067-2ffe-47d0-959c-d1bd994c5dfd'},//完工
           {pointID:false,id:'c93bc808-f703-4c86-b124-5fac8319504d'},//验收
         ],
-        viceName:null,//省级名称
-        cityName:null,//城市名称
+        viceName:'北京',//省级名称
+        cityName:'北京市',//城市名称
         cityList:[],
       })
     },
     editProject(index){//编辑项目信息
       let _vm=this;
+      console.log(this.addProMes)
       _vm.editProMes=this.proList[index];
       _vm.$set(_vm.editProMes,'skillList',[]);
       _vm.$set(_vm.editProMes,'skillIDList',[]);
@@ -1880,8 +2068,8 @@ export default {
       _vm.$axios.get(_vm.url+'/usingTechnologyList').then((res)=>{
         if(res.data.code==0){
           _vm.editProMes.skillList=res.data.data;
+          _vm.addProMes.cusID=_vm.editProMes.customerId;
           _vm.$axios.get(_vm.url+'/projectInfo?projectId='+_vm.proList[index].id).then((res)=>{
-            // console.log(res)
             if(res.data.code==0){
               let a=res.data.data.levelVOList;
               _vm.editProMes.skillList.forEach((e)=>{
@@ -1932,6 +2120,71 @@ export default {
       });
     },
     turnEditPro(){//确认修改项目
+      let vc=this;
+      if(vc.addProMes.cusID==null){
+        vc.$message.error('请选择客户名称')
+      }else if(vc.editProMes.name==null||vc.editProMes.name==''){
+        vc.$message.error('请输入项目名称')
+      }else if(vc.editProMes.contractNumber==null||vc.editProMes.contractNumber==''){
+        vc.$message.error('请输入合同号')
+      }else if(vc.editProMes.content==null||vc.editProMes.content==''){
+        vc.$message.error('请输入项目内容')
+      }else if(vc.editProMes.linkman==null||vc.editProMes.linkman==''){
+        vc.$message.error('请输入联系人姓名')
+      }else if(vc.editProMes.phone==null||vc.editProMes.phone==''){
+        vc.$message.error('请输入联系人电话')
+      }else if(vc.editProMes.phone.length!=11){
+        vc.$message.error('请输入正确的手机号')
+      }else if(vc.editProMes.peopleNumber==null||vc.editProMes.peopleNumber==''){
+        vc.$message.error('请输入项目人数')
+      }else if(vc.editProMes.dayNumber==null||vc.editProMes.dayNumber==''){
+        vc.$message.error('请输入项目工期')
+      }else if(vc.editProMes.standard==null||vc.editProMes.standard==''){
+        vc.$message.error('请输入项目交付标准')
+      }else if(vc.editProMes.projectType.id==null){
+        vc.$message.error('请选择项目类型')
+      }else if(vc.editProMes.technologyId==null){
+        vc.$message.error('请选择产品线')
+      }else if(vc.editProMes.skillIDList.length<1){
+        vc.$message.error('请选择技术要求')
+      }else{
+        let opID=window.localStorage.getItem('Uid');
+        let formdata=new FormData();
+        formdata.append('id',vc.editProMes.id)
+        formdata.append('customerId',vc.addProMes.cusID);
+        formdata.append('projectTypeId',vc.editProMes.projectType.id);
+        formdata.append('technologyId',vc.editProMes.technologyId);
+        formdata.append('technologyName',vc.editProMes.technologyName);
+        formdata.append('name',vc.editProMes.name);
+        formdata.append('content',vc.editProMes.content);
+        formdata.append('linkman',vc.editProMes.linkman);
+        formdata.append('phone',vc.editProMes.phone);
+        formdata.append('peopleNumber',vc.editProMes.peopleNumber);
+        formdata.append('dayNumber',vc.editProMes.dayNumber);
+        formdata.append('standard',vc.editProMes.standard);
+        formdata.append('contractNumber',vc.editProMes.contractNumber)
+        if(vc.editProMes.proMount!=null&&vc.editProMes.proMount!=''){
+          formdata.append('budget',vc.editProMes.proMount);
+        }
+        formdata.append('operatorId',opID);
+        vc.editProMes.skillIDList.forEach((e)=>{
+          formdata.append('levelIds',e);
+        });
+        vc.$axios.post(vc.url+'/saveProject_n',formdata).then((res)=>{
+          if(res.data.code==0){
+            vc.$message.success('修改项目信息成功')
+            vc.getProList();
+            vc.editPro=false;
+            vc.addProMes.cusID=null;
+          }else{
+            vc.editPro=false;
+            vc.$message.error(res.data.msg)
+          }
+        }).catch((err)=>{
+          vc.editPro=false;
+          vc.$message.error('未知异常,请联系管理员')
+        })
+      }
       console.log(this.editProMes)
     },
     allChoosePoint(index){//局点全选
@@ -2138,7 +2391,7 @@ export default {
       formdata.append('operatorId',window.localStorage.getItem('Uid'));
       formdata.append('projectId',vc.proID);
       for(let i in vc.operTwoList){
-        if(vc.operTwoList[i].placeID==null||vc.operTwoList[i].address==null){
+        if(vc.operTwoList[i].placeID==null||vc.operTwoList[i].address==null||vc.operTwoList[i].address==''){
           vc.$message.error('请补全局点信息')
         }else{
           formdata.append('projectPointDTOList['+i+'].placeId',vc.operTwoList[i].placeID);
@@ -2146,15 +2399,22 @@ export default {
           if(vc.operTwoList[i].remark!=null&&vc.operTwoList[i].remark!=''){
             formdata.append('projectPointDTOList['+i+'].remark',vc.operTwoList[i].remark);
           }
+          if(vc.operTwoList[i].projectPointId!=undefined){
+            formdata.append('projectPointDTOList['+i+'].projectPointId',vc.operTwoList[i].projectPointId);
+          }
           for(let x in vc.operTwoList[i].chooseMes){
             formdata.append('projectPointDTOList['+i+'].projectCourseNodeDTOList['+x+'].courseNodeId',vc.operTwoList[i].chooseMes[x].id);
             formdata.append('projectPointDTOList['+i+'].projectCourseNodeDTOList['+x+'].isUsed',vc.operTwoList[i].chooseMes[x].pointID);
+            if(vc.operTwoList[i].chooseMes[x].pointId!=undefined){
+              formdata.append('projectPointDTOList['+i+'].projectCourseNodeDTOList['+x+'].projectCourseNodeId',vc.operTwoList[i].chooseMes[x].pointId);
+            }
           }
         }
       };
       vc.$axios.post(vc.url+'/saveProjectPoint_n',formdata).then((res)=>{
         if(res.data.code==0){
-          vc.$message.success('提交局点成功')
+          vc.$message.success('提交局点成功');
+          vc.firstStep(vc.callIndex)
         }else{
           vc.$message.error(res.data.msg)
         }
@@ -2430,7 +2690,7 @@ input[type=checkbox]:checked:after {
           left: 10px;
           top:30px;
           display: none;
-          opacity: 1;
+          opacity: 0;
         }
         input{
           position: absolute;
