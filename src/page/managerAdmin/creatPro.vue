@@ -354,7 +354,7 @@
       <p class="mes_titleOne">
         <span>人员委派</span>
       </p>
-      <div class="" style="margin-top:15px;" v-if="secondConBox">
+      <div class="" v-if="secondConBox">
         <el-row>
           <el-col :span="2"><div class="gate_title">序号</div></el-col>
           <el-col :span="3"><div class="gate_title">地点</div></el-col>
@@ -362,13 +362,14 @@
           <el-col :span="7"><div class="gate_title">添加工程师</div></el-col>
           <el-col :span="7"><div class="gate_title">已选择工程师</div></el-col>
         </el-row>
+        <p style="line-height:100px;fontSize:18px;color:#666;width:100%;textAlign:center;" v-if="hasPoint">暂无局点，请前往建立</p>
         <el-row class="proMes" v-for="(choseEng,index) in gateList" :key="'ChoseEng'+index">
-          <el-col :span="2"><div class="gate_mes">{{choseEng.num}}</div></el-col>
-          <el-col :span="3"><div class="gate_mes">{{choseEng.place}}</div></el-col>
+          <el-col :span="2"><div class="gate_mes">{{choseEng.num+1}}</div></el-col>
+          <el-col :span="3"><div class="gate_mes">{{choseEng.placeName}}</div></el-col>
           <el-col :span="5"><div class="gate_mes">{{choseEng.address}}</div></el-col>
           <el-col :span="7"><div class="gate_mes">
             <el-select
-              v-model="searchEngText"
+              v-model="choseEng.searchEngText"
               filterable
               remote
               reserve-keyword
@@ -376,6 +377,7 @@
               style="width:200px;"
               placeholder="请输入工程师姓名"
               :remote-method="remoteEng"
+              @change="chooseEng"
               :loading="cusLoading">
               <el-option
                 v-for="eng in searchEngList"
@@ -384,9 +386,14 @@
                 :value="eng.value">
               </el-option>
             </el-select>
-            <el-button type="primary" size="small">添加</el-button>
+            <el-button type="primary" size="small" @click="subTurnEng(index)">添加</el-button>
           </div></el-col>
-          <el-col :span="7"><div class="gate_mes">{{choseEng.turnEng}}</div></el-col>
+          <el-col :span="7" v-if="choseEng.personnelRecordVOList==null"><div class="gate_mes">-</div></el-col>
+          <el-col :span="7" v-else><div class="gate_mes" :class="{ceed:choseEng.isCeed=true}">
+            <span v-for="(turnEng,engIndex) in choseEng.personnelRecordVOList">
+              <span>{{turnEng.engineerName}}<i class="el-icon-delete" style="margin-left:5px;color:#eb7a1d;cursor:pointer;" @click="delTurnEng(index,engIndex)"></i></span>/
+            </span>
+          </div></el-col>
         </el-row>
         </div>
 
@@ -404,20 +411,21 @@
             <ul>
               <li>
                 <span>项目状态</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <el-select v-model="value" placeholder="请选择" style="width:220px;" size="medium">
+                <el-select v-model="proStateMes.stateText" placeholder="请选择" @change="chooseProState" style="width:220px;" size="medium">
                   <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
+                    v-for="item in proStateList"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.name">
                   </el-option>
                 </el-select>
               </li>
               <li>
                 <span>预警时间</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <el-date-picker
-                  v-model="value1"
+                  v-model="proStateMes.warnTime"
                   type="date"
+                  value-format="yyyy-MM-dd"
                   size="medium"
                   placeholder="选择日期">
                 </el-date-picker>
@@ -425,8 +433,9 @@
               <li>
                 <span>计划完工时间</span>
                 <el-date-picker
-                  v-model="value1"
+                  v-model="proStateMes.planEndTime"
                   type="date"
+                  value-format="yyyy-MM-dd"
                   size="medium"
                   placeholder="选择日期">
                 </el-date-picker>
@@ -434,8 +443,9 @@
               <li>
                 <span>计划验收时间</span>
                 <el-date-picker
-                  v-model="value1"
+                  v-model="proStateMes.planAcceptTime"
                   type="date"
+                  value-format="yyyy-MM-dd"
                   size="medium"
                   placeholder="选择日期">
                 </el-date-picker>
@@ -444,13 +454,14 @@
             <ul>
               <li>
                 <span>项目进度</span>
-                <el-input type="primary" size="medium" style="width:220px;" placeholder="请输入项目进度"></el-input>%
+                <el-input type="primary" v-model="proStateMes.proGress" size="medium" style="width:220px;" placeholder="请输入项目进度"></el-input>%
               </li>
               <li>
                 <span>入场时间</span>
                 <el-date-picker
-                  v-model="value1"
+                  v-model="proStateMes.startTime"
                   type="date"
+                  value-format="yyyy-MM-dd"
                   size="medium"
                   placeholder="选择日期">
                 </el-date-picker>
@@ -458,8 +469,9 @@
               <li>
                 <span>完工时间</span>
                 <el-date-picker
-                  v-model="value1"
+                  v-model="proStateMes.endTime"
                   type="date"
+                  value-format="yyyy-MM-dd"
                   size="medium"
                   placeholder="选择日期">
                 </el-date-picker>
@@ -467,8 +479,9 @@
               <li>
                 <span>验收时间</span>
                 <el-date-picker
-                  v-model="value1"
+                  v-model="proStateMes.acceptTime"
                   type="date"
+                  value-format="yyyy-MM-dd"
                   size="medium"
                   placeholder="选择日期">
                 </el-date-picker>
@@ -476,32 +489,14 @@
             </ul>
           </div>
           <p class="cess_btn">
-            <el-button type="primary" size="medium">保存</el-button>
+            <el-button type="primary" size="medium" @click="saveProState()">保存</el-button>
           </p>
         </div>
         <div class="pro_point" v-for="(point,index) in pointList" :key="'Point'+index">
           <p class="point_title">局点信息</p>
           <p class="point_place">
-            地点:{{point.place}}&nbsp;&nbsp;&nbsp;详细地址:{{point.address}}
+            地点:{{point.placeName}}&nbsp;&nbsp;&nbsp;详细地址:{{point.address}}
           </p>
-          <!-- <p class="point_title" style="margin-top:10px;">局点状态</p>
-          <p class="change_point">
-            <el-select v-model="value" placeholder="请选择" style="width:220px;" size="medium">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-            <el-date-picker
-              v-model="value1"
-              type="date"
-              size="medium"
-              placeholder="选择日期">
-            </el-date-picker>
-            <el-button type="primary" size="medium">保存</el-button>
-          </p> -->
           <p class="point_title" style="margin-top:10px;">局点进程</p>
           <div class="">
             <el-row>
@@ -512,44 +507,51 @@
               <el-col :span="4"><div class="edit_title">实际完成时间</div></el-col>
               <el-col :span="5"><div class="edit_title">备注</div></el-col>
             </el-row>
-            <el-row class="proMes" v-for="(editMes,index) in pointMesList" :key="'EditMes'+index">
-              <el-col :span="3"><div class="edit_mes">{{editMes.name}}</div></el-col>
+            <el-row class="proMes" v-for="(editMes,indexK) in point.usingProjectCourseNodeVOList" :key="'EditMes'+indexK">
+              <el-col :span="3"><div class="edit_mes">{{editMes.courseNodeName}}</div></el-col>
               <el-col :span="4"><div class="edit_mes">
                 <el-date-picker
-                  v-model="value1"
+                  v-model="editMes.planStartTimeStr"
                   type="date"
+                  value-format="yyyy-MM-dd"
                   size="medium"
                   placeholder="选择日期">
                 </el-date-picker>
               </div></el-col>
               <el-col :span="4"><div class="edit_mes">
                 <el-date-picker
-                  v-model="value1"
+                  v-model="editMes.planEndTimeStr"
                   type="date"
+                  value-format="yyyy-MM-dd"
                   size="medium"
                   placeholder="选择日期">
                 </el-date-picker>
               </div></el-col>
               <el-col :span="4"><div class="edit_mes">
                 <el-date-picker
-                  v-model="value1"
+                  v-model="editMes.startTimeStr"
                   type="date"
+                  value-format="yyyy-MM-dd"
                   size="medium"
                   placeholder="选择日期">
                 </el-date-picker>
               </div></el-col>
               <el-col :span="4"><div class="edit_mes">
                 <el-date-picker
-                  v-model="value1"
+                  v-model="editMes.endTimeStr"
                   type="date"
+                  value-format="yyyy-MM-dd"
                   size="medium"
                   placeholder="选择日期">
                 </el-date-picker>
               </div></el-col>
               <el-col :span="5"><div class="edit_mes">
-                <el-input type="primary" size="small" placeholder="请输入备注信息"></el-input>
+                <el-input type="primary" size="small" placeholder="请输入备注信息" v-model="editMes.remark"></el-input>
               </div></el-col>
             </el-row>
+            <p style="textAlign:center;lineHeight:50px;">
+              <el-button type="primary" size="medium" @click="subTurnPoint(index)">提交</el-button>
+            </p>
           </div>
         </div>
       </div>
@@ -560,18 +562,18 @@
       <p class="mes_titleOne">
         <span>项目文档</span>
       </p>
-      <div class="file_point" v-for="(pointFile,index) in pointFileList" :key="'PointFile'+index" v-if="fileConBox">
+      <div class="file_point" v-for="(pointFile,indexFile) in pointFileList" :key="'PointFile'+indexFile" v-if="fileConBox">
         <p class="file_title">局点信息</p>
-        <p class="file_place">地点:&nbsp;&nbsp;{{pointFile.place}}</p>
+        <p class="file_place">地点:&nbsp;&nbsp;{{pointFile.placeName}}</p>
         <p class="file_place">详细地址:&nbsp;&nbsp;{{pointFile.address}}</p>
         <ul>
-          <li v-for="(fileUp,index) in pointFile.children" :key="'FileUp'+index">
-            <span>{{fileUp}}:</span>
-            <el-input type="primary" style="width:600px;"></el-input>
-            <input type="file" name="" value="">
+          <li v-for="(fileUp,indexF) in pointFile.fileTypeList" :key="'FileUp'+indexF">
+            <span>{{fileUp.name}}:</span>
+            <el-input type="primary" style="width:600px;" v-model="fileUp.fileName"></el-input>
+            <input type="file" name="" value="" @change="upPointFile($event,indexFile,indexF)">
             <el-button type="primary" icon="el-icon-search" size="small">浏览文件</el-button>
             <el-button type="primary" icon="el-icon-upload" size="small">上传</el-button>
-            <a href="http://www.baidu.com">
+            <a :href="url+fileUp.path">
               <el-button type="primary" icon="el-icon-download" size="small">下载模板</el-button>
             </a>
           </li>
@@ -913,17 +915,24 @@
 export default {
   data(){
     return{
-      proList:[
-        {
-          num:1,
-          name:'集运教育',
-          technologyName:'UCC',
-          state:1,
-          schedule:50,
-          creatorName:'阿明',
-          createTimeSec:'2019/07/09'
-        }
-      ],
+      options: [{
+         value: '选项1',
+         label: '黄金糕'
+       }, {
+         value: '选项2',
+         label: '双皮奶'
+       }, {
+         value: '选项3',
+         label: '蚵仔煎'
+       }, {
+         value: '选项4',
+         label: '龙须面'
+       }, {
+         value: '选项5',
+         label: '北京烤鸭'
+       }],
+
+      proList:[],
       value1:'',
       multipleSelection: [],
       placeList: [],
@@ -1038,20 +1047,7 @@ export default {
       projectMes:{},//项目详情内容
       dayList:[],//项目日报列表
       activeNames:[],//折叠面板参数
-      gateList:[
-        {
-          num:'1',
-          place:'北京/海淀区',
-          address:'马连洼北路8号万霖科技大厦',
-          turnEng:'张琳/李璐'
-        },
-        {
-          num:'2',
-          place:'北京/昌平',
-          address:'融泽家园2号院',
-          turnEng:'阿明/阿C'
-        }
-      ],
+      gateList:[],
       searchEngText:[],//工程师远程查找
       searchEngList:[],//远程查找工程师列表
       engLoading:false,//查找工程师Loading
@@ -1154,6 +1150,20 @@ export default {
       temSeven:[],//临时数据
       loadPoint:false,//据点加载Loading
       callIndex:null,//调用Index
+      hasPoint:false,//是否含有局点
+      pointNum:0,//局点派遣排序
+      proStateList:[],//项目状态选项
+      proStateMes:{
+        stateText:null,//项目状态
+        state:null,//项目状态code
+        warnTime:null,//预警时间
+        planEndTime:null,//计划完工时间
+        planAcceptTime:null,//计划验收时间
+        proGress:null,//项目进度
+        startTime:null,//入场时间
+        endTime:null,//完工时间
+        acceptTime:null,//验收时间
+      },
     }
   },
   created(){
@@ -1694,18 +1704,44 @@ export default {
       },300)
     },
     secondStep(index){//第二步人员委派
-      this.secondBox=true;
-      setTimeout(()=>{
-        this.secondConBox=true;
-      },200)
-      setTimeout(()=>{
-        this.$refs.secondPerBox.style.width='100%';
-        this.$refs.secondPerBox.style.minHeight='100%';
-      })
+      let _vm=this;
+      _vm.proID=_vm.proList[index].id;
+      _vm.$axios.get(_vm.url+'/projectInfo?projectId='+_vm.proID).then((res)=>{
+        if(res.data.code==0){
+          _vm.gateList=res.data.data.projectPointVOList;
+          if(_vm.gateList==null||_vm.gateList.length<0){
+            _vm.hasPoint=true;
+          }else{
+            _vm.hasPoint=false;
+            _vm.gateList.forEach((e)=>{
+              _vm.$set(e,'num',_vm.pointNum++);
+              _vm.$set(e,'searchEngText',null);
+              if(e.personnelRecordVOList!=null&&e.personnelRecordVOList.length>4){
+                _vm.$set(e,'isCeed',true);
+              }else{
+                _vm.$set(e,'isCeed',false);
+              }
+            });
+          };
+          this.secondBox=true;
+          setTimeout(()=>{
+            this.secondConBox=true;
+          },200)
+          setTimeout(()=>{
+            this.$refs.secondPerBox.style.width='100%';
+            this.$refs.secondPerBox.style.minHeight='100%';
+          })
+        }else{
+          _vm.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        _vm.$message.error('未知错误,请联系管理员')
+      });
     },
     closeSecondtBox(){//关闭第二步人员委派
       this.$refs.secondPerBox.style.width='300px';
       this.$refs.secondPerBox.style.minHeight='200px';
+      this.gateList=[];
       setTimeout(()=>{
         this.secondConBox=false;
       },100)
@@ -1713,19 +1749,68 @@ export default {
         this.secondBox=false;
       },300)
     },
+    conversionTime(value){//转换时间
+      let timeDate=new Date(value);
+      let tYear=timeDate.getFullYear();
+      let tMon=timeDate.getMonth()+1;
+      if(tMon<10){
+        tMon='0'+tMon
+      };
+      let tDay=timeDate.getDate();
+      if(tDay<10){
+        tDay='0'+tDay
+      }
+      let tTime=tYear+'-'+tMon+'-'+tDay;
+      if(value!=null&&value!=''){
+        return tTime;
+      }else{
+        return null;
+      }
+    },
     threeStep(index){//第三步进程管理
-      this.threeBox=true;
-      setTimeout(()=>{
-        this.threeConBox=true;
-      },150)
-      setTimeout(()=>{
-        this.$refs.threePerBox.style.width='100%';
-        this.$refs.threePerBox.style.minHeight='100%';
-      })
+      let _vm=this;
+      _vm.proID=_vm.proList[index].id;
+      _vm.$axios.get(_vm.url+'/projectInfo?projectId='+_vm.proID).then((res)=>{
+        if(res.data.code==0){
+          _vm.pointList=res.data.data.projectPointVOList;
+          this.proStateMes.stateText=res.data.data.stateStr;
+          this.proStateMes.state=res.data.data.state;
+          this.proStateMes.proGress=res.data.data.schedule;
+          this.proStateMes.warnTime=this.conversionTime(res.data.data.warnTime);
+          this.proStateMes.planEndTime=this.conversionTime(res.data.data.planFinishTime);
+          this.proStateMes.planAcceptTime=this.conversionTime(res.data.data.planAcceptTime);
+          this.proStateMes.startTime=this.conversionTime(res.data.data.startTime);
+          this.proStateMes.endTime=this.conversionTime(res.data.data.finishTime);
+          this.proStateMes.acceptTime=this.conversionTime(res.data.data.acceptTime);
+          _vm.$axios.get(_vm.url+'/enum/projectStateList').then((res)=>{
+            if(res.data.code==0){
+              _vm.proStateList=res.data.data;
+              _vm.threeBox=true;
+              setTimeout(()=>{
+                _vm.threeConBox=true;
+              },150)
+              setTimeout(()=>{
+                _vm.$refs.threePerBox.style.width='100%';
+                _vm.$refs.threePerBox.style.minHeight='100%';
+              })
+            }else{
+              _vm.$message.error(res.data.msg)
+            }
+          }).catch((err)=>{
+            _vm.$message.error('未知错误,请联系管理员')
+          })
+        }else{
+          _vm.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        _vm.$message.error('未知错误,请联系管理员')
+      });
     },
     closeThreetBox(){//关闭第三步进程管理
       this.$refs.threePerBox.style.width='300px';
       this.$refs.threePerBox.style.minHeight='200px';
+      this.pointList=[];
+      this.getProList()
       setTimeout(()=>{
         this.threeConBox=false;
       },100)
@@ -1734,14 +1819,39 @@ export default {
       },300)
     },
     fileUp(index){//项目文档
-      this.fileBox=true;
-      setTimeout(()=>{
-        this.fileConBox=true;
-      },250)
-      setTimeout(()=>{
-        this.$refs.filePerBox.style.width='100%';
-        this.$refs.filePerBox.style.minHeight='100%';
-      })
+      let _vm=this;
+      _vm.proID=_vm.proList[index].id;
+      _vm.$axios.get(_vm.url+'/projectInfo?projectId='+_vm.proID).then((res)=>{
+        if(res.data.code==0){
+          _vm.pointFileList=res.data.data.projectPointVOList;
+          _vm.$axios.get(_vm.url+'/projectFileTypeList').then((res)=>{
+            if(res.data.code==0){
+              _vm.pointFileList.forEach((e)=>{
+                _vm.$set(e,'fileTypeList',res.data.data);
+                e.fileTypeList.forEach((x)=>{
+                  _vm.$set(x,'fileName',null);
+                });
+              });
+              this.fileBox=true;
+              setTimeout(()=>{
+                this.fileConBox=true;
+              },250)
+              setTimeout(()=>{
+                this.$refs.filePerBox.style.width='100%';
+                this.$refs.filePerBox.style.minHeight='100%';
+              })
+            }else{
+              _vm.$message.error(res.data.msg)
+            }
+          }).catch((err)=>{
+            _vm.$message.error('未知错误,请联系管理员')
+          })
+        }else{
+          _vm.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        _vm.$message.error('未知错误,请联系管理员')
+      });
     },
     closeFileBox(){//关闭项目文档
       this.$refs.filePerBox.style.width='300px';
@@ -1773,19 +1883,18 @@ export default {
         this.insBox=false;
       },300)
     },
-    remoteEng(query) {//远程查询客户列表
+    remoteEng(query) {//远程查询工程师列表
         if (query !== '') {
           let formdata=new FormData();
           formdata.append('state',2);
           formdata.append('name',query);
           formdata.append('size',20);
           formdata.append('page',0);
-          this.$axios.post(this.url+'/findCustomerListByCondition',formdata).then((res)=>{
+          this.$axios.post(this.url+'/findEngineerListByCondition',formdata).then((res)=>{
             if(res.data.code==0){
               this.searchEngList=res.data.data.content.map(item=>{
                 return {value:item.name,label:item.name,id:item.id}
               });
-
             }else{
               this.$message.error(res.data.msg)
             }
@@ -2421,13 +2530,195 @@ export default {
       }).catch((err)=>{
         vc.$message.error('未知异常,请联系管理员')
       })
-    }
+    },
+    chooseEng(value){//选择派遣工程师
+      this.searchEngList.forEach((e)=>{
+        if(value==e.label){
+          this.gateList.forEach((x)=>{
+            if(value==x.searchEngText){
+              this.$set(x,'engID',e.id);
+            }
+          })
+        }
+      })
+    },
+    subTurnEng(index){//提交派遣工程师
+      let _vm=this;
+      if(this.gateList[index].engID==undefined||this.gateList[index].engID==null){
+        this.$message.error('请选择工程师')
+      }else{
+        let formdata=new FormData();
+        formdata.append('projectPointId',this.gateList[index].id);
+        formdata.append('engineerId',this.gateList[index].engID);
+        formdata.append('operatorId',window.localStorage.getItem('Uid'));
+        this.$axios.post(this.url+'/savePersonnelRecord_n',formdata).then((res)=>{
+          if(res.data.code==0){
+            this.$message.success('添加工程师成功');
+            _vm.proID=_vm.proList[index].id;
+            _vm.$axios.get(_vm.url+'/projectInfo?projectId='+_vm.proID).then((res)=>{
+              if(res.data.code==0){
+                _vm.gateList=res.data.data.projectPointVOList;
+                if(_vm.gateList==null||_vm.gateList.length<0){
+                  _vm.hasPoint=true;
+                }else{
+                  _vm.hasPoint=false;
+                  _vm.gateList.forEach((e)=>{
+                    _vm.$set(e,'num',_vm.pointNum++);
+                    _vm.$set(e,'searchEngText',null);
+                    if(e.personnelRecordVOList!=null&&e.personnelRecordVOList.length>4){
+                      _vm.$set(e,'isCeed',true);
+                    }else{
+                      _vm.$set(e,'isCeed',false);
+                    }
+                  });
+                };
+              }else{
+                _vm.$message.error(res.data.msg)
+              }
+            }).catch((err)=>{
+              _vm.$message.error('未知错误,请联系管理员')
+            });
+          }else{
+            _vm.$message.error(res.data.msg)
+          }
+        }).catch((err)=>{
+          this.$message.error('未知错误,请联系管理员')
+        })
+      }
+
+    },
+    delTurnEng(index,engIndex){
+      let formdata=new FormData();
+      let _vm=this;
+      formdata.append('id',this.gateList[index].personnelRecordVOList[engIndex].id);
+      this.$axios.post(this.url+'/deletePersonnelRecord',formdata).then((res)=>{
+        if(res.data.code==0){
+          this.$message.success('删除派遣工程师成功');
+          _vm.$axios.get(_vm.url+'/projectInfo?projectId='+_vm.proID).then((res)=>{
+            if(res.data.code==0){
+              _vm.gateList=res.data.data.projectPointVOList;
+              if(_vm.gateList==null||_vm.gateList.length<0){
+                _vm.hasPoint=true;
+              }else{
+                _vm.hasPoint=false;
+                _vm.gateList.forEach((e)=>{
+                  _vm.$set(e,'num',_vm.pointNum++);
+                  _vm.$set(e,'searchEngText',null);
+                  if(e.personnelRecordVOList!=null&&e.personnelRecordVOList.length>4){
+                    _vm.$set(e,'isCeed',true);
+                  }else{
+                    _vm.$set(e,'isCeed',false);
+                  }
+                });
+              };
+            }else{
+              _vm.$message.error(res.data.msg)
+            }
+          }).catch((err)=>{
+            _vm.$message.error('未知错误,请联系管理员')
+          });
+        }else{
+          _vm.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        _vm.$message.error('未知错误,请联系管理员')
+      })
+    },
+    chooseProState(value){//选择项目状态
+      this.proStateList.forEach((e)=>{
+        if(value==e.name){
+          this.proStateMes.state=e.code
+        }
+      });
+    },
+    saveProState(){//保存项目状态更改
+      let formdata=new FormData();
+      if(this.proStateMes.stateText==null&&this.proStateMes.stateText==''){
+        this.$message.error('请选择项目状态')
+      }else{
+        formdata.append('id',this.proID);
+        formdata.append('state',this.proStateMes.state);
+        if(this.proStateMes.warnTime!=null&&this.proStateMes.warnTime!==''){
+          formdata.append('warnTime',this.proStateMes.warnTime);
+        };
+        if(this.proStateMes.planEndTime!=null&&this.proStateMes.planEndTime!==''){
+          formdata.append('planFinishTime',this.proStateMes.planEndTime);
+        }
+        if(this.proStateMes.planAcceptTime!=null&&this.proStateMes.planAcceptTime!==''){
+          formdata.append('planAcceptTime',this.proStateMes.planAcceptTime);
+        }
+        if(this.proStateMes.startTime!=null&&this.proStateMes.startTime!==''){
+          formdata.append('startTime',this.proStateMes.startTime);
+        }
+        if(this.proStateMes.endTime!=null&&this.proStateMes.endTime!==''){
+          formdata.append('finishTime',this.proStateMes.endTime);
+        }
+        if(this.proStateMes.acceptTime!=null&&this.proStateMes.acceptTime!==''){
+          formdata.append('acceptTime',this.proStateMes.acceptTime);
+        };
+        if(this.proStateMes.proGress!=null&&this.proStateMes.proGress!==''){
+          formdata.append('schedule',this.proStateMes.proGress);
+        };
+        this.$axios.post(this.url+'/saveProjectCourse',formdata).then((res)=>{
+          if(res.data.code==0){
+            this.$message.success('更新项目信息成功')
+          }else{
+            this.$message.error(res.data.msg);
+          }
+        }).catch((err)=>{
+          this.$message.error('未知错误,请联系管理员')
+        })
+      };
+    },
+    subTurnPoint(index){//保存局点编辑
+      let formdata=new FormData();
+      for(let i in this.pointList[index].usingProjectCourseNodeVOList){
+        formdata.append('projectCourseNodeFormList['+i+'].id',this.pointList[index].usingProjectCourseNodeVOList[i].id)
+        if(this.pointList[index].usingProjectCourseNodeVOList[i].planStartTimeStr!=null&&this.pointList[index].usingProjectCourseNodeVOList[i].planStartTimeStr!=''){
+          formdata.append('projectCourseNodeFormList['+i+'].planStartTime',this.pointList[index].usingProjectCourseNodeVOList[i].planStartTimeStr)
+        };
+        if(this.pointList[index].usingProjectCourseNodeVOList[i].planEndTimeStr!=null&&this.pointList[index].usingProjectCourseNodeVOList[i].planEndTimeStr!=''){
+          formdata.append('projectCourseNodeFormList['+i+'].planEndTime',this.pointList[index].usingProjectCourseNodeVOList[i].planEndTimeStr)
+        };
+        if(this.pointList[index].usingProjectCourseNodeVOList[i].startTimeStr!=null&&this.pointList[index].usingProjectCourseNodeVOList[i].startTimeStr!=''){
+          formdata.append('projectCourseNodeFormList['+i+'].startTime',this.pointList[index].usingProjectCourseNodeVOList[i].startTimeStr)
+        };
+        if(this.pointList[index].usingProjectCourseNodeVOList[i].endTimeStr!=null&&this.pointList[index].usingProjectCourseNodeVOList[i].endTimeStr!=''){
+          formdata.append('projectCourseNodeFormList['+i+'].endTime',this.pointList[index].usingProjectCourseNodeVOList[i].endTimeStr)
+        };
+        if(this.pointList[index].usingProjectCourseNodeVOList[i].remark!=null&&this.pointList[index].usingProjectCourseNodeVOList[i].remark!=''){
+          formdata.append('projectCourseNodeFormList['+i+'].remark',this.pointList[index].usingProjectCourseNodeVOList[i].remark)
+        };
+      }
+      this.$axios.post(this.url+'/updateProjectCourseNodeList',formdata).then((res)=>{
+        if(res.data.code==0){
+          this.$message.success('更新局点信息成功');
+        }else{
+          this.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        this.$message.error('未知错误,请联系管理员')
+      })
+    },
+    upPointFile(e,indexFile,indexF){//项目文档上传
+      // console.log(e.target.files[0]);
+      // console.log(index)
+      // console.log(indexF)
+      // console.log(this.pointFileList)
+      // console.log(this.pointFileList[indexFile].fileTypeList)
+      console.log();
+      this.pointFileList[indexFile].fileTypeList[indexF].name='123'
+      // this.$set(,'fileName',);
+      // console.log(this.pointFileList)
+    },
   }
 }
 </script>
 
 <style lang="scss" scoped>
-
+.ceed{
+  line-height: 22px!important;
+}
 input[type=checkbox]:after {
   position: absolute;
   width: 10px;
@@ -2738,7 +3029,8 @@ input[type=checkbox]:checked:after {
     }
     .gate_mes{
       text-align: center;
-      line-height: 40px;
+      min-height: 45px;
+      line-height: 45px;
       color:black;
     }
     .pro_cess{
