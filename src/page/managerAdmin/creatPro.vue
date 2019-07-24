@@ -1,33 +1,79 @@
 <!-- 项目搭建 -->
 <template lang="html">
   <div class="crestPro">
-    <div class="pro_search">
-      <ul>
+    <div class="query_search" ref="query_search">
+      <ul v-show="searchList">
         <li>
-          日期选择:&nbsp;&nbsp;
-          <el-date-picker
-             v-model="value7"
-             type="daterange"
-             align="right"
-             unlink-panels
-             range-separator="至"
-             start-placeholder="开始日期"
-             end-placeholder="结束日期"
-             :picker-options="pickerOptions2">
-           </el-date-picker>
+          <p>项目名称:&nbsp;<el-input type="primary" v-model="searchMes.proName" style="width:70%;" placeholder="请输入项目名称"></el-input/></p>
+          <p>客户名称:&nbsp;<el-input type="primary" v-model="searchMes.cusName" style="width:70%;" placeholder="请输入客户名称"></el-input></p>
+          <p>合同单号:
+            <el-input type="primary" v-model="searchMes.conNumber" style="width:70%;" placeholder="请输入合同单号"></el-input/>
+          </p>
         </li>
         <li>
-          项目名称:&nbsp;&nbsp;
-          <el-input type="primary" v-model="proName" placeholder="请输入项目名称" style="width:300px;"></el-input>
-          <el-button type="primary" icon="el-icon-search" size="medium" style="margin-left:25px;">搜索</el-button>
+          <p>&nbsp;&nbsp;&nbsp;产品线:
+            <el-select v-model="searchMes.lineName" placeholder="请选择产品线" style="width:70%;" @change="chooseLine">
+              <el-option
+                v-for="(item,index) in searchMes.lineList"
+                :key="item.name"
+                :value="item.name"
+                >
+              </el-option>
+            </el-select>
+          </p>
+          <p>项目状态:
+            <el-select v-model="searchMes.proStatus" placeholder="请选择项目状态" style="width:70%;" @change="chooseStatus">
+              <el-option
+                v-for="item in searchMes.typeList"
+                :key="item"
+                :value="item"
+                >
+              </el-option>
+            </el-select>
+          </p>
+          <p style="opacity:0;">合同单号:
+            <el-input type="primary" v-model="searchMes.conNumber" style="width:70%;" placeholder="请输入合同单号"></el-input/>
+          </p>
+          <p style="position:absolute;background:red;height:61px;right:30px;opacity:0;"></p>
+        </li>
+        <li style="padding-left:25px;">
+          <span style="width:160px;display:inline-block;">
+              <el-select v-model="searchMes.dateText" placeholder="时间类型" style="width:70%;" @change="chooseDate">
+                <el-option
+                  v-for="item in searchMes.dateList"
+                  :key="item"
+                  :value="item">
+                </el-option>
+              </el-select>
+          :</span>
+          <span style="width:40%;display:inline-block;">
+            <el-date-picker
+               v-model="searchMes.dateChoose"
+               type="daterange"
+               :picker-options="pickerOptions2"
+               range-separator="至"
+               start-placeholder="开始日期"
+               end-placeholder="结束日期"
+               value-format="yyyy-MM-dd"
+               align="right"
+               >
+             </el-date-picker>
+          </span>
+          <span>
+            <el-button type="primary" icon="el-icon-zoom-in" @click="serchPro()">筛选</el-button>
+            <el-button type="primary" icon="el-icon-remove" @click="cancelPro()">取消筛选</el-button>
+          </span>
         </li>
       </ul>
+      <el-tooltip class="item" effect="dark" :content="closeText" placement="bottom">
+        <p class="add" @click="searchSwitch" ref="add">
+          <img :src="operClose" alt="">
+        </p>
+      </el-tooltip>
     </div>
     <p class="addEng">
       <el-button type="primary" icon="el-icon-plus" size="medium" @click="openPushBox()">添加项目</el-button>
       <span class="dataLength">共有数据:&nbsp;<span style="color:#eb7a1d;font-weight:bold;">{{dataLength}}</span>&nbsp;条</span>
-    </p>
-    <p class="admin_reload">
       <el-tooltip class="item" effect="dark" content="刷新数据" placement="bottom">
         <i class="el-icon-refresh" @click="getProList()"></i>
       </el-tooltip>
@@ -562,20 +608,24 @@
       <p class="mes_titleOne">
         <span>项目文档</span>
       </p>
+      <p  style="line-height:100px;fontSize:18px;color:#666;width:100%;textAlign:center;display:none;" ref="FileNoData">暂无局点，请前往建立</p>
       <div class="file_point" v-for="(pointFile,indexFile) in pointFileList" :key="'PointFile'+indexFile" v-if="fileConBox">
         <p class="file_title">局点信息</p>
         <p class="file_place">地点:&nbsp;&nbsp;{{pointFile.placeName}}</p>
         <p class="file_place">详细地址:&nbsp;&nbsp;{{pointFile.address}}</p>
         <ul>
-          <li v-for="(fileUp,indexF) in pointFile.fileTypeList" :key="'FileUp'+indexF">
-            <span>{{fileUp.name}}:</span>
-            <el-input type="primary" style="width:600px;" v-model="fileUp.fileName"></el-input>
-            <input type="file" name="" value="" @change="upPointFile($event,indexFile,indexF)">
+          <li v-for="(fileUpDom,fileUpIn) in pointFile.fileList" :key="'FileUp'+fileUpIn">
+            <span>{{fileUpDom.name}}:</span>
+            <el-input type="primary" style="width:600px;" v-model="fileUpDom.fileName"></el-input>
+            <input type="file" name="" value="" @change="upPointFile($event,indexFile,fileUpIn)">
             <el-button type="primary" icon="el-icon-search" size="small">浏览文件</el-button>
-            <el-button type="primary" icon="el-icon-upload" size="small">上传</el-button>
-            <a :href="url+fileUp.path">
+            <el-button type="primary" icon="el-icon-upload" size="small" @click="upFile(indexFile,fileUpIn)">上传</el-button>
+            <a :href="url+fileUpDom.path">
               <el-button type="primary" icon="el-icon-download" size="small">下载模板</el-button>
             </a>
+            <p v-for="(fileBack,indexBack) in pointFile.projectFileVOList" v-if="fileBack.fileType==fileUpDom.code">
+              <a :href="url+'/'+fileBack.fileName">{{fileBack.fileName}}</a>
+            </p>
           </li>
         </ul>
       </div>
@@ -586,55 +636,58 @@
       <p class="mes_titleOne">
         <span>验货单</span>
       </p>
+      <p  style="line-height:100px;fontSize:18px;color:#666;width:100%;textAlign:center;display:none;" ref="InsNoData">暂无局点，请前往建立</p>
       <div class="ins_point"  v-for="(pointIns,key) in pointInsList" v-if="insConBox">
         <p class="file_title">局点信息</p>
-        <p class="file_place">地点:&nbsp;&nbsp;{{pointIns.place}}</p>
+        <p class="file_place">地点:&nbsp;&nbsp;{{pointIns.placeName}}</p>
         <p class="file_place">详细地址:&nbsp;&nbsp;{{pointIns.address}}</p>
         <p class="file_place">Excel导入:
-          <el-input type="primary" size='small' style="width:500px;" disab></el-input>
+          <el-input type="primary" size='small' style="width:500px;" v-model="pointIns.fileName"></el-input>
           <el-button type="primary" size="small" icon="el-icon-search">浏览文件</el-button>
-          <el-button type="primary" size="small" icon="el-icon-d-arrow-left">导入Excel</el-button>
-          <a href="http://www.baidu.com">
+          <el-button type="primary" size="small" icon="el-icon-d-arrow-left" @click="upInsFile(key)">导入Excel</el-button>
+          <a :href="url+'/inspectionTemplate.xlsx'">
             <el-button type="primary" size="small" icon="el-icon-download">下载模板</el-button>
           </a>
-          <el-button type="primary" size="small" icon="el-icon-d-arrow-right">导出Excel</el-button>
+          <a :href="url+'/exportInspectionExcel?projectPointId='+pointIns.id">
+            <el-button type="primary" size="small" icon="el-icon-d-arrow-right">导出Excel</el-button>
+          </a>
           <span class="place_mask"></span>
-          <input type="file" name="" value="" class="upBtnPlace">
+          <input type="file" name="" value=""  Accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="upBtnPlace" @change="upPiontIns($event,key)">
         </p>
         <ul>
-          <li v-for="(tableMes,index) in pointIns.children">
-            <p class="table_title"><span>设备{{tableMes.num}}</span><el-button type="primary" icon="el-icon-delete" size="small" style="margin-left:100px;" @click="delIns(key,index)">删除</el-button></p>
+          <li v-for="(tableMes,index) in pointIns.inspectionVOList">
+            <p class="table_title"><span>设备{{tableMes.num+1}}</span><el-button type="primary" icon="el-icon-delete" size="small" style="margin-left:100px;" @click="delIns(key,index)">删除</el-button></p>
             <p class="table_mes">
-              <span>网元名<font style="color:red;">*</font></span>
-              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入网元名" v-model="tableMes.unitName"></el-input>
+              <span>网元名称<font style="color:red;">*</font></span>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入网元名" v-model="tableMes.name"></el-input>
               <span>设备型号</span>
-              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入设备型号" v-model="tableMes.modelName"></el-input>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入设备型号" v-model="tableMes.model"></el-input>
               <span>整机、机框条码</span>
-              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入整机、机框条码" v-model="tableMes.barCodeName"></el-input>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入整机、机框条码" v-model="tableMes.code"></el-input>
             </p>
             <p class="table_mes">
               <span>省份</span>
-              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入省份" v-model="tableMes.vinceName"></el-input>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入省份" v-model="tableMes.province"></el-input>
               <span>城市</span>
-              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入城市" v-model="tableMes.cityName"></el-input>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入城市" v-model="tableMes.city"></el-input>
               <span>地址</span>
               <el-input type="primary" style="width:300px;" size="small" placeholder="请输入详细地址" v-model="tableMes.address"></el-input>
             </p>
             <p class="table_mes">
               <span>主机版本</span>
-              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入主机版本" v-model="tableMes.hostName"></el-input>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入主机版本" v-model="tableMes.hostVersion"></el-input>
               <span>补丁版本</span>
-              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入补丁版本" v-model="tableMes.patchName"></el-input>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入补丁版本" v-model="tableMes.patchVersion"></el-input>
               <span>槽位号及单板名称</span>
-              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入槽位号及单板名称" v-model="tableMes.soltName"></el-input>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入槽位号及单板名称" v-model="tableMes.boardName"></el-input>
             </p>
             <p class="table_mes">
               <span>单板型号</span>
-              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入单板型号" v-model="tableMes.vennerName"></el-input>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入单板型号" v-model="tableMes.boardModel"></el-input>
               <span>单板条码</span>
-              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入单板条码" v-model="tableMes.vCodeName"></el-input>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入单板条码" v-model="tableMes.boardCode"></el-input>
               <span>单板版本(软件)</span>
-              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入单板版本(软件)" v-model="tableMes.appliName"></el-input>
+              <el-input type="primary" style="width:300px;" size="small" placeholder="请输入单板版本(软件)" v-model="tableMes.boardVersion"></el-input>
             </p>
             <p style="width:95%;margin:0 auto;margin-top:15px;">
               <span style="fontSize:13px;width:110px;textAlign:center;display:inline-block;">备注</span>
@@ -644,7 +697,7 @@
         </ul>
         <p class="table_oper">
           <el-button type="primary" icon="el-icon-circle-plus-outline" size="small" @click="pushTable(key)">添加</el-button>
-          <el-button type="primary" icon="el-icon-upload" size="small">提交</el-button>
+          <el-button type="primary" icon="el-icon-upload" size="small" @click="subIns(key)">提交</el-button>
         </p>
       </div>
     </div>
@@ -915,30 +968,11 @@
 export default {
   data(){
     return{
-      options: [{
-         value: '选项1',
-         label: '黄金糕'
-       }, {
-         value: '选项2',
-         label: '双皮奶'
-       }, {
-         value: '选项3',
-         label: '蚵仔煎'
-       }, {
-         value: '选项4',
-         label: '龙须面'
-       }, {
-         value: '选项5',
-         label: '北京烤鸭'
-       }],
-
       proList:[],
       value1:'',
       multipleSelection: [],
       placeList: [],
       value: '',
-
-
       planList:[
         {name:'进场开工',id:'01'},
         {name:'硬件安装',id:'02'},
@@ -948,8 +982,27 @@ export default {
         {name:'完工',id:'06'},
         {name:'验收',id:'07'}
       ],
-      value7:[],//筛选日期数组
-      proName:null,//搜索项目名称
+      searchMes:{//筛选条件
+        proName:null,//项目名称
+        cusName:null,//客户名称
+        manName:null,//项目经理
+        lineName:null,//产品线
+        lineID:null,//产品线ID
+        proStatus:null,//项目状态
+        proStatusNum:null,//项目状态值  0未开工   1开工   2停工  3完工  4验收
+        dateText:null,//时间文本
+        dateUpText:null,//上传时间类型字段
+        lineList:[],//产品线选择列表
+        typeList:['未开工','开工','停工','完工','验收'],//项目状态选择列表
+        dateList:['创建时间','预警时间','入场时间','计划完工时间','完工时间','计划验收时间','验收时间'],//时间类型选择列表
+        dateChoose:[],//时间选择
+        startTime:null,//筛选开始时间
+        endTime:null,//筛选结束时间
+        conNumber:null,//合同号
+      },
+      closeText:'收起筛选',
+      searchList:true,//闭合搜索
+      operClose:'./static/img/close_search.png',
       dataLength:88,//共有数据条数
       // proList:[],//项目列表
       page:0,//页码
@@ -1091,30 +1144,7 @@ export default {
           ]
         }
       ],
-      pointInsList:[
-        {
-          place:'国外/国外',
-          address:'纽约市',
-          children:[
-            {
-              num:1,
-              unitName:null,//网元名称
-              modelName:null,//设备型号
-              barCodeName:null,//整机条码
-              vinceName:null,//省份
-              cityName:null,//城市
-              address:null,//详细地址
-              hostName:null,//主机版本
-              patchName:null,//补丁版本
-              soltName:null,//槽位号
-              vennerName:null,//单板型号
-              vCodeName:null,//单板条码
-              appliName:null,//软件版本
-              remark:null,//备注
-            },
-          ]
-        }
-      ],
+      pointInsList:[],
       operTwoList:[
         {
           num:0,
@@ -1153,6 +1183,7 @@ export default {
       hasPoint:false,//是否含有局点
       pointNum:0,//局点派遣排序
       proStateList:[],//项目状态选项
+      insNum:0,//验货单排序
       proStateMes:{
         stateText:null,//项目状态
         state:null,//项目状态code
@@ -1168,9 +1199,7 @@ export default {
   },
   created(){
     this.getProList();
-  },
-  mounted(){
-
+    this.getLineList()
   },
   watch:{
     addPro(val,oldVal){
@@ -1188,56 +1217,149 @@ export default {
     }
   },
   methods:{
-    searchEng(){//搜索工程师
-      let _vc=this;
-      let startDate=new Date(this.value7[0]);
-      let startYear=startDate.getFullYear();
-      let startMonth=startDate.getMonth()+1;
-      if(startMonth<10){
-        startMonth='0'+startMonth
-      }
-      let startDay=startDate.getDate();
-      if(startDay<10){
-        startDay='0'+startDay
-      }
-      let endData=new Date(this.value7[1]);
-      let endYear=endData.getFullYear();
-      let endMonth=endData.getMonth()+1;
-      if(endMonth<10){
-        endMonth='0'+endMonth
-      }
-      let endDay=endData.getDate();
-      if(endDay<10){
-        endDay='0'+endDay
-      }
-      let formdata=new FormData();
-      formdata.append('size',10);
-      formdata.append('beginTime',startYear+'-'+startMonth+'-'+startDay);
-      formdata.append('endTime',endYear+'-'+endMonth+'-'+endDay);
-      if(_vc.proName!=null){
-        formdata.append('name',_vc.proName)
-      };
-      _vc.$axios.post(_vc.url,formdata).then((res)=>{
+    getLineList(){//获取产品线选项
+      this.$axios.get(this.url+'/usingTechnologyList').then((res)=>{
         if(res.data.code==0){
-          _vc.length=_vc.page*10;
-          res.data.data.content.forEach((e)=>{
-            _vc.$set(e,'num',_vc.length++);
-            if(e.email!=null&&e.email!=''){
-              if(e.email.length>15){
-                _vc.$set(e,'emailToop',true)
-              }else{
-                _vc.$set(e,'emailToop',false)
-              }
-            }
-          });
-          _vc.$emit('searchData',res.data.data.content)
+          this.searchMes.lineList=res.data.data;
         }else{
-          _vc.$message.error(res.data.msg)
+          this.$message.error(res.data.msg)
         }
       }).catch((err)=>{
-        _vc.$message.error('未知错误,请联系管理员')
+        this.$message.error('获取产品线失败,请联系管理员')
+      })
+    },
+    serchPro(){//搜索项目
+      let formdata=new FormData();
+      let opID=window.localStorage.getItem('Uid');
+      formdata.append('operatorId',opID);
+      formdata.append('operateType','creator');
+      if(this.searchMes.proName!=null&&this.searchMes.proName!=''){
+        formdata.append('name',this.searchMes.proName)
+      };
+      if(this.searchMes.cusName!=null&&this.searchMes.cusName!=''){
+        formdata.append('customerName',this.searchMes.cusName)
+      };
+      if(this.searchMes.lineID!=null&&this.searchMes.lineID!=''){
+        formdata.append('technologyId',this.searchMes.lineID)
+      };
+      if(this.searchMes.proStatus!=null&&this.searchMes.proStatus!=''){
+        formdata.append('state',this.searchMes.proStatusNum)
+      };
+      if(this.searchMes.conNumber!=null&&this.searchMes.conNumber!=''){
+        formdata.append('contractNumber',this.searchMes.conNumber)
+      };
+      if(this.searchMes.dateUpText!=null&&this.searchMes.dateChoose!=null){
+        formdata.append('dateType',this.searchMes.dateUpText);
+        formdata.append('beginTime',this.searchMes.dateChoose[0]);
+        formdata.append('endTime',this.searchMes.dateChoose[1]);
+      };
+      this.$axios.post(this.url+'/findProjectListByCondition',formdata).then((res)=>{
+        if(res.data.code==0){
+          this.length=this.page*10
+          res.data.data.content.forEach((e)=>{
+            this.$set(e,'num',this.length++);
+            //创建时间-------------------------------------->
+            let createDate=new Date(e.createTime);
+            let cYear=createDate.getFullYear();
+            let cMon=createDate.getMonth()+1;
+            if(cMon<10){
+              cMon='0'+cMon
+            };
+            let cDay=createDate.getDate();
+            if(cDay<10){
+              cDay='0'+cDay
+            }
+            let cTime=cYear+'-'+cMon+'-'+cDay;
+            this.$set(e,'createTimeSec',cTime);
+          })
+          this.proList=res.data.data.content;
+          this.pageNum=res.data.data.totalPages*10;
+          this.proLoad=false;
+          this.dataLength=res.data.data.totalElements;
+        }else{
+          this.$message.error(res.data.msg);
+          this.proLoad=false;
+        }
+      }).catch((err)=>{
+        this.$message.error('未知错误,请联系管理员');
+        this.proLoad=false;
         // console.log(err)
       })
+    },
+    searchSwitch(){//闭合搜索
+      if(this.closeText==='收起筛选'){
+        this.closeText='展开筛选';
+        this.$refs.query_search.style.height="10px";
+        this.operClose='./static/img/open_search.png';
+        this.$refs.add.style.bottom='-20px'
+        setTimeout(()=>{
+          this.searchList=false;
+        },50)
+      }else{
+        this.closeText='收起筛选';
+        this.$refs.query_search.style.height="230px";
+        this.operClose='./static/img/close_search.png';
+        this.$refs.add.style.bottom='0'
+        setTimeout(()=>{
+          this.searchList=true;
+        },200)
+      }
+    },
+    chooseStatus(){//选择项目状态
+      if(this.searchMes.proStatus==='未开工'){
+        this.searchMes.proStatusNum=0;
+      }else if(this.searchMes.proStatus==='开工'){
+        this.searchMes.proStatusNum=1;
+      }else if(this.searchMes.proStatus==='停工'){
+        this.searchMes.proStatusNum=2;
+      }else if(this.searchMes.proStatus==='完工'){
+        this.searchMes.proStatusNum=3;
+      }else{
+        this.searchMes.proStatusNum=4;
+      }
+    },
+    chooseLine(){//选择产品线
+      this.searchMes.lineList.forEach((e)=>{
+        if(e.name===this.searchMes.lineName){
+          this.searchMes.lineID=e.id;
+        }else{
+          return
+        }
+      })
+    },
+    chooseDate(){//选择时间类型
+      if(this.searchMes.dateText==='创建时间'){
+        this.searchMes.dateUpText='createTime'
+      }else if(this.searchMes.dateText==='预警时间'){
+        this.searchMes.dateUpText='warnTime'
+      }else if(this.searchMes.dateText==='入场时间'){
+        this.searchMes.dateUpText='startTime'
+      }else if(this.searchMes.dateText==='计划完工时间'){
+        this.searchMes.dateUpText='planFinishTime'
+      }else if(this.searchMes.dateText==='完工时间'){
+        this.searchMes.dateUpText='finishTime'
+      }else if(this.searchMes.dateText==='计划验收时间'){
+        this.searchMes.dateUpText='planAcceptTime'
+      }else{
+        this.searchMes.dateUpText='acceptTime'
+      };
+    },
+    cancelPro(){//取消筛选
+      this.page=0;
+      this.getProList();
+      this.searchMes.proName=null;
+      this.searchMes.cusName=null;
+      this.searchMes.manName=null;
+      this.searchMes.lineID=null;
+      this.searchMes.proStatusNum=null;
+      this.searchMes.dateUpText=null;
+      this.searchMes.startTime=null;
+      this.searchMes.endTime=null;
+      this.searchMes.lineName=null;
+      this.searchMes.dateText=null;
+      this.searchMes.proStatus=null;
+      this.searchMes.dateChoose=[];
+      this.searchMes.conNumber=null;
     },
     pushPro(){//添加项目
       this.$message.success('添加项目')
@@ -1280,7 +1402,7 @@ export default {
       }).catch((err)=>{
         _vn.$message.error('未知错误,请联系管理员');
         _vn.proLoad=false;
-        console.log(err)
+        // console.log(err)
       })
     },
     handleSizeChange(val) {
@@ -1288,7 +1410,11 @@ export default {
     },
     handleCurrentChange(val) {
       this.page=val-1;
-      this.getProList();
+      if(this.searchMes.proName!=null||this.searchMes.cusName!=null||this.searchMes.manName!=null||this.searchMes.lineID!=null||this.searchMes.proStatus!=null||this.searchMes.dateChoose!=null||this.searchMes.conNumber){
+        this.serchPro()
+      }else{
+        this.getProList()
+      }
     },
     remoteMethod(query) {//远程查询客户列表
         if (query !== '') {
@@ -1479,7 +1605,7 @@ export default {
                 cityName:res.data.data.projectPointVOList[i].placeVO.name,//城市名称
                 cityList:[],
                 projectPointId:res.data.data.projectPointVOList[i].id
-              })
+              });
               for(let x in res.data.data.projectPointVOList[i].projectCourseNodeVOList){
                 _vm.operTwoList.forEach((e)=>{
                   e.chooseMes.push(
@@ -1503,7 +1629,7 @@ export default {
                     _vm.$refs.ChosePointParent[u].children[Number(o)+4].children[1].style.display='block';
                   }
                 }
-              },500);
+              },550);
             };
             _vm.operTwoList.forEach((t)=>{
                 _vm.tem.push(t.chooseMes[0].pointID);
@@ -1742,6 +1868,7 @@ export default {
       this.$refs.secondPerBox.style.width='300px';
       this.$refs.secondPerBox.style.minHeight='200px';
       this.gateList=[];
+      this.pointNum=0;
       setTimeout(()=>{
         this.secondConBox=false;
       },100)
@@ -1823,34 +1950,46 @@ export default {
       _vm.proID=_vm.proList[index].id;
       _vm.$axios.get(_vm.url+'/projectInfo?projectId='+_vm.proID).then((res)=>{
         if(res.data.code==0){
-          _vm.pointFileList=res.data.data.projectPointVOList;
-          _vm.$axios.get(_vm.url+'/projectFileTypeList').then((res)=>{
-            if(res.data.code==0){
-              _vm.pointFileList.forEach((e)=>{
-                _vm.$set(e,'fileTypeList',res.data.data);
-                e.fileTypeList.forEach((x)=>{
-                  _vm.$set(x,'fileName',null);
-                });
-              });
-              this.fileBox=true;
-              setTimeout(()=>{
-                this.fileConBox=true;
-              },250)
-              setTimeout(()=>{
-                this.$refs.filePerBox.style.width='100%';
-                this.$refs.filePerBox.style.minHeight='100%';
+          let a=res.data.data.projectPointVOList;
+          if(a!=null&&a!=''){
+            for(let i in a){
+              _vm.$set(a[i],'fileList',[]);
+              _vm.$axios.get(_vm.url+'//projectFileTypeList').then((res)=>{
+                if(res.data.code==0){
+                  for(let x in res.data.data){
+                    a[i].fileList.push(res.data.data[x]);
+                  };
+                  a[i].fileList.forEach((e)=>{
+                    _vm.$set(e,'fileName',null);
+                    _vm.$set(e,'file',null);
+                  })
+                }else{
+                  _vm.$message.error(res.data.msg)
+                }
+              }).catch((err)=>{
+                _vm.$message.error('未知错误,请联系管理员')
               })
-            }else{
-              _vm.$message.error(res.data.msg)
             }
-          }).catch((err)=>{
-            _vm.$message.error('未知错误,请联系管理员')
+          }else{
+            setTimeout(()=>{
+              _vm.$refs.FileNoData.style.display='block'
+            },250)
+          }
+          this.fileBox=true;
+          setTimeout(()=>{
+            this.fileConBox=true;
+          },250)
+          setTimeout(()=>{
+            this.$refs.filePerBox.style.width='100%';
+            this.$refs.filePerBox.style.minHeight='100%';
           })
+          _vm.pointFileList=a;
+          console.log(_vm.pointFileList)
         }else{
           _vm.$message.error(res.data.msg)
         }
       }).catch((err)=>{
-        _vm.$message.error('未知错误,请联系管理员')
+        _vm.$message.error('未知错误');
       });
     },
     closeFileBox(){//关闭项目文档
@@ -1864,16 +2003,65 @@ export default {
       },300)
     },
     insUp(index){//验货单
-      this.insBox=true;
-      setTimeout(()=>{
-        this.insConBox=true;
-      },250)
-      setTimeout(()=>{
-        this.$refs.insPerBox.style.width='100%';
-        this.$refs.insPerBox.style.minHeight='100%';
+      let _vm=this;
+      _vm.proID=_vm.proList[index].id;
+      _vm.$axios.get(_vm.url+'/projectInfo?projectId='+_vm.proID).then((res)=>{
+        if(res.data.code==0){
+          _vm.pointInsList=res.data.data.projectPointVOList;
+          if(_vm.pointInsList==null){
+            setTimeout(()=>{
+              _vm.$refs.InsNoData.style.display='block';
+            },250)
+          }else{
+            _vm.pointInsList.forEach((e)=>{
+              _vm.insNum=0;
+              _vm.$set(e,'fileName',null)
+              _vm.$set(e,'file',null)
+              if(e.inspectionVOList==null||e.inspectionVOList==''){
+                e.inspectionVOList=[
+                  {
+                      num:0,
+                      name:null,//网元名称
+                      model:null,//设备型号
+                      code:null,//整机条码
+                      province:null,//省份
+                      city:null,//城市
+                      address:null,//详细地址
+                      hostVersion:null,//主机版本
+                      patchVersion:null,//补丁版本
+                      boardName:null,//槽位号
+                      boardModel:null,//单板型号
+                      boardCode:null,//单板条码
+                      boardVersion:null,//软件版本
+                      remark:null,//备注
+                    }
+                ]
+              }else{
+                e.inspectionVOList.forEach((x)=>{
+                  _vm.$set(x,'num',_vm.insNum++);
+                })
+              }
+            });
+            console.log(_vm.pointInsList)
+          };
+          _vm.insBox=true;
+          setTimeout(()=>{
+            _vm.insConBox=true;
+          },250)
+          setTimeout(()=>{
+            _vm.$refs.insPerBox.style.width='100%';
+            _vm.$refs.insPerBox.style.minHeight='100%';
+          });
+        }else{
+          _vm.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        _vm.$message.error('未知错误,请联系管理员');
+        console.log(err)
       });
     },
     closeInsBox(){//关闭验货单
+      this.insNum=0;
       this.$refs.insPerBox.style.width='300px';
       this.$refs.insPerBox.style.minHeight='200px';
       setTimeout(()=>{
@@ -2126,25 +2314,40 @@ export default {
        // console.log(val);
     },
     pushTable(key){//添加验货单设备
-      this.pointInsList[key].children.push({
-        num:this.pointInsList[key].children.length+1,
-        unitName:null,//网元名称
-        modelName:null,//设备型号
-        barCodeName:null,//整机条码
-        vinceName:null,//省份
-        cityName:null,//城市
+      this.pointInsList[key].inspectionVOList.push({
+        num:this.pointInsList[key].inspectionVOList.length,
+        name:null,//网元名称
+        model:null,//设备型号
+        code:null,//整机条码
+        province:null,//省份
+        city:null,//城市
         address:null,//详细地址
-        hostName:null,//主机版本
-        patchName:null,//补丁版本
-        soltName:null,//槽位号
-        vennerName:null,//单板型号
-        vCodeName:null,//单板条码
-        appliName:null,//软件版本
+        hostVersion:null,//主机版本
+        patchVersion:null,//补丁版本
+        boardName:null,//槽位号
+        boardModel:null,//单板型号
+        boardCode:null,//单板条码
+        boardVersion:null,//软件版本
         remark:null,//备注
       });
     },
     delIns(key,index){//删除验货单设备
-      this.pointInsList[key].children.splice(index,1)
+      if(this.pointInsList[key].inspectionVOList[index].id!=undefined){
+        let formdata=new FormData();
+        formdata.append('inspectionId',this.pointInsList[key].inspectionVOList[index].id);
+        this.$axios.post(this.url+'/deleteInspection',formdata).then((res)=>{
+          if(res.data.code==0){
+            this.$message.success('删除设备成功');
+            this.pointInsList[key].inspectionVOList.splice(index,1);
+          }else{
+            this.$message.error(res.data.msg)
+          }
+        }).catch((err)=>{
+          this.$message.error('未知错误,请联系管理员')
+        })
+      }else{
+        this.pointInsList[key].inspectionVOList.splice(index,1);
+      }
     },
     pushPoint(){//添加实施地点
       this.operTwoList.push({
@@ -2168,7 +2371,6 @@ export default {
     },
     editProject(index){//编辑项目信息
       let _vm=this;
-      console.log(this.addProMes)
       _vm.editProMes=this.proList[index];
       _vm.$set(_vm.editProMes,'skillList',[]);
       _vm.$set(_vm.editProMes,'skillIDList',[]);
@@ -2293,8 +2495,7 @@ export default {
           vc.editPro=false;
           vc.$message.error('未知异常,请联系管理员')
         })
-      }
-      console.log(this.editProMes)
+      };
     },
     allChoosePoint(index){//局点全选
       if(index==0){
@@ -2554,9 +2755,9 @@ export default {
         this.$axios.post(this.url+'/savePersonnelRecord_n',formdata).then((res)=>{
           if(res.data.code==0){
             this.$message.success('添加工程师成功');
-            _vm.proID=_vm.proList[index].id;
             _vm.$axios.get(_vm.url+'/projectInfo?projectId='+_vm.proID).then((res)=>{
               if(res.data.code==0){
+                console.log(res)
                 _vm.gateList=res.data.data.projectPointVOList;
                 if(_vm.gateList==null||_vm.gateList.length<0){
                   _vm.hasPoint=true;
@@ -2700,16 +2901,131 @@ export default {
         this.$message.error('未知错误,请联系管理员')
       })
     },
-    upPointFile(e,indexFile,indexF){//项目文档上传
-      // console.log(e.target.files[0]);
-      // console.log(index)
-      // console.log(indexF)
-      // console.log(this.pointFileList)
-      // console.log(this.pointFileList[indexFile].fileTypeList)
-      console.log();
-      this.pointFileList[indexFile].fileTypeList[indexF].name='123'
-      // this.$set(,'fileName',);
-      // console.log(this.pointFileList)
+    upPointFile(e,indexFile,fileUpIn){//项目文档上传
+      let a=this.pointFileList[indexFile];
+      a.fileList[fileUpIn].fileName=e.target.files[0].name;
+      a.fileList[fileUpIn].file=e.target.files[0];
+    },
+    upFile(indexFile,fileUpIn){//提交文档
+      let formdata=new FormData();
+      if(this.pointFileList[indexFile].fileList[fileUpIn].file!=null&&this.pointFileList[indexFile].fileList[fileUpIn].file!=''){
+        formdata.append('fileType',this.pointFileList[indexFile].fileList[fileUpIn].code);
+        formdata.append('file',this.pointFileList[indexFile].fileList[fileUpIn].file);
+        formdata.append('projectPointId',this.pointFileList[indexFile].id);
+        formdata.append('projectId',this.proID);
+        this.$axios.post(this.url+'/saveProjectFile',formdata).then((res)=>{
+          if(res.data.code==0){
+            if(this.pointFileList[indexFile].projectFileVOList==null){
+              this.pointFileList[indexFile].projectFileVOList=[];
+            }
+            this.pointFileList[indexFile].projectFileVOList.push({
+              fileType:res.data.data.fileType,
+              fileName:res.data.data.fileName
+            })
+            this.$message.success('上传成功')
+          }else{
+            this.$message.error(res.data.msg)
+          }
+        }).catch((err)=>{
+          this.$message.error('未知错误,请联系管理员')
+        })
+      }else{
+        this.$message.error('未选择文件')
+      };
+    },
+    upPiontIns(e,key){//验货单局点文件上传
+      this.pointInsList[key].fileName=e.target.files[0].name;
+      this.pointInsList[key].file=e.target.files[0];
+    },
+    upInsFile(key){//上传局点文件
+      let formdata=new FormData();
+      if(this.pointInsList[key].file!=null&&this.pointInsList[key].file!=null){
+        formdata.append('projectId',this.proID);
+        formdata.append('projectPointId',this.pointInsList[key].id);
+        formdata.append('file',this.pointInsList[key].file);
+        this.insNum=0;
+        this.$axios.post(this.url+'/importInspectionExcel',formdata).then((res)=>{
+          if(res.data.code==0){
+            this.$message.success('导入成功');
+            this.pointInsList[key].inspectionVOList=res.data.data;
+            this.pointInsList[key].inspectionVOList.forEach((e)=>{
+              this.$set(e,'num',this.insNum++);
+            })
+          }else{
+            this.$message.error(res.data.msg)
+          }
+        }).catch((err)=>{
+          this.$message.error('未知错误,请联系管理员')
+        })
+      }else{
+        this.$message.error('未选择上传文件')
+      }
+    },
+    subIns(key){//提交验货单
+      let vm=this;
+      let formdata=new FormData();
+      for(let i in vm.pointInsList[key].inspectionVOList){
+        if(vm.pointInsList[key].inspectionVOList[i].name==null||vm.pointInsList[key].inspectionVOList[i].name==''){
+          vm.$message.error('请输入网元名称');
+        }else{
+          formdata.append('inspectionFormList['+i+'].name',vm.pointInsList[key].inspectionVOList[i].name);
+          formdata.append('inspectionFormList['+i+'].projectPointId',vm.pointInsList[key].id);
+          formdata.append('inspectionFormList['+i+'].projectId',vm.proID);
+          if(vm.pointInsList[key].inspectionVOList[i].model!=null&&vm.pointInsList[key].inspectionVOList[i].model!=''){
+            formdata.append('inspectionFormList['+i+'].model',vm.pointInsList[key].inspectionVOList[i].model);
+          };
+          if(vm.pointInsList[key].inspectionVOList[i].code!=null&&vm.pointInsList[key].inspectionVOList[i].code!=''){
+            formdata.append('inspectionFormList['+i+'].code',vm.pointInsList[key].inspectionVOList[i].code);
+          };
+          if(vm.pointInsList[key].inspectionVOList[i].province!=null&&vm.pointInsList[key].inspectionVOList[i].province!=''){
+            formdata.append('inspectionFormList['+i+'].province',vm.pointInsList[key].inspectionVOList[i].province);
+          };
+          if(vm.pointInsList[key].inspectionVOList[i].city!=null&&vm.pointInsList[key].inspectionVOList[i].city!=''){
+            formdata.append('inspectionFormList['+i+'].city',vm.pointInsList[key].inspectionVOList[i].city);
+          };
+          if(vm.pointInsList[key].inspectionVOList[i].address!=null&&vm.pointInsList[key].inspectionVOList[i].address!=''){
+            formdata.append('inspectionFormList['+i+'].address',vm.pointInsList[key].inspectionVOList[i].address);
+          };
+          if(vm.pointInsList[key].inspectionVOList[i].hostVersion!=null&&vm.pointInsList[key].inspectionVOList[i].hostVersion!=''){
+            formdata.append('inspectionFormList['+i+'].hostVersion',vm.pointInsList[key].inspectionVOList[i].hostVersion);
+          };
+          if(vm.pointInsList[key].inspectionVOList[i].patchVersion!=null&&vm.pointInsList[key].inspectionVOList[i].patchVersion!=''){
+            formdata.append('inspectionFormList['+i+'].patchVersion',vm.pointInsList[key].inspectionVOList[i].patchVersion);
+          };
+          if(vm.pointInsList[key].inspectionVOList[i].boardName!=null&&vm.pointInsList[key].inspectionVOList[i].boardName!=''){
+            formdata.append('inspectionFormList['+i+'].boardName',vm.pointInsList[key].inspectionVOList[i].boardName);
+          };
+          if(vm.pointInsList[key].inspectionVOList[i].boardModel!=null&&vm.pointInsList[key].inspectionVOList[i].boardModel!=''){
+            formdata.append('inspectionFormList['+i+'].boardModel',vm.pointInsList[key].inspectionVOList[i].boardModel);
+          };
+          if(vm.pointInsList[key].inspectionVOList[i].boardCode!=null&&vm.pointInsList[key].inspectionVOList[i].boardCode!=''){
+            formdata.append('inspectionFormList['+i+'].boardCode',vm.pointInsList[key].inspectionVOList[i].boardCode);
+          };
+          if(vm.pointInsList[key].inspectionVOList[i].boardVersion!=null&&vm.pointInsList[key].inspectionVOList[i].boardVersion!=''){
+            formdata.append('inspectionFormList['+i+'].boardVersion',vm.pointInsList[key].inspectionVOList[i].boardVersion);
+          };
+          if(vm.pointInsList[key].inspectionVOList[i].remark!=null&&vm.pointInsList[key].inspectionVOList[i].remark!=''){
+            formdata.append('inspectionFormList['+i+'].remark',vm.pointInsList[key].inspectionVOList[i].remark);
+          };
+          if(vm.pointInsList[key].inspectionVOList[i].id!=undefined&&vm.pointInsList[key].inspectionVOList[i].id!=null){
+            formdata.append('inspectionFormList['+i+'].id',vm.pointInsList[key].inspectionVOList[i].id);
+          }
+        }
+      };
+      vm.$axios.post(vm.url+'/saveInspectionList',formdata).then((res)=>{
+        if(res.data.code==0){
+          vm.$message.success('编辑验货单成功')
+          vm.pointInsList[key].inspectionVOList=res.data.data;
+          vm.insNum=0;
+          this.pointInsList[key].inspectionVOList.forEach((e)=>{
+            vm.$set(e,'num',vm.insNum++);
+          })
+        }else[
+          vm.$message.error(res.data.msg)
+        ]
+      }).catch((err)=>{
+        vm.$message.error('未知错误,请联系管理员')
+      })
     },
   }
 }
@@ -2732,7 +3048,6 @@ input[type=checkbox]:after {
   padding: 0px 3px;
   border-radius: 3px;
 }
-
 input[type=checkbox]:checked:after {
   content: "✓";
   font-size: 14px;
@@ -2745,25 +3060,50 @@ input[type=checkbox]:checked:after {
   height: 100%;
   position: relative;
   overflow-x: hidden;
-  .pro_search{
+  .query_search{
     width: 100%;
-    height: 120px;
-    ul{
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-wrap: wrap;
-      li{
-        height: 120px;
-        line-height: 120px;
-        width: 50%;
-        color:#666;
+    height: 230px;
+    margin:0 auto;
+    border-bottom:1px solid #eee;
+    padding-bottom: 20px;
+    position: relative;
+    transition: .5s all;
+    margin-bottom: 20px;
+    .add{
+      width: 80px;
+      height: 20px;
+      position: absolute;
+      bottom:0;
+      left:50%;
+      margin-left: -40px;
+      cursor:pointer;
+      transition: .5s all;
+      img{
+        width: 100%;
+        height: 100%;
+        opacity: 1;
       }
-      li:first-child{
-        width: 45%;
-        text-align: right;
-        padding-right: 80px;
-        box-sizing: border-box;
+    }
+    ul{
+      width: 1224px;
+      margin:0 auto;
+      height: 100%;
+      box-sizing: border-box;
+      padding-top: 30px;
+      li{
+        display: flex;
+        width: 100%;
+        margin:0 auto;
+        line-height: 60px;
+        p{
+          width: 30%;
+          margin:0 auto;
+        }
+      }
+      li:nth-child(2){
+        p{
+          // margin-left: 28px;
+        }
       }
     }
   }
@@ -2773,12 +3113,21 @@ input[type=checkbox]:checked:after {
     padding-bottom: 5px;
     height: 42px;
     line-height: 42px;
+    position: relative;
     .dataLength{
       display: inline-block;
       width: 88%;
       text-align: right;
       box-sizing: border-box;
       padding-right: 50px;
+    }
+    i{
+      font-size: 32px;
+      color:#eb7a1d;
+      cursor:pointer;
+      position: absolute;
+      right:32px;
+      top:5px;
     }
   }
   .pro_title{
@@ -2822,11 +3171,7 @@ input[type=checkbox]:checked:after {
     position: absolute;
     top:124px;
     right:30px;
-    i{
-      font-size: 32px;
-      color:#eb7a1d;
-      cursor:pointer;
-    }
+
   }
   .addProBox{
     width: 100%;
@@ -3136,14 +3481,14 @@ input[type=checkbox]:checked:after {
         li{
           font-size: 14px;
           position: relative;
-          height: 50px;
+          min-height: 50px;
           line-height: 50px;
           border-bottom: 1px solid #eee;
           input{
             width: 730px;
             background: red;
             position: absolute;
-            height: 100%;
+            height: 50px;
             left:120px;
             outline: none;
             opacity: 0;
@@ -3153,6 +3498,11 @@ input[type=checkbox]:checked:after {
             width: 120px;
             text-align: center;
             display: inline-block;
+          }
+          p{
+            width: 100%;
+            box-sizing: border-box;
+            padding-left: 130px;
           }
         }
       }

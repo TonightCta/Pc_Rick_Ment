@@ -67,39 +67,7 @@ body{
 }
 
 
-
-input[type=radio] {
-    margin-right: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    width: 15px;
-    height: 12px;
-    position: relative;
+a{
+	color:#eb7a1d;
+	text-decoration: underline;
 }
-
-input[type=radio]:after {
-    position: absolute;
-    width: 10px;
-    height: 15px;
-    top: 0;
-    content: " ";
-    background-color: #ff0000;
-    color: #fff;
-    display: inline-block;
-    visibility: visible;
-    padding: 0px 3px;
-    border-radius: 50%;
-}
-
-input[type=radio]:checked:before {
-    content: "✓";
-    display: block;
-    position: relative;
-    top: -2px;
-    left: 3px;
-    width: 6px;
-    height: 6px;
-    color: #fff;
-    font-weight: 400;
-    z-index: 1;
-	}

@@ -771,7 +771,7 @@ export default {
       if(this.searchMes.lineID!=null&&this.searchMes.lineID!=''){
         formdata.append('technologyId',this.searchMes.lineID)
       };
-      if(this.searchMes.proStatusNum!=null&&this.searchMes.proStatusNum!=''){
+      if(this.searchMes.proStatus!=null&&this.searchMes.proStatus!=''){
         formdata.append('state',this.searchMes.proStatusNum)
       };
       if(this.searchMes.conNumber!=null&&this.searchMes.conNumber!=''){
