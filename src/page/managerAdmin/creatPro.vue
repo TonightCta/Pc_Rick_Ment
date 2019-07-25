@@ -132,7 +132,9 @@
           </div></el-col>
           <el-col :span="2"><div class="pro_oper">
             <i class="el-icon-edit-outline" style="margin-right:15px;" @click="editProject(index)"></i>
-            <i class="el-icon-delete" style="color:black;" @click="delPro(index)"></i>
+            <el-tooltip class="item" effect="dark" content="删除项目" placement="bottom">
+              <i class="el-icon-delete" style="color:black;" @click="delPro(index)"></i>
+            </el-tooltip>
           </div></el-col>
         </el-row>
       </div>
@@ -1128,22 +1130,7 @@ export default {
           name:'联调割接'
         },
       ],
-      pointFileList:[
-        {
-          place:'国外/国外',
-          address:'纽约市',
-          children:[
-            '项目经理认命','开工检查项','会议纪要','技术方案'
-          ]
-        },
-        {
-          place:'中国/北京',
-          address:'海淀区马连洼北路8号',
-          children:[
-            '项目经理认命','开工检查项','会议纪要'
-          ]
-        }
-      ],
+      pointFileList:[],
       pointInsList:[],
       operTwoList:[
         {
@@ -2103,7 +2090,37 @@ export default {
         }
     },
     delPro(index){//删除当前项目
-      console.log(this.proList[index].id)
+      let vm=this;
+      vm.$confirm('正在操作将删除此项目, 是否继续?', '提示', {
+         confirmButtonText: '确定',
+         cancelButtonText: '取消',
+         type: 'error'
+       }).then(() => {
+         let formdata=new FormData();
+         formdata.append('id',vm.proList[index].id)
+         vm.$axios.post(vm.url+'/deleteProject',formdata).then((res)=>{
+           if(res.data.code==0){
+             vm.$message({
+               type: 'success',
+               message: '删除成功!'
+             });
+             vm.getProList()
+           }else{
+             vm.$message({
+               type: 'error',
+               message:res.data.msg
+             });
+           }
+         }).catch((err)=>{
+           console.log(err)
+           vm.$message.error('未知错误,请联系管理员')
+         })
+       }).catch(() => {
+         vm.$message({
+           type: 'error',
+           message: '已取消删除'
+         });
+       });
     },
     delOperTwo(indexOper){//删除当前局点
       if(this.operTwoList[indexOper].projectPointId!=undefined){
