@@ -3268,10 +3268,9 @@ input[type=checkbox]:checked:after {
       }
     }
     .mes_titleTwo{
-      width: 95%;
+      min-width: 100%;
       height: 40px;
       display: flex;
-      margin:0 auto;
       background: #eb7a1d;
       color:white;
       line-height: 40px;
