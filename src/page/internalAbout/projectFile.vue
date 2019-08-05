@@ -3,6 +3,7 @@
   <div class="project_file">
     <p class="file_reload">
       <i class="el-icon-refresh"></i>
+      <span class="dataLength">共有数据:&nbsp;<span style="color:#eb7a1d;font-weight:bold;">{{dataLength}}</span>&nbsp;条</span>
     </p>
     <div class="" style="minHeight:500px;">
       <el-row>
@@ -11,7 +12,7 @@
         <el-col :span="3"><div class="fileMes_title">文档管理</div></el-col>
         <el-col :span="3"><div class="fileMes_title">验货单管理</div></el-col>
       </el-row>
-      <el-row class="operTwo" v-for="(proMes,index) in fileList" :key="'proMes'+index">
+      <el-row class="operTwo" v-for="(proMes,index) in proList" :key="'proMes'+index">
         <el-col :span="12"><div class="file_con">{{proMes.name}}</div></el-col>
         <el-col :span="6"><div class="file_con">{{proMes.point}}</div></el-col>
         <el-col :span="3"><div class="file_con">
@@ -136,16 +137,7 @@ export default {
       fileConBox:false,//项目上文内容
       insBox:false,//验货单上传
       insConBox:false,//验货单内容
-      fileList:[
-        {
-          name:'爱奇艺2018Q4网络设备采购95期_第四批、第五批',
-          point:'北京-北京市'
-        },
-        {
-          name:'1Y01001812090L民生银行北京分行安防',
-          point:'天津-天津市'
-        }
-      ],
+      proList:[],
       pageNum:10,//总页数
       currentPage3:1,//分页器类型
       pointFileList:[
@@ -188,7 +180,12 @@ export default {
           ]
         }
       ],
+      page:0,//页码
+      dataLength:0,//数据总和
     }
+  },
+  created(){
+    this.getProList()
   },
   methods:{
     handleSizeChange(val) {
@@ -196,6 +193,26 @@ export default {
     },
     handleCurrentChange(val) {
 
+    },
+    getProList(){
+      let _vn=this;
+      _vn.proLoad=true;
+      let formdata=new FormData();
+      let opID=window.localStorage.getItem('Uid');
+      formdata.append('page',_vn.page);
+      formdata.append('operatorId',opID);
+      formdata.append('operateType','creator')
+      _vn.$axios.post(_vn.url+'/findProjectListByCondition',formdata).then((res)=>{
+        if(res.data.code==0){
+          _vn.proList=res.data.data.content;
+          _vn.pageNum=res.data.data.totalPages*10;
+          _vn.dataLength=res.data.data.totalElements;
+        }else{
+          _vn.$message.error(res.data.msg);
+        }
+      }).catch((err)=>{
+        _vn.$message.error('未知错误,请联系管理员');
+      })
     },
     closeFileBox(){//关闭项目文档
       this.$refs.filePerBox.style.width='300px';
@@ -277,6 +294,12 @@ export default {
   padding-bottom: 10px;
   box-sizing: border-box;
   padding-right: 20px;
+  position: relative;
+  .dataLength{
+    position: absolute;
+    right:60px;
+    top:16px;
+  }
   i{
     color:#eb7a1d;
     font-size: 30px;

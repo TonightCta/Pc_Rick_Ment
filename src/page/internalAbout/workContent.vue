@@ -4,22 +4,23 @@
     <div class="work_search">
       日期范围:
       <el-date-picker
-        v-model="value7"
+        v-model="workDate"
         type="daterange"
         align="right"
         unlink-panels
         range-separator="至"
         start-placeholder="开始日期"
         end-placeholder="结束日期"
+        value-format="yyyy-MM-dd"
         :picker-options="pickerOptions2">
       </el-date-picker>
-      <el-button type="primary" icon="el-icon-search" size="medium">搜索</el-button>
+      <el-button type="primary" icon="el-icon-search" size="medium" @click="searchWork()">搜索</el-button>
     </div>
     <p class="work_title">
-      <el-button type="primary" icon="el-icon-plus" size="medium" @click="addWork=true;">添加工作内容</el-button>
-      <span>共有数据:&nbsp;<font style="color:#eb7a1d;font-weight:bold;">58</font>&nbsp;条</span>
+      <el-button type="primary" icon="el-icon-plus" size="medium" @click="pushWork()">添加工作内容</el-button>
+      <span>共有数据:&nbsp;<font style="color:#eb7a1d;font-weight:bold;">{{dataLength}}</font>&nbsp;条</span>
       <el-tooltip class="item" effect="dark" content="刷新列表" placement="bottom">
-        <i class="el-icon-refresh" style="color:#eb7a1d;fontSize:30px;cursor:pointer;"></i>
+        <i class="el-icon-refresh" style="color:#eb7a1d;fontSize:30px;cursor:pointer;" @click="getWorkList()"></i>
       </el-tooltip>
     </p>
     <div class="cust_con">
@@ -32,23 +33,26 @@
         <el-col :span="3"><div class="cusMesTitle">阅览状态</div></el-col>
         <el-col :span="2"><div class="cusMesTitle">操作</div></el-col>
       </el-row>
-      <el-row class="operTwo" v-for="(cusMes,index) in workList" :key="'CusMes'+index">
-        <el-col :span="2"><div class="cusMesCon">{{cusMes.num}}</div></el-col>
-        <el-col :span="9"><div class="cusMesCon">{{cusMes.name}}</div></el-col>
-        <el-col :span="3"><div class="cusMesCon">{{cusMes.point}}</div></el-col>
-        <el-col :span="3"><div class="cusMesCon">{{cusMes.ceratName}}</div></el-col>
-        <el-col :span="2"><div class="cusMesCon">{{cusMes.time}}</div></el-col>
-        <el-col :span="3"><div class="cusMesCon">
-          <span v-if="cusMes.state==1" style="color:#eb7a1d;">已阅览</span>
-          <span v-else style="color:#666;">未阅览</span>
-        </div></el-col>
-        <el-col :span="2"><div class="cusMesCon">
-          <el-tooltip class="item" effect="dark" content="工作详情" placement="bottom">
-            <i class="el-icon-document" style="color:#eb7a1d;" @click="workDetails(index)"></i>
-          </el-tooltip>
-          <i class="el-icon-delete"></i>
-        </div></el-col>
-      </el-row>
+      <p style="textAlign:center;lineHeight:80px;color:#666;" v-if="noWork">暂无更多记录</p>
+      <div class="" style="minHeight:500px;" v-loading="workLoading">
+        <el-row class="operTwo" v-for="(cusMes,index) in workList" :key="'CusMes'+index">
+          <el-col :span="2"><div class="cusMesCon">{{cusMes.num+1}}</div></el-col>
+          <el-col :span="9"><div class="cusMesCon">{{cusMes.projectName}}</div></el-col>
+          <el-col :span="3"><div class="cusMesCon">{{cusMes.projectCourseNodeName}}</div></el-col>
+          <el-col :span="3"><div class="cusMesCon">{{cusMes.engineerName}}</div></el-col>
+          <el-col :span="2"><div class="cusMesCon">{{cusMes.startTimeSec}}</div></el-col>
+          <el-col :span="3"><div class="cusMesCon">
+            <span v-if="cusMes.checked" style="color:#eb7a1d;">已阅览</span>
+            <span v-else style="color:#666;">未阅览</span>
+          </div></el-col>
+          <el-col :span="2"><div class="cusMesCon">
+            <el-tooltip class="item" effect="dark" content="工作详情" placement="bottom">
+              <i class="el-icon-document" style="color:#eb7a1d;" @click="workDetails(index)"></i>
+            </el-tooltip>
+            <i class="el-icon-delete"></i>
+          </div></el-col>
+        </el-row>
+      </div>
     </div>
     <!-- 分页器 -->
     <p class="project_page">
@@ -64,7 +68,7 @@
     <!-- 添加工作内容 -->
     <div class="">
       <el-dialog
-        title="添加客户"
+        title="添加工作内容"
         :visible.sync="addWork"
         width="45%">
         <div class="add_work">
@@ -79,36 +83,27 @@
           </ul>
           <ul>
             <li>
-              <el-select
-                v-model="cusName"
-                filterable
-                remote
-                reserve-keyword
-                size="medium"
-                style="width:365px;"
-                placeholder="请输入项目名称"
-                :remote-method="remoteMethod"
-                :loading="workLoading">
+              <el-select v-model="addworkMes.pushName" @change="choosePro" placeholder="请选择项目" size="medium" style="width:365px;">
                 <el-option
-                  v-for="item in restaurants"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  v-for="item in addworkMes.pushProList"
+                  :key="item.id"
+                  :label="item.projectName"
+                  :value="item.projectName">
                 </el-option>
               </el-select>
             </li>
             <li>
-              <el-select v-model="value" placeholder="请选择进程节点" size="medium" style="width:365px;">
+              <el-select v-model="addworkMes.pointName" @change="choosePoint" placeholder="请选择进程节点" size="medium" style="width:365px;">
                 <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  v-for="item in addworkMes.pointList"
+                  :key="item.id"
+                  :label="item.courseNodeName"
+                  :value="item.courseNodeName">
                 </el-option>
               </el-select>
             </li>
             <li>
-              <textarea @focus="getTear" @blur="clearTear" ref="proTear" placeholder="请输入工作内容"></textarea>
+              <textarea @focus="getTear" @blur="clearTear" ref="proTear" v-model="addworkMes.pushContent" placeholder="请输入工作内容"></textarea>
             </li>
             <li style="marginTop:-5px;">
               <el-time-select
@@ -134,49 +129,84 @@
               </el-time-select>
             </li>
             <li class="file_up">
-              <el-input type="primary" size="medium" style="width:240px;" placeholder="请选择图片附件"></el-input>
+              <el-input type="primary" v-model="addworkMes.picName" size="medium" style="width:240px;" placeholder="请选择图片附件"></el-input>
               <el-button type="primary" size="medium" icon="el-icon-upload">浏览文件</el-button>
-              <input type="file" name="" value="" accept="image/*" class="file_dom">
+              <input type="file" name="" value="" accept="image/*" class="file_dom" @change="upWorkPic">
             </li>
             <li class="file_up">
-              <el-input type="primary" size="medium" style="width:240px;" placeholder="请选择文档附件"></el-input>
+              <el-input type="primary" v-model="addworkMes.exName" size="medium" style="width:240px;" placeholder="请选择文档附件"></el-input>
               <el-button type="primary" size="medium" icon="el-icon-upload">浏览文件</el-button>
-              <input type="file" name="" value="" class="file_dom">
+              <input type="file" name="" value="" class="file_dom"   Accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" @change="upWorkEx">
             </li>
             <li>
-              <textarea @focus="getTear" @blur="clearTear" ref="proTear" placeholder="若项目存在项目风险，请在此处进行描述反馈"></textarea>
+              <textarea @focus="getTear" @blur="clearTear" ref="proTear" v-model="addworkMes.potenText" placeholder="若项目存在项目风险，请在此处进行描述反馈"></textarea>
             </li>
           </ul>
         </div>
         <span slot="footer" class="dialog-footer">
           <el-button @click="addWork = false">取 消</el-button>
-          <el-button type="primary" @click="addWork = false">提 交</el-button>
+          <el-button type="primary" @click="subAddWork()">提 交</el-button>
         </span>
       </el-dialog>
     </div>
     <!-- 工作内容详情 -->
     <div class="">
       <el-dialog
-        title="添加客户"
+        title="工作详情"
         :visible.sync="workBox"
         width="45%">
-        <div class="add_work">
-          <ul>
-            <li>项目:</li>
-            <li>进程节点:</li>
-            <li>工作内容:</li>
-            <li>工作时间:</li>
-            <li>文档附件:</li>
-            <li>图片附件:</li>
-          </ul>
-          <ul>
-            <li>{{workMes.name}}</li>
-            <li>123</li>
-            <li>123</li>
-            <li>123</li>
-            <li>123</li>
-            <li>123</li>
-          </ul>
+        <div class="work_detials">
+          <p class="work_left">
+            <span>项目名称:</span>
+          </p>
+          <p class="work_right">
+            {{workMes.projectName}}
+          </p>
+        </div>
+        <div class="work_detials">
+          <p class="work_left">
+            <span>进程节点:</span>
+          </p>
+          <p class="work_right">
+            {{workMes.projectCourseNodeName}}
+          </p>
+        </div>
+        <div class="work_detials">
+          <p class="work_left">
+            <span>工作内容:</span>
+          </p>
+          <p class="work_right">
+            {{workMes.content}}
+          </p>
+        </div>
+        <div class="work_detials">
+          <p class="work_left">
+            <span>工作时间:</span>
+          </p>
+          <p class="work_right">
+            {{workMes.startTimeSec}}
+          </p>
+        </div>
+        <div class="work_detials">
+          <p class="work_left">
+            <span>文档附件:</span>
+          </p>
+          <p class="work_right" style="minHeight:15px;">
+            <a :href="url+'/'+file.fileName" v-for="(file,index) in workMes.fileUploads">{{file.fileName}}</a>
+          </p>
+        </div>
+        <div class="work_detials" style="marginTop:15px;">
+          <p class="work_left">
+            <span>图片附件:</span>
+          </p>
+          <div class="work_right">
+            <viewer :images="workMes.imgUploads" style="width:100%;">
+              <img v-for="(pic,index) in workMes.imgUploads"
+              :key="'Skill'+index" :src="url+'/'+pic.fileName" alt=""
+              style="width:40%;height:100px;margin-left:15px;margin-top:10px;cursor:pointer;border:1px solid #eb7a1d;border-radius:8px;"
+              >
+            </viewer>
+          </div>
         </div>
         <span slot="footer" class="dialog-footer">
           <el-button @click="workBox = false">取 消</el-button>
@@ -193,24 +223,6 @@ export default {
     return{
       startTime:null,
       endTime:null,
-      value7:[],
-      options: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
-        }],
-      value: '',
       // 临时数据
       pageNum:10,//总页数
       currentPage3:1,//分页器类型
@@ -241,38 +253,120 @@ export default {
           }
         }]
       },
-      workList:[
-        {
-          num:1,
-          name:'天津信息所数据设备更新项目/天津市',
-          point:'加电单调',
-          ceratName:'彭闯',
-          time:'2019/05/17',
-          state:1,
-        },
-        {
-          num:2,
-          name:'1Y01001812090L民生银行北京分行安防/贵阳市',
-          point:'联调割接',
-          ceratName:'彭闯',
-          time:'2019/05/17',
-          state:2,
-        }
-      ],
+      workList:[],
       addWork:false,//添加工作内容
-      workLoading:false,//查询加载
       restaurants:[],//查询返回列表
       cusName:null,//查询名称
       workBox:false,//工作内容详情
-      workMes:{},
+      workMes:{
+        projectName:null,
+        projectCourseNodeName:null,
+        content:null,
+        startTimeSec:null,
+        fileUploads:[],
+      },
+      page:0,//页码
+      dataLength:0,//数据总条数
+      length:0,//数据排序
+      proID:null,//添加项目选中ID
+      addworkMes:{
+        pushProList:[],//添加项目列表
+        pushName:null,//添加项目名称
+        pushProID:null,//添加项目ID
+        pointName:null,//局点名称
+        pointList:[],//添加项目选择局点
+        pointID:null,//添加局点ID
+        pushContent:null,//添加工作内容
+        filePic:null,//图片文件
+        fileEx:null,//文档文件
+        picName:null,//图片名称
+        exName:null,//文档名称
+        potenText:null,//潜在风险
+      },
+      workLoading:false,//日志加载
+      workDate:[],//搜索日期
+      noWork:false,//是否有日子
     }
   },
+  watch:{
+    addWork(val,oldVal){
+      if(!val){
+        this.addworkMes={
+            pushProList:[],//添加项目列表
+            pushName:null,//添加项目名称
+            pushProID:null,//添加项目ID
+            pointName:null,//局点名称
+            pointList:[],//添加项目选择局点
+            pointID:null,//添加局点ID
+            pushContent:null,//添加工作内容
+            filePic:null,//图片文件
+            fileEx:null,//文档文件
+            picName:null,//图片名称
+            exName:null,//文档名称
+            potenText:null,//潜在风险
+        }
+      }
+    },
+    workList(val,oldVal){
+      if(val==null||val.length<1){
+        this.noWork=true;
+      }else{
+        this.noWork=false;
+      }
+    }
+  },
+  created(){
+    this.getWorkList()
+  },
   methods:{
+    getWorkList(){//获取工作内容列表
+      let formdata=new FormData();
+      formdata.append('engineerId',window.localStorage.getItem('engID'));
+      formdata.append('page',this.page);
+      formdata.append('size',10);
+      this.workLoading=true;
+      this.$axios.post(this.url+'/mobile/findWorkRecordListByEngineerId',formdata).then((res)=>{
+        if(res.data.code==0){
+          this.dataLength=res.data.data.totalElements;
+          this.pageNum=res.data.data.totalPages*10;
+          this.length=this.page*10;
+          this.workList=res.data.data.content;
+          this.workLoading=false;
+          this.workList.forEach((e)=>{
+            this.$set(e,'num',this.length++);
+            let startDate=new Date(e.workTime);
+            let sYear=startDate.getFullYear();
+            let sMon=startDate.getMonth()+1;
+            if(sMon<10){
+              sMon='0'+sMon
+            };
+            let sDay=startDate.getDate();
+            if(sDay<10){
+              sDay='0'+sDay
+            }
+            let sTime=sYear+'-'+sMon+'-'+sDay;
+            this.$set(e,'startTimeSec',sTime);
+          })
+        }else{
+          this.workLoading=false;
+          this.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        this.workLoading=false;
+        this.$message.error('未知错误,请联系管理员')
+        // console.log(err)
+      })
+    },
     handleSizeChange(val) {
 
     },
     handleCurrentChange(val) {
-
+      this.page=val-1;
+      if(this.workDate!=null&&this.workDate.length>1){
+        this.searchWork()
+      }else{
+        this.getWorkList()
+      }
     },
     getTear(){//获取文本域焦点
       this.$refs.proTear.style.borderColor='#eb7a1d'
@@ -284,37 +378,137 @@ export default {
       this.workMes=this.workList[index];
       this.workBox=true;
     },
-    remoteMethod(query) {//远程查询项目列表
-        if (query !== '') {
-          let formdata=new FormData();
-          formdata.append('state',2);
-          formdata.append('name',query);
-          formdata.append('size',20);
-          formdata.append('page',0);
-          this.$axios.post(this.url+'/findCustomerListByCondition',formdata).then((res)=>{
-            if(res.data.code==0){
-              this.restaurants=res.data.data.content.map(item=>{
-                return {value:item.name,label:item.name,id:item.id}
-              });
-            }else{
-              this.$message.error(res.data.msg)
-            }
-          }).catch((err)=>{
-            this.$message.error('未知错误,请联系管理员');
-            // console.log(err)
-          })
-          this.workLoading = true;
-          setTimeout(() => {
-            this.workLoading = false;
-            this.restaurants.filter(item => {
-              return item.label.toLowerCase()
-                .indexOf(query.toLowerCase()) > -1;
-            });
-          }, 200);
-        } else {
-          this.restaurants = [];
+    pushWork(){//添加项目
+      let formdata=new FormData();
+      formdata.append('engineerId',window.localStorage.getItem('engID'));
+      this.$axios.post(this.url+'/mobile/findProjectPointAndProjectCourseNodeByEngineer',formdata).then((res)=>{
+        if(res.data.code==0){
+          this.addworkMes.pushProList=res.data.data;
+          this.addWork=true;
+        }else{
+          this.$message.error(res.data.msg)
         }
+      }).catch((err)=>{
+        this.$message.error('未知错误,请联系管理员')
+      })
     },
+    choosePro(val){//选择项目
+      this.addworkMes.pushProList.forEach((e)=>{
+        if(e.projectName==val){
+          this.addworkMes.pushProID=e.id;
+          this.addworkMes.pointList=e.usingProjectCourseNodeVOList;
+        }
+      })
+    },
+    choosePoint(val){//选择局点
+      this.addworkMes.pointList.forEach((e)=>{
+        if(e.courseNodeName==val){
+          this.addworkMes.pointID=e.id;
+        }
+      });
+    },
+    upWorkPic(e){//上传日志图片
+      this.addworkMes.picName=e.target.files[0].name;
+      this.addworkMes.filePic=e.target.files[0];
+    },
+    upWorkEx(e){//上传文档文件
+      this.addworkMes.exName=e.target.files[0].name;
+      this.addworkMes.fileEx=e.target.files[0];
+    },
+    subAddWork(){//提交新增日志
+      let _vm=this;
+      let formdata=new FormData();
+      if(_vm.addworkMes.pushProID==null||_vm.addworkMes.pushProID==''){
+        _vm.$message.error('请选择项目')
+      }else if(_vm.addworkMes.pointID==null||_vm.addworkMes.pointID==''){
+        _vm.$message.error('请选择局点')
+      }else if(_vm.addworkMes.pushContent==null||_vm.addworkMes.pushContent==''){
+        _vm.$message.error('请输入工作内容')
+      }else if(_vm.startTime==null||_vm.startTime==''){
+        _vm.$message.error('请选择开始时间')
+      }else if(_vm.endTime==null||_vm.endTime==''){
+        _vm.$message.error('请选择结束时间')
+      }else{
+        formdata.append('engineerId',window.localStorage.getItem('engID'));
+        formdata.append('projectCourseNodeId',_vm.addworkMes.pointID);
+        formdata.append('content',_vm.addworkMes.pushContent);
+        formdata.append('startTime',Number(_vm.startTime.substring(0,2)));
+        formdata.append('endTime',Number(_vm.endTime.substring(0,2)));
+        let date=new Date();
+        let year = date.getFullYear();
+        let month = date.getMonth() + 1;
+        let day = date.getDate();
+        if(day > 0 && day < 9) {
+          day = '0' + day
+        }
+        let Time = year + '-' + month + '-' + day;
+        formdata.append('workTime',Time);
+        if(_vm.addworkMes.filePic!=null&&_vm.addworkMes.filePic!=''){
+          formdata.append('imageFiles',_vm.addworkMes.filePic);
+        }
+        if(_vm.addworkMes.fileEx!=null&&_vm.addworkMes.fileEx!=''){
+          formdata.append('otherFiles',_vm.addworkMes.fileEx);
+        };
+        if(_vm.addworkMes.potenText!=null&&_vm.addworkMes.potenText!=''){
+          formdata.append('warnRecordContent',_vm.addworkMes.potenText);
+        };
+        _vm.$axios.post(_vm.url+'/mobile/saveWorkRecord',formdata).then((res)=>{
+          if(res.data.code==0){
+            _vm.$message.success('添加成功');
+            _vm.addWork=false;
+            _vm.getWorkList();
+          }else{
+            _vm.$message.error(res.data.msg)
+          }
+        }).catch((err)=>{
+          _vm.$message.error('未知错误,请联系管理员')
+        })
+      }
+    },
+    searchWork(){//搜索日志
+      if(this.workDate!=null&&this.workDate.length>1){
+        let formdata=new FormData();
+        formdata.append('engineerId',window.localStorage.getItem('engID'));
+        formdata.append('page',this.page);
+        formdata.append('size',10);
+        formdata.append('beginTime',this.workDate[0])
+        formdata.append('endTime',this.workDate[1])
+        this.workLoading=true;
+        this.$axios.post(this.url+'/mobile/findWorkRecordListByEngineerId',formdata).then((res)=>{
+          if(res.data.code==0){
+            this.dataLength=res.data.data.totalElements;
+            this.pageNum=res.data.data.totalPages*10;
+            this.length=this.page*10;
+            this.workList=res.data.data.content;
+            this.workLoading=false;
+            this.workList.forEach((e)=>{
+              this.$set(e,'num',this.length++);
+              let startDate=new Date(e.workTime);
+              let sYear=startDate.getFullYear();
+              let sMon=startDate.getMonth()+1;
+              if(sMon<10){
+                sMon='0'+sMon
+              };
+              let sDay=startDate.getDate();
+              if(sDay<10){
+                sDay='0'+sDay
+              }
+              let sTime=sYear+'-'+sMon+'-'+sDay;
+              this.$set(e,'startTimeSec',sTime);
+            })
+          }else{
+            this.workLoading=false;
+            this.$message.error(res.data.msg)
+          }
+        }).catch((err)=>{
+          this.workLoading=false;
+          this.$message.error('未知错误,请联系管理员')
+          // console.log(err)
+        })
+      }else{
+        this.$message.error('未选择时间')
+      }
+    }
   }
 }
 </script>
@@ -362,7 +556,7 @@ export default {
       color:white;
     }
     .cusMesCon{
-      line-height: 38px;
+      line-height: 50px;
       text-align: center;
       font-size: 14px;
       i{
@@ -439,6 +633,26 @@ export default {
 
         }
       }
+    }
+  }
+  .work_detials{
+    width: 95%;
+    margin:0 auto;
+    display: flex;
+    color:#333;
+    font-size: 15px;
+    margin-bottom: 15px;
+    .work_left{
+      width: 25%;
+      position: relative;
+      span{
+        position: absolute;
+        top:0;
+        right:20px;
+      }
+    }
+    .work_right{
+      width: 75%;
     }
   }
 }

@@ -242,7 +242,7 @@
       </el-dialog>
     </div>
     <!-- 编辑项目 -->
-    <div class="" v-if="isDown">
+    <div class="">
       <el-dialog
         title="编辑项目"
         :visible.sync="editPro"
@@ -1106,16 +1106,7 @@ export default {
       searchEngText:[],//工程师远程查找
       searchEngList:[],//远程查找工程师列表
       engLoading:false,//查找工程师Loading
-      pointList:[
-        {
-          place:'国外/国外',
-          address:'马连洼北路万霖科技大厦'
-        },
-        {
-          place:'国外/国外',
-          address:'生命科学园'
-        }
-      ],
+      pointList:[],
       pointMesList:[
         {
           name:'进场开工'
@@ -1152,7 +1143,22 @@ export default {
           cityList:[],
         },
       ],
-      editProMes:{},//编辑项目内容
+      editProMes:{
+        name:null,
+        customerName:null,
+        contractNumber:null,
+        content:null,
+        linkman:null,
+        phone:null,
+        peopleNumber:null,
+        dayNumber:null,
+        standard:null,
+        projectType:{
+          name:null
+        },
+        technologyName:null,
+        skillList:[],
+      },//编辑项目内容
       isDown:false,//编辑项目信息是否数据加载完毕
       abilityIDList:[],//技能评定ID列表
       proID:null,//项目ID
@@ -1197,7 +1203,22 @@ export default {
     },
     editPro(val,oldVal){
       if(!val){
-        this.editProMes={};
+        this.editProMes={
+          name:null,
+          customerName:null,
+          contractNumber:null,
+          content:null,
+          linkman:null,
+          phone:null,
+          peopleNumber:null,
+          dayNumber:null,
+          standard:null,
+          projectType:{
+            name:null
+          },
+          technologyName:null,
+          skillList:[],
+        };
         this.isDown=false;
         // console.log(this.editProMes)
       }
@@ -1406,7 +1427,7 @@ export default {
     remoteMethod(query) {//远程查询客户列表
         if (query !== '') {
           let formdata=new FormData();
-          formdata.append('state',2);
+          formdata.append('stateList',2);
           formdata.append('name',query);
           formdata.append('size',20);
           formdata.append('page',0);

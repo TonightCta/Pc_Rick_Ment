@@ -93,7 +93,8 @@ export default {
            });
            window.sessionStorage.setItem('adminMes',JSON.stringify(res.data.data));
            _vm.$router.push('/admin')
-           window.localStorage.setItem('Uid',res.data.data.id)
+           window.localStorage.setItem('Uid',res.data.data.id);
+           window.localStorage.setItem('engID',res.data.data.engineerVO.id);
            setTimeout(()=>{
              // this.$refs.loginCanv.style.display='none';
              // this.$refs.loginCanvT.style.display='none';

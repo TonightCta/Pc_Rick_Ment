@@ -143,8 +143,12 @@ export default {
                url:'/admin/creatPro'
              },
              {
-               name:'客户管理',
+               name:'客户管理(管理员)',
                url:'/admin/custTion'
+             },
+             {
+               name:'客户管理(项目经理)',
+               url:'/admin/custTionManer'
              }
            ]
          },
@@ -157,12 +161,46 @@ export default {
                url:'/admin/workContent'
              },
              {
-               name:'潜在风险记录列表',
+               name:'潜在风险记录列表(管理员)',
                url:'/admin/riskRcord',
+             },
+             {
+               name:'潜在风险记录列表(工程师)',
+               url:'/admin/riskRcordManer',
              },
              {
                name:'项目相关文档管理',
                url:'/admin/projectFile'
+             }
+           ]
+         },
+         {
+           name:'基础数据管理',
+           in:'1-8',
+           usingChannelVOList:[
+             {
+               name:'频道管理',
+               url:'/admin/channel'
+             },
+             {
+               name:'角色管理',
+               url:'/admin/role'
+             },
+             {
+               name:'操作人员管理',
+               url:'/admin/operman'
+             },
+             {
+               name:'地点管理',
+               url:'/admin/place'
+             },
+             {
+               name:'进程节点管理',
+               url:'/admin/point'
+             },
+             {
+               name:'技术领域及领域管理',
+               url:'/admin/field'
              }
            ]
          }
@@ -273,6 +311,7 @@ export default {
     .crumbs{
       width: 100%;
       height: 30px;
+      ul::-webkit-scrollbar {display:none};
       ul{
         width: 100%;
         height: 100%;

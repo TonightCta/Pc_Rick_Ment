@@ -92,19 +92,59 @@ const router = new Router({
           component:resolve=>require(['@/page/managerAdmin/customer'],resolve)
         },
         {
+          path:'/admin/custTionManer',//客户列表管理(项目经理级别)
+          name:'custTionManer',
+          component:resolve=>require(['@/page/managerAdmin/customerManer'],resolve)
+        },
+        {
           path:'/admin/workContent',//工作内容管理
           name:'WorkContent',
           component:resolve=>require(['@/page/internalAbout/workContent'],resolve)
         },
         {
-          path:'/admin/riskRcord',//潜在风险记录列表
+          path:'/admin/riskRcord',//潜在风险记录列表(管理员)
           name:'RiskRecord',
           component:resolve=>require(['@/page/internalAbout/riskRcord'],resolve)
+        },
+        {
+          path:'/admin/riskRcordManer',//潜在风险记录列表(工程师)
+          name:'riskRcordManer',
+          component:resolve=>require(['@/page/internalAbout/riskRcordManer'],resolve)
         },
         {
           path:'/admin/projectFile',//项目相关文档管理
           name:'ProjectFile',
           component:resolve=>require(['@/page/internalAbout/projectFile'],resolve)
+        },
+        {
+          path:'/admin/channel',//频道管理
+          name:'Channel',
+          component:resolve=>require(['@/page/basicData/channelAdmin'],resolve)
+        },
+        {
+          path:'/admin/role',//角色管理
+          name:'Role',
+          component:resolve=>require(['@/page/basicData/roleAdmin'],resolve)
+        },
+        {
+          path:'/admin/operman',//操作人员管理
+          name:'OperMan',
+          component:resolve=>require(['@/page/basicData/opermanAdmin'],resolve)
+        },
+        {
+          path:'/admin/place',//地点管理
+          name:'Place',
+          component:resolve=>require(['@/page/basicData/placeAdmin'],resolve)
+        },
+        {
+          path:'/admin/point',//进程节点管理
+          name:'Point',
+          component:resolve=>require(['@/page/basicData/pointAdmin'],resolve)
+        },
+        {
+          path:'/admin/field',//技术领域及能力管理
+          name:'Field',
+          component:resolve=>require(['@/page/basicData/fieldAdmin'],resolve)
         }
       ],
       redirect:'/admin/wel'

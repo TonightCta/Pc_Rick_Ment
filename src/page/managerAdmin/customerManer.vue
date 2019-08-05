@@ -17,7 +17,7 @@
           </el-date-picker>
         </li>
         <li>
-          <el-input type="primary" style="width:350px;" placeholder="请输入客户名称" v-model="cusName"></el-input>
+          <el-input type="primary" style="width:350px;" placeholder="请输入客户名称" v-model="cusName" ></el-input>
           <el-button type="primary" icon="el-icon-search" size="medium" @click="searchCus()">搜索</el-button>
         </li>
       </ul>
@@ -74,9 +74,6 @@
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="编辑客户" placement="bottom">
               <i class="el-icon-edit" style="color:#eb7a1d;" @click="editCust(index)"></i>
-            </el-tooltip>
-            <el-tooltip class="item" effect="dark" content="删除客户" placement="bottom">
-              <i class="el-icon-delete" style="color:#eb7a1d;" @click="delCust(index)"></i>
             </el-tooltip>
           </div></el-col>
         </el-row>
@@ -308,6 +305,7 @@ export default {
       formdata.append('stateList',-1);
       formdata.append('size',10);
       formdata.append('page',_vm.page);
+      formdata.append('creatorId',window.localStorage.getItem('Uid'));
       _vm.$axios.post(_vm.url+'/findCustomerListByCondition',formdata).then((res)=>{
         if(res.data.code==0){
           _vm.dataLength=res.data.data.totalElements;
@@ -327,7 +325,7 @@ export default {
         _vm.cusLoading=false;
       })
     },
-    searchCus(){//搜索客户
+    searchCus(){
       let _vm=this;
       let formdata=new FormData();
       if(this.cusDate!=null&&this.cusDate.length>1){
@@ -341,6 +339,7 @@ export default {
       formdata.append('stateList',-1);
       formdata.append('size',10);
       formdata.append('page',_vm.page);
+      formdata.append('creatorId',window.localStorage.getItem('Uid'));
       _vm.$axios.post(_vm.url+'/findCustomerListByCondition',formdata).then((res)=>{
         if(res.data.code==0){
           _vm.dataLength=res.data.data.totalElements;
@@ -408,31 +407,6 @@ export default {
         _vm.$message.error('未知错误,请联系管理员')
       });
 
-    },
-    delCust(index){//删除客户
-      let formdata=new FormData();
-      this.$confirm('此操作将永久删除该客户,是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'error'
-        }).then(() => {
-          formdata.append('id',this.cusList[index].id);
-          this.$axios.post(this.url+'/deleteCustomer',formdata).then((res)=>{
-            if(res.data.code==0){
-              this.$message.success('删除客户成功');
-              this.getCusList()
-            }else{
-              this.$message.error(res.data.msg)
-            }
-          }).catch((err)=>{
-            this.$message.error('未知错误,请联系管理员')
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });
-        });
     },
     turnEditCus(){//编辑客户信息上传
       let _vm=this;

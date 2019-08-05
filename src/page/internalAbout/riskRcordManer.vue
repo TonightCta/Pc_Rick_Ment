@@ -1,4 +1,4 @@
-<!-- 潜在风险记录(管理员) -->
+<!-- 潜在风险记录(工程师) -->
 <template lang="html">
   <div class="risk_rcord">
     <div class="risk_search">
@@ -122,10 +122,10 @@ export default {
       let _vm=this;
       let formdata=new FormData();
       _vm.riskLoading=true;
-      formdata.append('operateType','admin');
+      formdata.append('operateType','creator');
+      formdata.append('creatorId',window.localStorage.getItem('Uid'));
       formdata.append('page',_vm.page);
       formdata.append('size',10);
-
       _vm.$axios.post(_vm.url+'/findWarnRecordListByCondition',formdata).then((res)=>{
         if(res.data.code==0){
           _vm.riskLoading=false;
@@ -188,10 +188,10 @@ export default {
         _vm.riskLoading=true;
         formdata.append('beginTime',_vm.riskData[0])
         formdata.append('overTime',_vm.riskData[1])
-        formdata.append('operateType','admin');
+        formdata.append('operateType','creator');
+        formdata.append('creatorId',window.localStorage.getItem('Uid'));
         formdata.append('page',_vm.page);
         formdata.append('size',10);
-
         _vm.$axios.post(_vm.url+'/findWarnRecordListByCondition',formdata).then((res)=>{
           if(res.data.code==0){
             _vm.riskLoading=false;
