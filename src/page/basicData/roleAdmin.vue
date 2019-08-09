@@ -2,7 +2,7 @@
 <template lang="html">
   <div class="role_admin">
     <p class="role_titleOper">
-      <el-button type="primary" icon="el-icon-plus" size="medium">添加角色</el-button>
+      <el-button type="primary" icon="el-icon-plus" size="medium" @click="addRole=true">添加角色</el-button>
       <span class="dataLength">共有数据:&nbsp;<span style="color:#eb7a1d;font-weight:bold;">{{dataLength}}</span>&nbsp;条</span>
       <i class="el-icon-refresh"></i>
     </p>
@@ -36,7 +36,7 @@
             <i class="el-icon-circle-check-outline" style="color:#eb7a1d;"></i>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="编辑角色" placement="bottom">
-            <i class="el-icon-edit" style="color:#eb7a1d;marginLeft:5px;marginRight:5px;"></i>
+            <i class="el-icon-edit" style="color:#eb7a1d;marginLeft:5px;marginRight:5px;" @click="addRole=true"></i>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="删除角色" placement="bottom">
             <i class="el-icon-delete"></i>
@@ -55,6 +55,34 @@
         :total="pageNum">
       </el-pagination>
     </p>
+    <!-- 添加角色 -->
+    <div class="addRole">
+      <el-dialog
+        title="添加角色"
+        :visible.sync="addRole"
+        width="40%">
+        <p class="input"><span style="color:red;">*</span>角色名称:&nbsp;<el-input type="primary" style="width:350px;" v-model="addRoleMes.name" placeholder="请输入角色名称"></el-input></p>
+        <p class="input" style="marginTop:10px;"><span style="color:red;opacity:0;">*</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;说明:&nbsp;<el-input type="primary" style="width:350px;" v-model="addRoleMes.remark" placeholder="请输入说明"></el-input></p>
+        <div class="roleTree">
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:red;">*</span>频道:&nbsp;
+          </p>
+          <div class="" style="width:80%;">
+            <el-tree
+              :data="data2"
+              show-checkbox
+              node-key="id"
+              :default-expanded-keys="[1,2,3]"
+              @check-change="abc"
+              :props="defaultProps">
+            </el-tree>
+          </div>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="addRole = false" size="medium">取 消</el-button>
+          <el-button type="primary" @click="addRole = false" size="medium">确 定</el-button>
+        </span>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -81,6 +109,50 @@ export default {
       ],
       pageNum:10,//总页数
       currentPage3:1,//分页器类型
+      addRole:false,//添加角色
+      addRoleMes:{
+        name:null,//角色名称
+        remark:null,//说明
+      },
+      data2: [{
+       id: 1,
+       label: '一级 1',
+       children: [{
+         id: 4,
+         label: '二级 1-1',
+         children: [{
+           id: 9,
+           label: '三级 1-1-1'
+         }, {
+           id: 10,
+           label: '三级 1-1-2'
+         }]
+       }]
+       }, {
+         id: 2,
+         label: '一级 2',
+         children: [{
+           id: 5,
+           label: '二级 2-1'
+         }, {
+           id: 6,
+           label: '二级 2-2'
+         }]
+       }, {
+         id: 3,
+         label: '一级 3',
+         children: [{
+           id: 7,
+           label: '二级 3-1'
+         }, {
+           id: 8,
+           label: '二级 3-2'
+         }]
+      }],
+      defaultProps: {
+          children: 'children',
+          label: 'label'
+      },
     }
   },
   methods:{
@@ -90,6 +162,9 @@ export default {
     handleCurrentChange(val) {
 
     },
+    abc(value){
+      console.log(value.label)
+    }
   }
 }
 </script>
@@ -147,6 +222,22 @@ export default {
     text-align: right;
     margin-top: 20px;
     margin-bottom: 50px;
+  }
+  .addRole{
+    .roleTree{
+      width: 80%;
+      margin:0 auto;
+      display: flex;
+      margin-top: 10px;
+      p{
+        width: 80px!important;
+        // text-align: center;
+      }
+    }
+    .input{
+      width: 80%;
+      margin:0 auto;
+    }
   }
 }
 </style>

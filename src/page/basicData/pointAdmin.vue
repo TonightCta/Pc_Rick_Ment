@@ -30,7 +30,7 @@
             <i class="el-icon-circle-check-outline" style="color:#eb7a1d;"></i>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="编辑节点" placement="bottom">
-            <i class="el-icon-edit" style="color:#eb7a1d;marginLeft:5px;marginRight:5px;"></i>
+            <i class="el-icon-edit" style="color:#eb7a1d;marginLeft:5px;marginRight:5px;" @click="editPointPar(index)"></i>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="删除节点" placement="bottom">
             <i class="el-icon-delete"></i>
@@ -71,6 +71,28 @@
         </span>
       </el-dialog>
     </div>
+    <!-- 编辑进程节点 -->
+    <div class="">
+      <el-dialog
+        title="编辑局点"
+        :visible.sync="editPoint"
+        width="45%">
+        <ul class="addPoint">
+          <li>
+            <span><i style="color:red;">*</i>名称:</span>
+            <el-input type="primary" placeholder="请输入节点名称" style="width:300px;" v-model="editPointMes.pointName"></el-input>
+          </li>
+          <li>
+            <span><i style="color:red;">*</i>排序号:</span>
+            <el-input type="primary" placeholder="请输入排序号" style="width:300px;" v-model="editPointMes.pointNum"></el-input>
+          </li>
+        </ul>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="editPoint = false" size="medium">取&nbsp;消</el-button>
+          <el-button type="primary" @click="editPoint = false" size="medium">提&nbsp;交</el-button>
+        </span>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -96,6 +118,11 @@ export default {
       addPoint:false,//添加进程节点
       pointName:null,//添加节点名称
       pointNum:null,//添加节点排序号
+      editPointMes:{
+        pointName:null,//修改局点名称
+        pointNum:null,//修改排序号
+      },
+      editPoint:false,//编辑进程节点
     }
   },
   methods:{
@@ -104,6 +131,11 @@ export default {
     },
     handleCurrentChange(val) {
 
+    },
+    editPointPar(index){
+      this.editPointMes.pointName=this.pointList[index].name;
+      this.editPointMes.pointNum=this.pointList[index].num;
+      this.editPoint=true;
     },
   }
 }
@@ -147,7 +179,7 @@ export default {
   .point_mes{
     text-align: center;
     font-size: 13px;
-    line-height: 40px;
+    line-height: 50px;
     i{
       font-size: 20px;
       cursor: pointer;
