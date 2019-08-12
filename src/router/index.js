@@ -145,6 +145,11 @@ const router = new Router({
           path:'/admin/field',//技术领域及能力管理
           name:'Field',
           component:resolve=>require(['@/page/basicData/fieldAdmin'],resolve)
+        },
+        {
+          path:'/admin/demand',//需求管理
+          name:'DeMand',
+          component:resolve=>require(['@/page/demandAdmin/demandAdmin'],resolve)
         }
       ],
       redirect:'/admin/wel'

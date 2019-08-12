@@ -203,6 +203,16 @@ export default {
                url:'/admin/field'
              }
            ]
+         },
+         {
+           name:'需求管理',
+           in:'1-9',
+           usingChannelVOList:[
+             {
+               name:'需求列表',
+               url:'/admin/demand'
+             }
+           ]
          }
        ],
        closeUrl:null,//暂存页面地址
