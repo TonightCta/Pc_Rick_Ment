@@ -150,6 +150,36 @@ const router = new Router({
           path:'/admin/demand',//需求管理
           name:'DeMand',
           component:resolve=>require(['@/page/demandAdmin/demandAdmin'],resolve)
+        },
+        {
+          path:'/admin/travelOA',//差旅费用相关
+          name:'TravelOA',
+          component:resolve=>require(['@/page/OA/travelOA'],resolve)
+        },
+        {
+          path:'/admin/businessOA',//业务费用相关
+          name:'BusinessOA',
+          component:resolve=>require(['@/page/OA/businessOA'],resolve)
+        },
+        {
+          path:'/admin/purchaseOA',//采购、外包相关
+          name:'PurchaseOA',
+          component:resolve=>require(['@/page/OA/purchaseOA'],resolve)
+        },
+        {
+          path:'/admin/otherOA',//其他费用相关
+          name:'OtherOA',
+          component:resolve=>require(['@/page/OA/otherOA'],resolve)
+        },
+        {
+          path:'/admin/staffAdmin',//员工管理
+          name:'StaffAdmin',
+          component:resolve=>require(['@/page/staffAdmin/staffTion'],resolve)
+        },
+        {
+          path:'/admin/financeOA',//财务部相关
+          name:'FinanceOA',
+          component:resolve=>require(['@/page/OA/financeOA'],resolve)
         }
       ],
       redirect:'/admin/wel'

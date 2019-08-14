@@ -213,6 +213,42 @@ export default {
                url:'/admin/demand'
              }
            ]
+         },
+         {
+           name:'OA',
+           in:'1-10',
+           usingChannelVOList:[
+             {
+               name:'差旅相关',
+               url:'/admin/travelOA',
+             },
+             {
+               name:'业务相关',
+               url:'/admin/businessOA'
+             },
+             {
+               name:'采购、外包相关',
+               url:'/admin/purchaseOA'
+             },
+             {
+               name:'其他费用',
+               url:'/admin/otherOA'
+             },
+             {
+               name:'财务相关',
+               url:'/admin/financeOA'
+             }
+           ]
+         },
+         {
+           name:'员工相关',
+           in:'1-11',
+           usingChannelVOList:[
+             {
+               name:'员工管理',
+               url:'/admin/staffAdmin',
+             }
+           ]
          }
        ],
        closeUrl:null,//暂存页面地址
