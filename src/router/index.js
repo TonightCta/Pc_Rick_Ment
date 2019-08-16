@@ -180,6 +180,11 @@ const router = new Router({
           path:'/admin/financeOA',//财务部相关
           name:'FinanceOA',
           component:resolve=>require(['@/page/OA/financeOA'],resolve)
+        },
+        {
+          path:'/admin/placeOA',//出差地管理
+          name:'PlaceOA',
+          component:resolve=>require(['@/page/placeAdmin/placeAbout'],resolve)
         }
       ],
       redirect:'/admin/wel'

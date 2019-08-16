@@ -249,6 +249,16 @@ export default {
                url:'/admin/staffAdmin',
              }
            ]
+         },
+         {
+           name:'出差相关',
+           in:'1-12',
+           usingChannelVOList:[
+             {
+               name:'出差目的地管理',
+               url:'/admin/placeOA'
+             }
+           ]
          }
        ],
        closeUrl:null,//暂存页面地址
