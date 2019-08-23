@@ -215,34 +215,42 @@ export default {
            ]
          },
          {
-           name:'OA',
+           name:'报销申请',
            in:'1-10',
            usingChannelVOList:[
              {
-               name:'差旅相关',
-               url:'/admin/travelOA',
-             },
-             {
-               name:'业务相关',
+               name:'差旅申请',
                url:'/admin/businessOA'
              },
+           ]
+         },
+         {
+           name:'财务相关',
+           in:'1-11',
+           usingChannelVOList:[
              {
-               name:'采购、外包相关',
-               url:'/admin/purchaseOA'
+               name:'报销申请审核',
+               url:'/admin/oaList'
              },
              {
-               name:'其他费用',
-               url:'/admin/otherOA'
-             },
+               name:'报销记录统计查询',
+               url:'/admin/query'
+             }
+           ]
+         },
+         {
+           name:'审核规则',
+           in:'1-12',
+           usingChannelVOList:[
              {
-               name:'财务相关',
-               url:'/admin/financeOA'
+               name:'审核规则',
+               url:'/admin/ruleList'
              }
            ]
          },
          {
            name:'员工相关',
-           in:'1-11',
+           in:'1-13',
            usingChannelVOList:[
              {
                name:'员工管理',
@@ -252,7 +260,7 @@ export default {
          },
          {
            name:'出差相关',
-           in:'1-12',
+           in:'1-14',
            usingChannelVOList:[
              {
                name:'出差目的地管理',

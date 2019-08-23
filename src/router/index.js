@@ -152,24 +152,9 @@ const router = new Router({
           component:resolve=>require(['@/page/demandAdmin/demandAdmin'],resolve)
         },
         {
-          path:'/admin/travelOA',//差旅费用相关
-          name:'TravelOA',
-          component:resolve=>require(['@/page/OA/travelOA'],resolve)
-        },
-        {
           path:'/admin/businessOA',//业务费用相关
           name:'BusinessOA',
           component:resolve=>require(['@/page/OA/businessOA'],resolve)
-        },
-        {
-          path:'/admin/purchaseOA',//采购、外包相关
-          name:'PurchaseOA',
-          component:resolve=>require(['@/page/OA/purchaseOA'],resolve)
-        },
-        {
-          path:'/admin/otherOA',//其他费用相关
-          name:'OtherOA',
-          component:resolve=>require(['@/page/OA/otherOA'],resolve)
         },
         {
           path:'/admin/staffAdmin',//员工管理
@@ -177,14 +162,24 @@ const router = new Router({
           component:resolve=>require(['@/page/staffAdmin/staffTion'],resolve)
         },
         {
-          path:'/admin/financeOA',//财务部相关
-          name:'FinanceOA',
-          component:resolve=>require(['@/page/OA/financeOA'],resolve)
-        },
-        {
           path:'/admin/placeOA',//出差地管理
           name:'PlaceOA',
           component:resolve=>require(['@/page/placeAdmin/placeAbout'],resolve)
+        },
+        {
+          path:'/admin/oaList',//申请记录列表
+          name:'OAList',
+          component:resolve=>require(['@/page/OA/OAList'],resolve)
+        },
+        {
+          path:'/admin/query',//报销记录查询
+          name:'QueryOA',
+          component:resolve=>require(['@/page/OA/QueryOA'],resolve)
+        },
+        {
+          path:'/admin/ruleList',//审核规则则
+          name:'RuleList',
+          component:resolve=>require(['@/page/OA/ruleList'],resolve)
         }
       ],
       redirect:'/admin/wel'

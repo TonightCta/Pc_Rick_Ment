@@ -94,17 +94,14 @@ export default {
            window.sessionStorage.setItem('adminMes',JSON.stringify(res.data.data));
            _vm.$router.push('/admin')
            window.localStorage.setItem('Uid',res.data.data.id);
-           window.localStorage.setItem('engID',res.data.data.engineerVO.id);
-           setTimeout(()=>{
-             // this.$refs.loginCanv.style.display='none';
-             // this.$refs.loginCanvT.style.display='none';
-             // console.log(this.$refs.loginCanv.style)
-           },500);
+           if(res.data.data.engineerVO!=null){
+             window.localStorage.setItem('engID',res.data.data.engineerVO.id);
+           }
          }else{
            _vm.$message.error(res.data.msg)
          }
        }).catch((err)=>{
-         _vm.$message.error('未知错误,请联系管理员')
+         _vm.$message.error('未知错误,请联系管理员');
        })
       }
     },
