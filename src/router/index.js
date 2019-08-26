@@ -162,6 +162,11 @@ const router = new Router({
           component:resolve=>require(['@/page/staffAdmin/staffTion'],resolve)
         },
         {
+          path:'/admin/depAdmin',//部门管理
+          name:'DepAdmin',
+          component:resolve=>require(['@/page/staffAdmin/depAdmin'],resolve)
+        },
+        {
           path:'/admin/placeOA',//出差地管理
           name:'PlaceOA',
           component:resolve=>require(['@/page/placeAdmin/placeAbout'],resolve)

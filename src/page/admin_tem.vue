@@ -253,6 +253,10 @@ export default {
            in:'1-13',
            usingChannelVOList:[
              {
+               name:'部门管理',
+               url:'/admin/depAdmin'
+             },
+             {
                name:'员工管理',
                url:'/admin/staffAdmin',
              }

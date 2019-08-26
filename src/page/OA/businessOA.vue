@@ -148,7 +148,8 @@
               :
             </span>
             <span class="mount">
-              <el-input type="primary" v-model="mount.mount" size="medium" style="width:360px;" placeholder="请输入金额"></el-input>
+              <el-input type="number" @change="docuMount(index)" v-model="mount.mount" size="medium" style="width:280px;" placeholder="请输入金额"></el-input>
+              <el-input type="number" v-model="mount.rate" size="medium" style="width:80px;" placeholder="利率"></el-input>
               <i class="el-icon-delete" style="marginLeft:10px;color:#eb7a1d;fontSize:18px;cursor:pointer;" @click="delMuchType(index)"></i>
             </span>
           </p>
@@ -272,6 +273,7 @@ export default {
         {
           type:null,//报销金额类型
           mount:null,//报销金额
+          rate:null,//金额利率
         }
       ],
       ruleName:null,//审核规则
@@ -358,7 +360,6 @@ export default {
     remoteMethod(query) {//远程查询客户列表
         if (query !== '') {
           let formdata=new FormData();
-          // formdata.append('stateList',2);
           formdata.append('name',query);
           formdata.append('size',20);
           formdata.append('page',0);
@@ -372,7 +373,6 @@ export default {
             }
           }).catch((err)=>{
             this.$message.error('未知错误,请联系管理员');
-            // console.log(err)
           })
           this.cusLoading = true;
           setTimeout(() => {
@@ -418,7 +418,11 @@ export default {
       this.muchTypeList.push({
         type:null,//报销金额类型
         mount:null,//报销金额
+        rate:null,//金额利率
       })
+    },
+    docuMount(index){//利率换算
+      this.muchTypeList[index].rate=this.muchTypeList[index].mount*0.2
     },
     delMuchType(index){//删除费用类型
       if(this.muchTypeList.length>1){
