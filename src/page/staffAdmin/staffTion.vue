@@ -8,9 +8,10 @@
       <div class="staff_lst">
         <p class="staff_oper">
           <el-button icon="el-icon-plus" type="primary" size="medium">添加员工</el-button>
-          <span>
+          <span class="staff_length">
             共有员工:<span style="color:#eb7a1d;font-weight:bold;">&nbsp;{{dataLength}}&nbsp;</span>人
           </span>
+          <i class="el-icon-refresh"></i>
         </p>
         <el-row>
           <el-col :span="2"><div class="staffTitle">序号</div></el-col>
@@ -21,15 +22,30 @@
           <el-col :span="3"><div class="staffTitle">待定</div></el-col>
           <el-col :span="2"><div class="staffTitle">操作</div></el-col>
         </el-row>
-        <el-row class="el_con">
-          <el-col :span="2"><div class="staffCon">序号</div></el-col>
-          <el-col :span="7"><div class="staffCon">待定</div></el-col>
-          <el-col :span="4"><div class="staffCon">待定</div></el-col>
-          <el-col :span="3"><div class="staffCon">待定</div></el-col>
-          <el-col :span="3"><div class="staffCon">待定</div></el-col>
-          <el-col :span="3"><div class="staffCon">待定</div></el-col>
-          <el-col :span="2"><div class="staffCon">操作</div></el-col>
-        </el-row>
+        <div class="" style="minHeight:500px;">
+          <el-row class="el_con" v-for="(staff,index) in staffList" :key="'Staff'+index">
+            <el-col :span="2"><div class="staffCon">{{staff.num+1}}</div></el-col>
+            <el-col :span="7"><div class="staffCon">{{staff.text}}</div></el-col>
+            <el-col :span="4"><div class="staffCon">{{staff.text}}</div></el-col>
+            <el-col :span="3"><div class="staffCon">{{staff.text}}</div></el-col>
+            <el-col :span="3"><div class="staffCon">{{staff.text}}</div></el-col>
+            <el-col :span="3"><div class="staffCon">{{staff.text}}</div></el-col>
+            <el-col :span="2"><div class="staffCon">
+              <i class="el-icon-edit"></i>
+            </div></el-col>
+          </el-row>
+        </div>
+        <!-- 分页器 -->
+        <div class="order_page">
+          <el-pagination
+            background
+            layout="prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="currentPage3"
+            :total="pageNum">
+          </el-pagination>
+        </div>
       </div>
     </div>
   </div>
@@ -39,6 +55,19 @@
 export default {
   data() {
       return {
+        currentPage3:1,//分页器类型
+        page:0,//页码
+        pageNum:10,//总页数
+        staffList:[
+          {
+            num:0,
+            text:'待定'
+          },
+          {
+            num:1,
+            text:'待定',
+          }
+        ],
         dataLength:88,//数据总和
         data: [{
           label: '一级 1',
@@ -83,8 +112,14 @@ export default {
   },
   methods:{
     handleNodeClick(data) {
-       console.log(data);
-     }
+       // console.log(data);
+    },
+    handleSizeChange(val) {
+       // console.log(`每页 ${val} 条`);
+    },
+    handleCurrentChange(val) {
+
+    },
   }
 }
 </script>
@@ -110,10 +145,26 @@ export default {
       box-sizing: border-box;
       padding-left: 10px;
       padding-right: 10px;
+      overflow-y: auto;
+      height: 80vh;
       .staff_oper{
         height: 40px;
         border-bottom:1px solid #eee;
         margin-bottom: 5px;
+        position: relative;
+        .staff_length{
+          position: absolute;
+          right:55px;
+          line-height: 40px;
+        }
+        i{
+          font-size: 30px;
+          position: absolute;
+          right:15px;
+          top:5px;
+          color:#eb7a1d;
+          cursor:pointer;
+        }
       }
       .staffTitle{
         line-height: 40px;
@@ -125,9 +176,20 @@ export default {
         line-height: 50px;
         text-align: center;
         font-size: 14px;
+        i{
+          font-size: 18px;
+          color:#eb7a1d;
+          cursor:pointer;
+        }
       }
       .el_con:nth-of-type(even){
         background:#eee;
+      }
+      .order_page{
+        width: 98%;
+        text-align: right;
+        margin-top: 55px;
+        margin-bottom:60px;
       }
     }
   }

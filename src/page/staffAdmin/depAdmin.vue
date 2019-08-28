@@ -3,9 +3,9 @@
   <div class="dep_admin">
     <p class="dep_title">
       <span class="depLength">共有数据:&nbsp;<span style="color:#eb7a1d;font-weight:bold;">{{dataLength}}</span>&nbsp;条</span>
-      <i class="el-icon-refresh"></i>
+      <i class="el-icon-refresh" @click="localtion()"></i>
     </p>
-    <div class="">
+    <div class="" style="minHeight:540px;">
       <el-row>
         <el-col :span="2"><div class="depTitle">序号</div></el-col>
         <el-col :span="4"><div class="depTitle">待定</div></el-col>
@@ -31,6 +31,17 @@
         <el-col :span="2"><div class="depCon">操作</div></el-col>
       </el-row>
     </div>
+    <!-- 分页器 -->
+    <div class="order_page">
+      <el-pagination
+        background
+        layout="prev, pager, next, jumper"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page.sync="currentPage3"
+        :total="pageNum">
+      </el-pagination>
+    </div>
   </div>
 </template>
 
@@ -38,7 +49,28 @@
 export default {
   data(){
     return{
-      dataLength:88,
+      dataLength:88,//数据总和
+      currentPage3:1,//分页器类型
+      page:0,//页码
+      pageNum:10,//总页数
+    }
+  },
+  methods:{
+    handleSizeChange(val) {
+       // console.log(`每页 ${val} 条`);
+    },
+    handleCurrentChange(val) {
+
+    },
+    localtion(){
+      if(navigator.geolocation){
+        navigator.geolocation.getCurrentPosition((position)=>{
+          let longitude = position.coords.longitude;
+          let latitude = position.coords.latitude;
+          console.log(longitude)
+          console.log(latitude)
+        })
+      }
     }
   }
 }
@@ -66,6 +98,7 @@ export default {
       position: absolute;
       right:20px;
       top:10px;
+      cursor:pointer;
     }
   }
   .depTitle{
@@ -81,6 +114,12 @@ export default {
   }
   .el_con:nth-of-type(even){
     background:#eee;
+  }
+  .order_page{
+    width: 98%;
+    text-align: right;
+    margin-top: 55px;
+    margin-bottom:60px;
   }
 }
 </style>
