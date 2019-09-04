@@ -185,6 +185,16 @@ const router = new Router({
           path:'/admin/ruleList',//审核规则则
           name:'RuleList',
           component:resolve=>require(['@/page/OA/ruleList'],resolve)
+        },
+        {
+          path:'/admin/newsAdmin',//新闻管理
+          name:'NewsAdmin',
+          component:resolve=>require(['@/page/atricleAdmin/newsAdmin'],resolve)
+        },
+        {
+          path:'/admin/caseAdmin',//案例管理
+          name:'CaseAdmin',
+          component:resolve=>require(['@/page/atricleAdmin/caseAdmin'],resolve)
         }
       ],
       redirect:'/admin/wel'

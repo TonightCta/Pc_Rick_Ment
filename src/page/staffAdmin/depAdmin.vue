@@ -63,14 +63,7 @@ export default {
 
     },
     localtion(){
-      if(navigator.geolocation){
-        navigator.geolocation.getCurrentPosition((position)=>{
-          let longitude = position.coords.longitude;
-          let latitude = position.coords.latitude;
-          console.log(longitude)
-          console.log(latitude)
-        })
-      }
+      
     }
   }
 }

@@ -880,7 +880,7 @@ export default {
         }
       }).catch((err)=>{
         this.$message.error('获取产品线失败,请联系管理员')
-        console.log(err)
+        // console.log(err)
       })
     },
     chooseStatus(){//选择项目状态

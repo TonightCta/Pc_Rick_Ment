@@ -3,7 +3,7 @@
   <div class="admin">
     <Header/>
     <el-row>
-      <el-col :span="3">
+      <el-col :span="4">
         <div style="box-shadow:0px 0px 10px #999;border-right:1px solid #eee;height:80vh;padding-bottom:150px;overflow-y:auto;" class="terM">
           <el-menu
             default-active="4"
@@ -26,7 +26,7 @@
           </el-menu>
         </div>
       </el-col>
-      <el-col :span="21">
+      <el-col :span="20">
         <div class="admin_view">
           <div class="crumbs">
             <ul>
@@ -269,6 +269,20 @@ export default {
              {
                name:'出差目的地管理',
                url:'/admin/placeOA'
+             }
+           ]
+         },
+         {
+           name:'文章管理',
+           in:'1-15',
+           usingChannelVOList:[
+             {
+               name:'新闻管理',
+               url:'/admin/newsAdmin'
+             },
+             {
+               name:'案例管理',
+               url:'/admin/caseAdmin'
              }
            ]
          }
