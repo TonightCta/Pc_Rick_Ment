@@ -364,6 +364,9 @@
       </div>
       <!-- 分页器 -->
       <div class="project_page">
+        <p class="downExcel">
+          <el-button type="primary" size="small" icon="el-icon-d-arrow-right" @click="downExcel()">导出Excel</el-button>
+        </p>
         <el-pagination
           background
           layout="prev, pager, next, jumper"
@@ -497,7 +500,15 @@ export default {
             pics:[]
           },
       ],
-      operClose:'./static/img/close_search.png'
+      operClose:'./static/img/close_search.png',
+      dynSize:9999,//数据条数
+      //导出数据
+      excelList:[],
+      filename:'项目目录',
+      autoWidth: true,
+      bookType: 'xlsx',
+      tHeader:['项目名称', '产品线', '负责人', '入场时间', '完工时间','验收时间','项目状态'],
+      tValue:['name', 'technologyName', 'creatorName', 'entranceTimeSec', 'finishTimeSec','acceptTimeSec','stateStr'],
     }
   },
   created(){
@@ -587,14 +598,12 @@ export default {
           });
           _vc.loadPro=false;
           _vc.proList=res.data.data.content;
-          console.log(_vc.proList)
         }else{
           _vc.loadPro=false;
           _vc.$message.error(res.data.msg);
         }
       }).catch((err)=>{
         _vc.loadPro=false;
-        console.log(err)
       })
     },
     hasDetials(index){//查看项目详情
@@ -991,8 +1000,116 @@ export default {
           this.searchList=true;
         },200)
       }
+    },
+    downExcel(){//导出Excel
+      let _vc=this;
+      let formdata=new FormData();
+      formdata.append('page',_vc.page);
+      formdata.append('size',_vc.dynSize);
+      const loading=_vc.$loading({
+          lock: true,
+          text: '下载中...',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });
+      _vc.$axios.post(_vc.url+'/findProjectListByCondition',formdata).then((res)=>{
+        if(res.data.code==0){
+          res.data.data.content.forEach((e)=>{
+            _vc.$set(e,'num',_vc.length++);
+            //创建时间-------------------------------------->
+            if(e.createTime!=''&&e.createTime!=null){
+              let createDate=new Date(e.createTime);
+              let cYear=createDate.getFullYear();
+              let cMon=createDate.getMonth()+1;
+              if(cMon<10){
+                cMon='0'+cMon
+              };
+              let cDay=createDate.getDate();
+              if(cDay<10){
+                cDay='0'+cDay
+              }
+              let cTime=cYear+'-'+cMon+'-'+cDay;
+              _vc.$set(e,'createTimeSec',cTime);
+            }else{
+              _vc.$set(e,'createTimeSec','-');
+            }
+            //入场时间-------------------------------------->
+            if(e.startTime!=''&&e.startTime!=null){
+              let entranceDate=new Date(e.startTime);
+              let eYear=entranceDate.getFullYear();
+              let eMon=entranceDate.getMonth()+1;
+              if(eMon<10){
+                eMon='0'+eMon
+              };
+              let eDay=entranceDate.getDate();
+              if(eDay<10){
+                eDay='0'+eDay
+              }
+              let eTime=eYear+'-'+eMon+'-'+eDay;
+              _vc.$set(e,'entranceTimeSec',eTime);
+            }else{
+              _vc.$set(e,'entranceTimeSec','-');
+            }
+            //完工时间-------------------------------------->
+            if(e.finishTime!=''&&e.finishTime!=null){
+              let finishDate=new Date(e.finishTime);
+              let fYear=finishDate.getFullYear();
+              let fMon=finishDate.getMonth()+1;
+              if(fMon<10){
+                fMon='0'+fMon
+              };
+              let fDay=finishDate.getDate();
+              if(fDay<10){
+                fDay='0'+fDay
+              }
+              let fTime=fYear+'-'+fMon+'-'+fDay;
+              _vc.$set(e,'finishTimeSec',fTime);
+            }else{
+              _vc.$set(e,'finishTimeSec','-');
+            }
+            //验收时间-------------------------------------->
+            if(e.acceptTime!=''&&e.acceptTime!=null){
+              let acceptDate=new Date(e.acceptTime);
+              let aYear=acceptDate.getFullYear();
+              let aMon=acceptDate.getMonth()+1;
+              if(aMon<10){
+                aMon='0'+aMon
+              };
+              let aDay=acceptDate.getDate();
+              if(aDay<10){
+                aDay='0'+aDay
+              }
+              let aTime=aYear+'-'+aMon+'-'+aDay;
+              _vc.$set(e,'acceptTimeSec',aTime);
+            }else{
+              _vc.$set(e,'acceptTimeSec','-');
+            }
+          });
+          loading.close()
+          _vc.excelList=res.data.data.content;
+          import('../../assets/js/excel').then(excel => {
+            const data = this.formatJson(this.tValue, this.excelList)
+            excel.export_json_to_excel({
+              header: this.tHeader,
+              data,
+              filename: this.filename,
+              autoWidth: this.autoWidth,
+              bookType: this.bookType
+            })
+          })
+        }else{
+          _vc.$message.error(res.data.msg);
+        }
+      }).catch((err)=>{
+        return err;
+      })
 
-    }
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => {
+          return v[j]
+      }))
+    },
   }
 }
 </script>
@@ -1226,6 +1343,12 @@ export default {
     text-align: right;
     margin-top: 20px;
     margin-bottom: 50px;
+    position: relative;
+    .downExcel{
+      position: absolute;
+      left:0;
+      top:-2px;
+    }
   }
   .project_day{
     position: fixed;

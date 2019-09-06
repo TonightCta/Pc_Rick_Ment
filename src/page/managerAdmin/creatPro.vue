@@ -452,6 +452,9 @@
       <p class="mes_titleOne">
         <span>进程管理</span>
       </p>
+      <p class="allSaveBtn">
+        <el-button type="primary" size="medium" icon="el-icon-upload" style="width:100%;">保存全部</el-button>
+      </p>
       <div class="" v-if="threeConBox">
         <div class="pro_cess">
           <p class="cess_title">项目进程</p>
@@ -1992,7 +1995,6 @@ export default {
             this.$refs.filePerBox.style.minHeight='100%';
           })
           _vm.pointFileList=a;
-          console.log(_vm.pointFileList)
         }else{
           _vm.$message.error(res.data.msg)
         }
@@ -2050,7 +2052,6 @@ export default {
                 })
               }
             });
-            console.log(_vm.pointInsList)
           };
           _vm.insBox=true;
           setTimeout(()=>{
@@ -2065,7 +2066,6 @@ export default {
         }
       }).catch((err)=>{
         _vm.$message.error('未知错误,请联系管理员');
-        console.log(err)
       });
     },
     closeInsBox(){//关闭验货单
@@ -3272,6 +3272,7 @@ input[type=checkbox]:checked:after {
     padding-top: 70px;
     padding-bottom:70px;
     box-sizing: border-box;
+    z-index: 10;
     .mes_titleOne{
       width:200px;
       height: 40px;
@@ -3342,6 +3343,13 @@ input[type=checkbox]:checked:after {
           top:32%;
         }
       }
+    }
+    .allSaveBtn{
+      position: fixed;
+      right:0;
+      bottom:0;
+      z-index: 999;
+      width: 100%;
     }
     .operTwo{
       height: 80px;

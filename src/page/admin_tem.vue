@@ -1,23 +1,26 @@
 <!-- 临时管理员页面 -->
 <template lang="html">
-  <div class="admin">
-    <Header/>
-    <el-row>
-      <el-col :span="4">
-        <div style="box-shadow:0px 0px 10px #999;border-right:1px solid #eee;height:80vh;padding-bottom:150px;overflow-y:auto;" class="terM">
+  <div class="admin" ref="admin">
+    <Header ref="header"></Header>
+    <div class="" style="width:100%;display:flex;">
+      <div style="width:16%;transition:.5s all;" ref="titleBox">
+        <div style="box-shadow:0px 0px 10px #999;border-right:1px solid #eee;height:80vh;padding-bottom:150px;overflow-y:auto;" class="terM" ref="terM">
           <el-menu
             default-active="4"
-            class="el-menu-vertical-demo"
             @open="handleOpen"
             @close="handleClose"
+            class="el-menu-vertical-demo"
             active-text-color="#000"
+            :collapse="isCollapse"
             unique-opened
             >
             <el-submenu v-for="(fun,key) in route" :key="'F'+key" :index="fun.in">
               <template slot="title">
+                 <i :class="'el-icon-'+fun.icon"></i>
                 <span>{{fun.name}}</span>
               </template>
-              <el-menu-item-group >
+              <el-menu-item-group>
+                <span slot="title">{{fun.name}}</span>
                 <el-menu-item v-for="(c,index) in fun.usingChannelVOList" :key="'C'+index">
                   <router-link tag="span" :to="c.url" @click.native="pushCru(key,index)">{{c.name}}</router-link>
                 </el-menu-item>
@@ -25,8 +28,8 @@
             </el-submenu>
           </el-menu>
         </div>
-      </el-col>
-      <el-col :span="20">
+      </div>
+      <div style="width:84%;transition:.5s all;" ref="contentBox">
         <div class="admin_view">
           <div class="crumbs">
             <ul>
@@ -34,23 +37,34 @@
                 <router-link tag="span" :to="crum.url">{{crum.name}}</router-link>
                 <i class="el-icon-circle-close" ref="close" @click.stop="delCru(index)"></i>
               </li>
+              <li class="full">
+                <el-tooltip class="item" effect="dark" content="全屏模式" placement="bottom">
+                  <img src="../../static/img/fulle_icon.png" alt="" class="fullBtn" @click="full()" ref="fullBtn" v-show="isFull">
+                </el-tooltip>
+                <el-tooltip class="item" effect="dark" content="退出全屏" placement="bottom">
+                  <img src="../../static/img/cancelFull_icon.png" alt="" class="canFullBtn" @click="canCelfull()" v-show="!isFull" ref="canFullBtn">
+                </el-tooltip>
+              </li>
               <li></li>
             </ul>
           </div>
-          <div class="" style="height:85vh;position:relative;">
+          <div class="" style="height:85vh;position:relative;" ref="conHeight">
             <router-view></router-view>
           </div>
         </div>
-      </el-col>
-    </el-row>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  data() {
+   data(){
      return {
-       isCollapse: true,
+       isCollapse:false,
+       title:4,//菜单占比
+       content:20,//主视图占比
+       isFull:true,
        utlN:0,
        abc:[
          {
@@ -59,10 +73,14 @@ export default {
          }
        ],
        length:0,
+       iconList:[
+         'info','star-on','question','sold-out','news','service','menu','date','more','edit-outline','setting','more-outline','upload2','bell','time'
+       ],
        route:[
          {
            name:'平台内部管理',
            in:'1-1',
+           sort:1,
            usingChannelVOList:[
              {
                name:'内部工程师管理',
@@ -85,6 +103,7 @@ export default {
          {
            name:'管理层',
            in:'1-2',
+           sort:2,
            usingChannelVOList:[
              {
                name:'项目浏览查询',
@@ -99,6 +118,7 @@ export default {
          {
            name:'技能管理',
            in:'1-3',
+           sort:3,
            usingChannelVOList:[
              {
                name:'技能管理',
@@ -109,6 +129,7 @@ export default {
          {
            name:'企业账户管理',
            in:'1-4',
+           sort:4,
            usingChannelVOList:[
              {
                name:'新注册企业管理',
@@ -127,6 +148,7 @@ export default {
          {
            name:'任务管理',
            in:'1-5',
+           sort:5,
            usingChannelVOList:[
              {
                name:'任务管理',
@@ -137,6 +159,7 @@ export default {
          {
            name:'项目经理相关',
            in:'1-6',
+           sort:6,
            usingChannelVOList:[
              {
                name:'项目管理',
@@ -155,6 +178,7 @@ export default {
          {
            name:'工程师相关',
            in:'1-7',
+           sort:7,
            usingChannelVOList:[
              {
                name:'工作内容管理',
@@ -177,6 +201,7 @@ export default {
          {
            name:'基础数据管理',
            in:'1-8',
+           sort:8,
            usingChannelVOList:[
              {
                name:'频道管理',
@@ -207,6 +232,7 @@ export default {
          {
            name:'需求管理',
            in:'1-9',
+           sort:9,
            usingChannelVOList:[
              {
                name:'需求列表',
@@ -217,6 +243,7 @@ export default {
          {
            name:'报销申请',
            in:'1-10',
+           sort:10,
            usingChannelVOList:[
              {
                name:'差旅申请',
@@ -227,6 +254,7 @@ export default {
          {
            name:'财务相关',
            in:'1-11',
+           sort:11,
            usingChannelVOList:[
              {
                name:'报销申请审核',
@@ -241,6 +269,7 @@ export default {
          {
            name:'审核规则',
            in:'1-12',
+           sort:12,
            usingChannelVOList:[
              {
                name:'审核规则',
@@ -251,6 +280,7 @@ export default {
          {
            name:'员工相关',
            in:'1-13',
+           sort:13,
            usingChannelVOList:[
              {
                name:'部门管理',
@@ -265,6 +295,7 @@ export default {
          {
            name:'出差相关',
            in:'1-14',
+           sort:14,
            usingChannelVOList:[
              {
                name:'出差目的地管理',
@@ -275,6 +306,7 @@ export default {
          {
            name:'文章管理',
            in:'1-15',
+           sort:15,
            usingChannelVOList:[
              {
                name:'新闻管理',
@@ -311,6 +343,13 @@ export default {
          this.route=[{name:'暂无权限'}]
        }
      };
+     this.route.forEach((e)=>{
+       if(this.iconList[e.sort-1]!=undefined){
+         this.$set(e,'icon',this.iconList[e.sort-1])
+       }else{
+         this.$set(e,'icon','d-caret')
+       }
+     });
    },
    methods: {
      handleOpen(key, keyPath) {
@@ -368,7 +407,35 @@ export default {
           this.$refs.crum[this.abc.length-1].style.color='#eb7a1d';
           this.$router.push(this.abc[this.abc.length-1].url);
        })
-     }
+     },
+     full(){//全屏模式
+       this.$refs.fullBtn.style.opacity="0";
+       this.$refs.canFullBtn.style.opacity="1";
+       this.$refs.admin.style.paddingTop='0';
+       this.$refs.conHeight.style.height='97vh';
+       this.$refs.terM.style.height='90vh';
+       this.$refs.contentBox.style.width="96%";
+       this.$refs.titleBox.style.width='4%';
+       this.$refs.header.closeHeader();
+       this.isCollapse=true;
+       setTimeout(()=>{
+         this.isFull=false;
+       },200)
+     },
+     canCelfull(){//取消全屏
+       this.$refs.fullBtn.style.opacity="1";
+       this.$refs.canFullBtn.style.opacity="0";
+       this.$refs.admin.style.paddingTop='86px';
+       this.$refs.conHeight.style.height='85vh';
+       this.$refs.terM.style.height='80vh';
+       this.$refs.contentBox.style.width="84%";
+       this.$refs.titleBox.style.width='16%';
+       this.$refs.header.cancelHeader()
+       this.isCollapse=false;
+       setTimeout(()=>{
+         this.isFull=true;
+       },200)
+     },
    }
 }
 </script>
@@ -378,6 +445,10 @@ export default {
   border-bottom:0!important;
   color:#eb7a1d!important;
 }
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+   width: 100%;
+   min-height: 400px;
+ }
 .admin{
   margin:0 auto;
   max-height: none;
@@ -386,6 +457,7 @@ export default {
   box-sizing: border-box;
   z-index: 100;
   background: white;
+  transition: .5s all;
   .terM::-webkit-scrollbar {display:none}
   .admin_view{
     background: white;
@@ -399,6 +471,7 @@ export default {
         height: 100%;
         display: flex;
         overflow-y: hidden;
+        // position: relative;
         li{
           min-width: 120px;
           text-align: center;
@@ -433,6 +506,25 @@ export default {
           flex:1;
           border:0;
           border-bottom:1px solid #eb7a1d;
+        }
+        .full{
+          position: fixed;
+          height: 29px;
+          right:-30px;
+          z-index: 1;
+          border:0;
+          border-bottom:1px solid #eb7a1d;
+          img{
+            width: 30px;
+            height: 30px;
+            transition: .2s all;
+          }
+          .fullBtn{
+            opacity: 1;
+          }
+          .canFullBtn{
+            opacity: 0;
+          }
         }
       }
 
