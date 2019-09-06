@@ -1,6 +1,7 @@
 <template lang="html">
   <div class="canvas_wel">
     <b></b>
+    <p>瑞得音信息</p>
   </div>
 </template>
 
@@ -20,7 +21,17 @@ export default {
   position: absolute;
   top:0;
   overflow: hidden;
-  /* filter: blur(5px); */
+}
+p{
+  width: 300px;
+  text-align: center;
+  position: absolute;
+  left:50%;
+  margin-left: -150px;
+  top:12%;
+  color:#eb7a1d;
+  font-size: 40px;
+  font-weight: bold;
 }
 b, b:before, b:after {
   display: block;

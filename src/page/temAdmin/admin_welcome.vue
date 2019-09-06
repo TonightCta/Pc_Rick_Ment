@@ -6,7 +6,7 @@
     <div class="mask">
 
     </div>
-    <p class="wel_title">瑞得音信息</p>
+    <!-- <p class="wel_title">瑞得音信息</p> -->
   </div>
 </template>
 
@@ -41,7 +41,8 @@ export default {
     font-size: 40px;
     font-weight: bold;
     top:38%;
-    left:23%;
+    left:50%;
+    margin-left: -35%;
   }
 }
 
