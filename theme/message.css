@@ -38,7 +38,7 @@
 -------------------------- */
 /* Alert
 -------------------------- */
-/* Message Box
+/* MessageBox
 -------------------------- */
 /* Message
 -------------------------- */
@@ -63,6 +63,8 @@
 /* Table
 -------------------------- */
 /* Pagination
+-------------------------- */
+/* Popup
 -------------------------- */
 /* Popover
 -------------------------- */
@@ -105,6 +107,16 @@
 /* Main
 --------------------------*/
 /* Timeline
+--------------------------*/
+/* Backtop
+--------------------------*/
+/* Link
+--------------------------*/
+/* Calendar
+--------------------------*/
+/* Form
+-------------------------- */
+/* Avatar
 --------------------------*/
 /* Break-point
 --------------------------*/
@@ -154,7 +166,7 @@
 -------------------------- */
 /* Alert
 -------------------------- */
-/* Message Box
+/* MessageBox
 -------------------------- */
 /* Message
 -------------------------- */
@@ -179,6 +191,8 @@
 /* Table
 -------------------------- */
 /* Pagination
+-------------------------- */
+/* Popup
 -------------------------- */
 /* Popover
 -------------------------- */
@@ -222,6 +236,16 @@
 --------------------------*/
 /* Timeline
 --------------------------*/
+/* Backtop
+--------------------------*/
+/* Link
+--------------------------*/
+/* Calendar
+--------------------------*/
+/* Form
+-------------------------- */
+/* Avatar
+--------------------------*/
 /* Break-point
 --------------------------*/
 .el-message {
@@ -238,10 +262,10 @@
   -webkit-transform: translateX(-50%);
   transform: translateX(-50%);
   background-color: #edf2fc;
-  -webkit-transition: opacity 0.3s, -webkit-transform .4s;
-  transition: opacity 0.3s, -webkit-transform .4s;
-  transition: opacity 0.3s, transform .4s;
-  transition: opacity 0.3s, transform .4s, -webkit-transform .4s;
+  -webkit-transition: opacity 0.3s, top 0.4s, -webkit-transform .4s;
+  transition: opacity 0.3s, top 0.4s, -webkit-transform .4s;
+  transition: opacity 0.3s, transform .4s, top 0.4s;
+  transition: opacity 0.3s, transform .4s, top 0.4s, -webkit-transform .4s;
   overflow: hidden;
   padding: 15px 15px 15px 20px;
   display: -webkit-box;
@@ -261,10 +285,10 @@
   .el-message--info .el-message__content {
     color: #909399; }
   .el-message--success {
-    background-color: #fdf2e8;
-    border-color: #fbe4d2; }
+    background-color: #f0f9eb;
+    border-color: #e1f3d8; }
     .el-message--success .el-message__content {
-      color: #eb7a1d; }
+      color: #67C23A; }
   .el-message--warning {
     background-color: #fdf6ec;
     border-color: #faecd8; }
@@ -297,7 +321,7 @@
     .el-message__closeBtn:hover {
       color: #909399; }
   .el-message .el-icon-success {
-    color: #eb7a1d; }
+    color: #67C23A; }
   .el-message .el-icon-error {
     color: #F56C6C; }
   .el-message .el-icon-info {

@@ -39,7 +39,7 @@
 -------------------------- */
 /* Alert
 -------------------------- */
-/* Message Box
+/* MessageBox
 -------------------------- */
 /* Message
 -------------------------- */
@@ -64,6 +64,8 @@
 /* Table
 -------------------------- */
 /* Pagination
+-------------------------- */
+/* Popup
 -------------------------- */
 /* Popover
 -------------------------- */
@@ -106,6 +108,16 @@
 /* Main
 --------------------------*/
 /* Timeline
+--------------------------*/
+/* Backtop
+--------------------------*/
+/* Link
+--------------------------*/
+/* Calendar
+--------------------------*/
+/* Form
+-------------------------- */
+/* Avatar
 --------------------------*/
 /* Break-point
 --------------------------*/
@@ -155,7 +167,7 @@
 -------------------------- */
 /* Alert
 -------------------------- */
-/* Message Box
+/* MessageBox
 -------------------------- */
 /* Message
 -------------------------- */
@@ -180,6 +192,8 @@
 /* Table
 -------------------------- */
 /* Pagination
+-------------------------- */
+/* Popup
 -------------------------- */
 /* Popover
 -------------------------- */
@@ -222,6 +236,16 @@
 /* Main
 --------------------------*/
 /* Timeline
+--------------------------*/
+/* Backtop
+--------------------------*/
+/* Link
+--------------------------*/
+/* Calendar
+--------------------------*/
+/* Form
+-------------------------- */
+/* Avatar
 --------------------------*/
 /* Break-point
 --------------------------*/
@@ -265,7 +289,7 @@
 -------------------------- */
 /* Alert
 -------------------------- */
-/* Message Box
+/* MessageBox
 -------------------------- */
 /* Message
 -------------------------- */
@@ -290,6 +314,8 @@
 /* Table
 -------------------------- */
 /* Pagination
+-------------------------- */
+/* Popup
 -------------------------- */
 /* Popover
 -------------------------- */
@@ -332,6 +358,16 @@
 /* Main
 --------------------------*/
 /* Timeline
+--------------------------*/
+/* Backtop
+--------------------------*/
+/* Link
+--------------------------*/
+/* Calendar
+--------------------------*/
+/* Form
+-------------------------- */
+/* Avatar
 --------------------------*/
 /* Break-point
 --------------------------*/
@@ -381,7 +417,7 @@
 -------------------------- */
 /* Alert
 -------------------------- */
-/* Message Box
+/* MessageBox
 -------------------------- */
 /* Message
 -------------------------- */
@@ -406,6 +442,8 @@
 /* Table
 -------------------------- */
 /* Pagination
+-------------------------- */
+/* Popup
 -------------------------- */
 /* Popover
 -------------------------- */
@@ -449,9 +487,20 @@
 --------------------------*/
 /* Timeline
 --------------------------*/
+/* Backtop
+--------------------------*/
+/* Link
+--------------------------*/
+/* Calendar
+--------------------------*/
+/* Form
+-------------------------- */
+/* Avatar
+--------------------------*/
 /* Break-point
 --------------------------*/
 .el-textarea {
+  position: relative;
   display: inline-block;
   width: 100%;
   vertical-align: bottom;
@@ -474,6 +523,8 @@
     transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1); }
     .el-textarea__inner::-webkit-input-placeholder {
       color: #C0C4CC; }
+    .el-textarea__inner::-moz-placeholder {
+      color: #C0C4CC; }
     .el-textarea__inner::-ms-input-placeholder {
       color: #C0C4CC; }
     .el-textarea__inner::placeholder {
@@ -483,17 +534,30 @@
     .el-textarea__inner:focus {
       outline: none;
       border-color: #eb7a1d; }
+  .el-textarea .el-input__count {
+    color: #909399;
+    background: #FFFFFF;
+    position: absolute;
+    font-size: 12px;
+    bottom: 5px;
+    right: 10px; }
   .el-textarea.is-disabled .el-textarea__inner {
-    background-color: #f5f7fa;
+    background-color: #F5F7FA;
     border-color: #E4E7ED;
     color: #C0C4CC;
     cursor: not-allowed; }
     .el-textarea.is-disabled .el-textarea__inner::-webkit-input-placeholder {
       color: #C0C4CC; }
+    .el-textarea.is-disabled .el-textarea__inner::-moz-placeholder {
+      color: #C0C4CC; }
     .el-textarea.is-disabled .el-textarea__inner::-ms-input-placeholder {
       color: #C0C4CC; }
     .el-textarea.is-disabled .el-textarea__inner::placeholder {
       color: #C0C4CC; }
+  .el-textarea.is-exceed .el-textarea__inner {
+    border-color: #F56C6C; }
+  .el-textarea.is-exceed .el-input__count {
+    color: #F56C6C; }
 
 .el-input {
   position: relative;
@@ -519,12 +583,26 @@
   .el-input .el-input__clear {
     color: #C0C4CC;
     font-size: 14px;
-    line-height: 16px;
     cursor: pointer;
     -webkit-transition: color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     transition: color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1); }
     .el-input .el-input__clear:hover {
       color: #909399; }
+  .el-input .el-input__count {
+    height: 100%;
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    color: #909399;
+    font-size: 12px; }
+    .el-input .el-input__count .el-input__count-inner {
+      background: #FFFFFF;
+      line-height: initial;
+      display: inline-block;
+      padding: 0 5px; }
   .el-input__inner {
     -webkit-appearance: none;
     background-color: #FFFFFF;
@@ -544,6 +622,8 @@
     transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     width: 100%; }
     .el-input__inner::-webkit-input-placeholder {
+      color: #C0C4CC; }
+    .el-input__inner::-moz-placeholder {
       color: #C0C4CC; }
     .el-input__inner::-ms-input-placeholder {
       color: #C0C4CC; }
@@ -594,11 +674,13 @@
     outline: none;
     border-color: #eb7a1d; }
   .el-input.is-disabled .el-input__inner {
-    background-color: #f5f7fa;
+    background-color: #F5F7FA;
     border-color: #E4E7ED;
     color: #C0C4CC;
     cursor: not-allowed; }
     .el-input.is-disabled .el-input__inner::-webkit-input-placeholder {
+      color: #C0C4CC; }
+    .el-input.is-disabled .el-input__inner::-moz-placeholder {
       color: #C0C4CC; }
     .el-input.is-disabled .el-input__inner::-ms-input-placeholder {
       color: #C0C4CC; }
@@ -606,6 +688,10 @@
       color: #C0C4CC; }
   .el-input.is-disabled .el-input__icon {
     cursor: not-allowed; }
+  .el-input.is-exceed .el-input__inner {
+    border-color: #F56C6C; }
+  .el-input.is-exceed .el-input__suffix .el-input__count {
+    color: #F56C6C; }
   .el-input--suffix .el-input__inner {
     padding-right: 30px; }
   .el-input--prefix .el-input__inner {
@@ -642,7 +728,7 @@
     vertical-align: middle;
     display: table-cell; }
   .el-input-group__append, .el-input-group__prepend {
-    background-color: #f5f7fa;
+    background-color: #F5F7FA;
     color: #909399;
     vertical-align: middle;
     display: table-cell;
@@ -736,7 +822,7 @@
 -------------------------- */
 /* Alert
 -------------------------- */
-/* Message Box
+/* MessageBox
 -------------------------- */
 /* Message
 -------------------------- */
@@ -761,6 +847,8 @@
 /* Table
 -------------------------- */
 /* Pagination
+-------------------------- */
+/* Popup
 -------------------------- */
 /* Popover
 -------------------------- */
@@ -803,6 +891,16 @@
 /* Main
 --------------------------*/
 /* Timeline
+--------------------------*/
+/* Backtop
+--------------------------*/
+/* Link
+--------------------------*/
+/* Calendar
+--------------------------*/
+/* Form
+-------------------------- */
+/* Avatar
 --------------------------*/
 /* Break-point
 --------------------------*/
@@ -844,7 +942,7 @@
 -------------------------- */
 /* Alert
 -------------------------- */
-/* Message Box
+/* MessageBox
 -------------------------- */
 /* Message
 -------------------------- */
@@ -869,6 +967,8 @@
 /* Table
 -------------------------- */
 /* Pagination
+-------------------------- */
+/* Popup
 -------------------------- */
 /* Popover
 -------------------------- */
@@ -911,6 +1011,16 @@
 /* Main
 --------------------------*/
 /* Timeline
+--------------------------*/
+/* Backtop
+--------------------------*/
+/* Link
+--------------------------*/
+/* Calendar
+--------------------------*/
+/* Form
+-------------------------- */
+/* Avatar
 --------------------------*/
 /* Break-point
 --------------------------*/
@@ -954,7 +1064,7 @@
 -------------------------- */
 /* Alert
 -------------------------- */
-/* Message Box
+/* MessageBox
 -------------------------- */
 /* Message
 -------------------------- */
@@ -979,6 +1089,8 @@
 /* Table
 -------------------------- */
 /* Pagination
+-------------------------- */
+/* Popup
 -------------------------- */
 /* Popover
 -------------------------- */
@@ -1021,6 +1133,16 @@
 /* Main
 --------------------------*/
 /* Timeline
+--------------------------*/
+/* Backtop
+--------------------------*/
+/* Link
+--------------------------*/
+/* Calendar
+--------------------------*/
+/* Form
+-------------------------- */
+/* Avatar
 --------------------------*/
 /* Break-point
 --------------------------*/
@@ -1155,42 +1277,42 @@
         border-color: #fbe4d2; }
   .el-button--success {
     color: #FFFFFF;
-    background-color: #eb7a1d;
-    border-color: #eb7a1d; }
+    background-color: #67C23A;
+    border-color: #67C23A; }
     .el-button--success:hover, .el-button--success:focus {
-      background: #ef954a;
-      border-color: #ef954a;
+      background: #85ce61;
+      border-color: #85ce61;
       color: #FFFFFF; }
     .el-button--success:active {
-      background: #d46e1a;
-      border-color: #d46e1a;
+      background: #5daf34;
+      border-color: #5daf34;
       color: #FFFFFF;
       outline: none; }
     .el-button--success.is-active {
-      background: #d46e1a;
-      border-color: #d46e1a;
+      background: #5daf34;
+      border-color: #5daf34;
       color: #FFFFFF; }
     .el-button--success.is-disabled, .el-button--success.is-disabled:hover, .el-button--success.is-disabled:focus, .el-button--success.is-disabled:active {
       color: #FFFFFF;
-      background-color: #f5bd8e;
-      border-color: #f5bd8e; }
+      background-color: #b3e19d;
+      border-color: #b3e19d; }
     .el-button--success.is-plain {
-      color: #eb7a1d;
-      background: #fdf2e8;
-      border-color: #f7caa5; }
+      color: #67C23A;
+      background: #f0f9eb;
+      border-color: #c2e7b0; }
       .el-button--success.is-plain:hover, .el-button--success.is-plain:focus {
-        background: #eb7a1d;
-        border-color: #eb7a1d;
+        background: #67C23A;
+        border-color: #67C23A;
         color: #FFFFFF; }
       .el-button--success.is-plain:active {
-        background: #d46e1a;
-        border-color: #d46e1a;
+        background: #5daf34;
+        border-color: #5daf34;
         color: #FFFFFF;
         outline: none; }
       .el-button--success.is-plain.is-disabled, .el-button--success.is-plain.is-disabled:hover, .el-button--success.is-plain.is-disabled:focus, .el-button--success.is-plain.is-disabled:active {
-        color: #f3af77;
-        background-color: #fdf2e8;
-        border-color: #fbe4d2; }
+        color: #a4da89;
+        background-color: #f0f9eb;
+        border-color: #e1f3d8; }
   .el-button--warning {
     color: #FFFFFF;
     background-color: #E6A23C;
@@ -1463,7 +1585,7 @@
 -------------------------- */
 /* Alert
 -------------------------- */
-/* Message Box
+/* MessageBox
 -------------------------- */
 /* Message
 -------------------------- */
@@ -1488,6 +1610,8 @@
 /* Table
 -------------------------- */
 /* Pagination
+-------------------------- */
+/* Popup
 -------------------------- */
 /* Popover
 -------------------------- */
@@ -1530,6 +1654,16 @@
 /* Main
 --------------------------*/
 /* Timeline
+--------------------------*/
+/* Backtop
+--------------------------*/
+/* Link
+--------------------------*/
+/* Calendar
+--------------------------*/
+/* Form
+-------------------------- */
+/* Avatar
 --------------------------*/
 /* Break-point
 --------------------------*/
@@ -1573,7 +1707,7 @@
 -------------------------- */
 /* Alert
 -------------------------- */
-/* Message Box
+/* MessageBox
 -------------------------- */
 /* Message
 -------------------------- */
@@ -1598,6 +1732,8 @@
 /* Table
 -------------------------- */
 /* Pagination
+-------------------------- */
+/* Popup
 -------------------------- */
 /* Popover
 -------------------------- */
@@ -1640,6 +1776,16 @@
 /* Main
 --------------------------*/
 /* Timeline
+--------------------------*/
+/* Backtop
+--------------------------*/
+/* Link
+--------------------------*/
+/* Calendar
+--------------------------*/
+/* Form
+-------------------------- */
+/* Avatar
 --------------------------*/
 /* Break-point
 --------------------------*/
@@ -1689,7 +1835,7 @@
 -------------------------- */
 /* Alert
 -------------------------- */
-/* Message Box
+/* MessageBox
 -------------------------- */
 /* Message
 -------------------------- */
@@ -1714,6 +1860,8 @@
 /* Table
 -------------------------- */
 /* Pagination
+-------------------------- */
+/* Popup
 -------------------------- */
 /* Popover
 -------------------------- */
@@ -1756,6 +1904,16 @@
 /* Main
 --------------------------*/
 /* Timeline
+--------------------------*/
+/* Backtop
+--------------------------*/
+/* Link
+--------------------------*/
+/* Calendar
+--------------------------*/
+/* Form
+-------------------------- */
+/* Avatar
 --------------------------*/
 /* Break-point
 --------------------------*/
@@ -1930,7 +2088,7 @@
     padding-left: 10px;
     line-height: 19px;
     font-size: 14px; }
-  .el-checkbox:last-child {
+  .el-checkbox:last-of-type {
     margin-right: 0; }
 
 .el-checkbox-button {
@@ -2043,11 +2201,11 @@
       border-radius: 4px; }
     .el-transfer__button.is-disabled {
       border: 1px solid #DCDFE6;
-      background-color: #f5f7fa;
+      background-color: #F5F7FA;
       color: #C0C4CC; }
       .el-transfer__button.is-disabled:hover {
         border: 1px solid #DCDFE6;
-        background-color: #f5f7fa;
+        background-color: #F5F7FA;
         color: #C0C4CC; }
     .el-transfer__button:first-child {
       margin-bottom: 10px; }
@@ -2091,7 +2249,8 @@
     padding-left: 15px;
     display: block; }
     .el-transfer-panel__item + .el-transfer-panel__item {
-      margin-left: 0; }
+      margin-left: 0;
+      display: block !important; }
     .el-transfer-panel__item.el-checkbox {
       color: #606266; }
     .el-transfer-panel__item:hover {
@@ -2133,7 +2292,7 @@
   .el-transfer-panel .el-transfer-panel__header {
     height: 40px;
     line-height: 40px;
-    background: #f5f7fa;
+    background: #F5F7FA;
     margin: 0;
     padding-left: 15px;
     border-bottom: 1px solid #EBEEF5;

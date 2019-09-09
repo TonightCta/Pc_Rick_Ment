@@ -6,6 +6,7 @@ import '../theme/index.css'
 import ElementUI from 'element-ui';
 import '../static/css/index.css'
 import Viewer from 'v-viewer'
+// import 'element-ui/lib/theme-chalk/index.css';
 import 'viewerjs/dist/viewer.css'
 Vue.prototype.$axios=Axios;
 // Vue.prototype.url="http://hexsoft.top:8080"
