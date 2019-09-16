@@ -195,6 +195,11 @@ const router = new Router({
           path:'/admin/caseAdmin',//案例管理
           name:'CaseAdmin',
           component:resolve=>require(['@/page/atricleAdmin/caseAdmin'],resolve)
+        },
+        {
+          path:'/admin/beta',//测试页面
+          name:'Bata',
+          component:resolve=>require(['@/page/basicData/betaFile'],resolve)
         }
       ],
       redirect:'/admin/wel'

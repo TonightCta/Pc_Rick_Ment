@@ -3,31 +3,26 @@
   <div class="channel_admin">
     <div class="" style="display:flex;height:100%;">
       <div class="channel_left">
-        <p style="position:relative;box-sizing:border-box;padding-left:20px;" class="ori_title" @mouseenter="data[0].isOper=true" @mouseleave="data[0].isOper=false">{{data[0].name}}
-          <span v-if="data[0].isOper">(<span class="root_title" @click="pushRoot()">添加</span>)</span>
-          <span class="hideChannel">
-          <el-button type="primary" icon="el-icon-minus" circle @click="isOpen=false" v-if="isOpen"></el-button>
-          <el-button type="primary" icon="el-icon-plus" circle @click="isOpen=true" v-if="!isOpen"></el-button>
-        </span></p>
-        <ul v-for="(name,index) in data[0].children" :class="{active:name.isOpen==false}">
-          <li style="position:relative;">
-            <span>
-              <span class="hideChannel" style="left:8px;">
-                <el-button type="primary" icon="el-icon-minus" @click="closeOper(index)" circle v-if="name.isOpen"></el-button>
-                <el-button type="primary" icon="el-icon-plus" @click="openOper(index)" circle v-if="!name.isOpen"></el-button>
+        <el-tree
+         :data="data"
+         node-key="id"
+         default-expand-all
+         :expand-on-click-node="false">
+         <span class="custom-tree-node" slot-scope="{ node, data }" @mouseleave="closeOper(data,$event)">
+           <span :dataType="data.id" @mouseover="openOper(data,$event)">
+             {{ node.label }}
+           </span>
+           <span class="node">
+             （
+             <span class="operText">
+               <span class="operHover" @click="addChannel(data,node)">添加</span>,
+               <span class="operHover" @click="editChannel(data,node)">修改</span>,
+               <span class="operHover" @click="delChannel(data,node)">删除</span>
               </span>
-            </span>
-          </li>
-          <li style="color:#eb7a1d;padding-left:25px;fontSize:15px;" @mouseenter="name.isOper=true" @mouseleave="name.isOper=false;">
-            {{name.name}}
-            <span v-if="name.isOper" style="color:black;">
-              (<span class="parOper" @click="pushRiskPar(index)">添加</span>&nbsp;,&nbsp;<span class="parOper" @click="editRiskPar(index)">修改</span>&nbsp;,&nbsp;<span class="parOper">删除</span>)
-            </span>
-          </li>
-          <li v-for="(item,key) in name.child" style="box-sizing:border-box;padding-left:35px;fontSize:14px;" v-show="name.isOpen" @mouseenter="showOper(index,key)" @mouseleave="hideOper(index,key)">
-            {{item.name}}<span class="oper" v-if="item.isOper">(<span @click="pushRisk(index,key)">添加</span>&nbsp;,&nbsp;<span @click="editRisk(index,key)">修改</span>&nbsp;,&nbsp;<span>删除</span>)</span>
-          </li>
-        </ul>
+             )
+           </span>
+         </span>
+        </el-tree>
       </div>
       <div class="channel_right">
         <ul v-for="(risk,index) in riskList" :key="index">
@@ -50,9 +45,7 @@
 export default {
   data(){
     return{
-      parRisk:null,//父级频道名称
-      isOpen:true,
-      isEdit:true,//是否为编辑
+      isEdit:false,
       riskList:[
         {
           num:0,//频道排序
@@ -62,79 +55,87 @@ export default {
           riskNum:null,//频道排序
         }
       ],
-      data:[
-        {
-          name:'根目录',
-          isOper:false,
-          children:[
-            {
-              name:'基础数据管理',
-              isOpen:true,
-              isOper:false,
-              code:1,
-              url:'a-a',
-              child:[
-                {
-                  name:'频道管理',
-                  code:1,
-                  url:'a',
-                  isOper:false,
-                },
-                {
-                  name:'角色管理',
-                  isOper:false,
-                  code:2,
-                  url:'b',
+      data: [{
+         id: 1,
+         label: '根目录',
+         isOpen:true,
+         children: [
+           {
+             id: 2,
+             label: '基础数据管理',
+             isOpen:false,
+             children: [
+               {
+                 id: 3,
+                 label: '频道管理',
+                 isOpen:false,
+               },
+               {
+                 id: 4,
+                 label: '角色管理',
+                 isOpen:false,
                 }
               ]
             },
             {
-              name:'平台内部管理',
-              isOpen:true,
-              isOper:false,
-              code:2,
-              url:'a-b',
-              child:[
+              id:5,
+              label:'平台内部管理',
+              isOpen:false,
+              children:[
                 {
-                  name:'内部工程师管理',
-                  isOper:false,
-                  code:3,
-                  url:'c',
+                  id:6,
+                  label:'内部工程师管理',
+                  isOpen:false,
                 },
                 {
-                  name:'项目列表',
-                  isOper:false,
-                  code:4,
-                  url:'d',
+                  id:7,
+                  label:'外部工程师管理',
+                  isOpen:false,
                 }
               ]
             }
           ]
-        }
-      ]
+        }]
     }
   },
   watch:{
-    isOpen(val,oldVal){
-      if(!val){
-        this.data[0].children=[];
-      }else{
-        return this.data[0]
-      }
-    }
+
   },
   methods:{
-    showOper(index,key){//鼠标移入
-      this.data[0].children[index].child[key].isOper=true;
+    openOper(data,$event){//鼠标移入
+      $event.currentTarget.nextElementSibling.setAttribute('class','block');
     },
-    hideOper(index,key){//鼠标移出
-      this.data[0].children[index].child[key].isOper=false;
+    closeOper(data,$event){//鼠标移出
+      $event.currentTarget.firstElementChild.nextElementSibling.setAttribute('class','none')
     },
-    openOper(index){//打开菜单
-      this.data[0].children[index].isOpen=true;
+    addChannel(data,node){//添加频道
+      this.isEdit=true;
+      this.riskList[0].riskName=null;
+      this.riskList[0].riskUrl=null;
+      this.riskList[0].riskNum=null;
+      this.riskList[0].parRisk=node.parent.data.label;
     },
-    closeOper(index){//关闭菜单
-      this.data[0].children[index].isOpen=false;
+    delRisk(index){//删除添加频道
+     if(this.riskList.length>=2){
+         this.riskList.splice(index,1)
+       }else{
+         this.$message.warning('不能删除了哦')
+       }
+    },
+    editChannel(data,node){//编辑频道
+      this.riskList=[{
+       num:0,
+       parRisk:null,//父级频道名称
+       riskName:null,//频道名称
+       riskUrl:null,//频道路径
+       riskNum:null,//频道排序
+      }];
+      this.isEdit=false;
+      this.riskList[0].parRisk=node.parent.data.label;
+      this.riskList[0].riskName=data.label;
+    },
+    delChannel(data,node){//删除频道
+      console.log(data)
     },
     addRisk(index){//添加频道
       this.riskList.push({
@@ -145,74 +146,35 @@ export default {
         riskNum:null,//频道排序
       })
     },
-    editRisk(index,key){//编辑频道
-      this.riskList=[{
-        num:0,
-        parRisk:null,//父级频道名称
-        riskName:null,//频道名称
-        riskUrl:null,//频道路径
-        riskNum:null,//频道排序
-      }];
-      this.isEdit=false;
-      this.riskList[0].parRisk=this.data[0].children[index].name;
-      this.riskList[0].riskName=this.data[0].children[index].child[key].name;
-      this.riskList[0].riskUrl=this.data[0].children[index].child[key].url;
-      this.riskList[0].riskNum=this.data[0].children[index].child[key].code;
-    },
-    pushRisk(index,key){//添加频道
-      this.isEdit=true;
-      this.riskList[0].riskName=null;
-      this.riskList[0].riskUrl=null;
-      this.riskList[0].riskNum=null;
-      this.riskList[0].parRisk=this.data[0].children[index].child[key].name;
-    },
-    delRisk(index){//删除添加频道
-      if(this.riskList.length>=2){
-        this.riskList.splice(index,1)
-      }else{
-        this.$message.warning('不能删除了哦')
-      }
-    },
-    pushRiskPar(index){//添加父级频道
-      this.isEdit=true;
-      this.riskList[0].riskName=null;
-      this.riskList[0].riskUrl=null;
-      this.riskList[0].riskNum=null;
-      this.riskList[0].parRisk=this.data[0].children[index].name;
-    },
-    editRiskPar(index){//编辑父级频道
-      this.riskList=[{
-        num:0,
-        parRisk:null,//父级频道名称
-        riskName:null,//频道名称
-        riskUrl:null,//频道路径
-        riskNum:null,//频道排序
-      }];
-      this.isEdit=false;
-      this.riskList[0].parRisk=this.data[0].name;
-      this.riskList[0].riskName=this.data[0].children[index].name;
-      this.riskList[0].riskUrl=this.data[0].children[index].url;
-      this.riskList[0].riskNum=this.data[0].children[index].code;
-    },
-    pushRoot(){//根目录下添加
-      this.isEdit=true;
-      this.riskList[0].riskName=null;
-      this.riskList[0].riskUrl=null;
-      this.riskList[0].riskNum=null;
-      this.riskList[0].parRisk=this.data[0].name;
-    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.active{
-  max-height: 20px!important;
-  transition: 1s all;
-  background: red;
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  box-sizing: border-box;
+  padding-right: 50%;
 }
-.el-button.is-circle{
-  padding: 0px!important;
+.operText{
+  font-size: 15px;
+  text-decoration: underline;
+}
+.operHover:hover{
+  color:#eb7a1d;
+}
+.node{
+  display: none;
+}
+.none{
+  display: none;
+}
+.block{
+  display: block;
 }
 .channel_admin{
   width: 98%;
@@ -221,48 +183,16 @@ export default {
   position: relative;
   overflow-x: hidden;
   .channel_left{
-    width: 30%;
+    width: 40%;
     box-sizing: border-box;
     padding-top: 15px;
     padding-left: 30px;
     transition: 1s all;
-    .root_title:hover{
-      color:#eb7a1d;
-    }
-    .ori_title:hover{
-      cursor:pointer;
-      text-decoration: underline;
-    }
-    .hideChannel{
-      position: absolute;
-      left:0;
-      top:-2px;
-    }
-    ul{
-      transition:1s all;
-      box-sizing: border-box;
-      li{
-        transition:1s all;
-        .oper{
-          font-size: 13px;
-          span:hover{
-            color:#eb7a1d ;
-          }
-        }
-        .parOper:hover{
-          color:#eb7a1d;
-        }
-      }
-      li:hover{
-        cursor:pointer;
-        text-decoration: underline;
-      }
-    }
   }
   .channel_right{
-    width: 70%;
+    width: 60%;
     ul{
-      width: 60%;
+      width: 70%;
       margin:0 auto;
       box-sizing: border-box;
       padding-bottom:5px;

@@ -35,7 +35,7 @@
             <ul>
               <li v-for="(crum,index) in abc" @click="choseCru(index)" :key="index+'A'" ref="crum">
                 <router-link tag="span" :to="crum.url">{{crum.name}}</router-link>
-                <i class="el-icon-circle-close" ref="close" @click.stop="delCru(index)"></i>
+                <i class="el-icon-error" ref="close" @click.stop="delCru(index)"></i>
               </li>
               <li class="full">
                 <el-tooltip class="item" effect="dark" content="全屏模式" placement="bottom">
