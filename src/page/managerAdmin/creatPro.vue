@@ -453,7 +453,7 @@
         <span>进程管理</span>
       </p>
       <p class="allSaveBtn">
-        <el-button type="primary" size="medium" icon="el-icon-upload" style="width:100%;">保存全部</el-button>
+        <el-button type="primary" size="medium" icon="el-icon-upload" style="width:100%;" @click="saveAllCess()">保存全部</el-button>
       </p>
       <div class="" v-if="threeConBox">
         <div class="pro_cess">
@@ -539,6 +539,18 @@
               </li>
             </ul>
           </div>
+          <p class="cess_remark">
+            <span>项目说明</span>
+            <el-input
+              type="textarea"
+              placeholder="项目长时间未验收请在此处填写说明..."
+              v-model="proStateMes.remark"
+              maxlength="200"
+              show-word-limit
+              style="width:72%;"
+              rows="4"
+            ></el-input>
+          </p>
           <p class="cess_btn">
             <el-button type="primary" size="medium" @click="saveProState()">保存</el-button>
           </p>
@@ -548,7 +560,37 @@
           <p class="point_place">
             地点:{{point.placeName}}&nbsp;&nbsp;&nbsp;详细地址:{{point.address}}
           </p>
-          <p class="point_title" style="margin-top:10px;">局点进程</p>
+          <p class="point_title" style="marginTop:10px;fontSize:20px;marginBottom:10px;">进场/离场记录</p>
+          <p v-for="(pointWork,workIndex) in point.goWorkList" style="marginTop:15px;box-sizing:border-box;paddingLeft:20px;">
+            <!-- <el-select v-model="pointWork.logText" placeholder="请选择" size="medium" style="width:120px;" @change="chooseWork(index,workIndex)">
+               <el-option
+                 v-for="(log,key) in pointLog"
+                 :key="key"
+                 :label="log"
+                 :value="log">
+               </el-option>
+             </el-select> -->
+             进/离场时间:
+             <el-date-picker
+                v-model="pointWork.arriveTime"
+                type="date"
+                value-format="yyyy-MM-dd"
+                size="medium"
+                placeholder="进场日期">
+              </el-date-picker>
+             &nbsp;-&nbsp;
+             <el-date-picker
+                v-model="pointWork.leaveTime"
+                type="date"
+                value-format="yyyy-MM-dd"
+                size="medium"
+                placeholder="离场日期">
+              </el-date-picker>
+              &nbsp;&nbsp;
+              <el-button type="primary" icon="el-icon-plus" circle size="medium" @click="addWorkPoint(index,workIndex)"></el-button>
+              <el-button type="danger" icon="el-icon-delete" circle size="medium" @click="delWorkPoint(index,workIndex)"></el-button>
+          </p>
+          <p class="point_title" style="margin-top:20px;">局点进程</p>
           <div class="">
             <el-row>
               <el-col :span="3"><div class="edit_title">节点</div></el-col>
@@ -601,7 +643,7 @@
               </div></el-col>
             </el-row>
             <p style="textAlign:center;lineHeight:50px;">
-              <el-button type="primary" size="medium" @click="subTurnPoint(index)">提交</el-button>
+              <el-button type="primary" size="medium" @click="subTurnPoint(index,false)">提交</el-button>
             </p>
           </div>
         </div>
@@ -1008,6 +1050,7 @@ export default {
       closeText:'收起筛选',
       searchList:true,//闭合搜索
       operClose:'./static/img/close_search.png',
+      //pointLog:['进场','离场'],//进场离场记录
       dataLength:88,//共有数据条数
       // proList:[],//项目列表
       page:0,//页码
@@ -1180,7 +1223,9 @@ export default {
       pointNum:0,//局点派遣排序
       proStateList:[],//项目状态选项
       insNum:0,//验货单排序
+      isUpWork:true,//是否上传进出场记录
       proStateMes:{
+        remark:null,//项目说明
         stateText:null,//项目状态
         state:null,//项目状态code
         warnTime:null,//预警时间
@@ -1582,7 +1627,6 @@ export default {
           formdata.append('levelIds',e);
         });
         vc.$axios.post(vc.url+'/saveProject_n',formdata).then((res)=>{
-          console.log(res);
           if(res.data.code==0){
             vc.getProList();
             vc.addPro=false;
@@ -1911,26 +1955,51 @@ export default {
       _vm.$axios.get(_vm.url+'/projectInfo?projectId='+_vm.proID).then((res)=>{
         if(res.data.code==0){
           _vm.pointList=res.data.data.projectPointVOList;
+          _vm.pointList.forEach((e)=>{
+            _vm.$set(e,'goWorkList',[]);
+            if(e.arriveRecordVOList!=null){
+              for(let i in e.arriveRecordVOList){
+                e.goWorkList.push({
+                  id:e.arriveRecordVOList[i].id,
+                  arriveTime:e.arriveRecordVOList[i].arriveTime,
+                  leaveTime:e.arriveRecordVOList[i].leaveTime,
+                });
+              }
+            }else{
+              e.goWorkList.push({
+                arriveTime:null,
+                leaveTime:null,
+              });
+            }
+          });
           this.proStateMes.stateText=res.data.data.stateStr;
           this.proStateMes.state=res.data.data.state;
           this.proStateMes.proGress=res.data.data.schedule;
+          this.proStateMes.remark=res.data.data.remark;
           this.proStateMes.warnTime=this.conversionTime(res.data.data.warnTime);
           this.proStateMes.planEndTime=this.conversionTime(res.data.data.planFinishTime);
           this.proStateMes.planAcceptTime=this.conversionTime(res.data.data.planAcceptTime);
           this.proStateMes.startTime=this.conversionTime(res.data.data.startTime);
           this.proStateMes.endTime=this.conversionTime(res.data.data.finishTime);
           this.proStateMes.acceptTime=this.conversionTime(res.data.data.acceptTime);
+          const loading = _vm.$loading({
+            lock: true,
+            text: '数据获取中...',
+            spinner: 'el-icon-loading',
+            background: 'rgba(0, 0, 0, 0.7)'
+          })
           _vm.$axios.get(_vm.url+'/enum/projectStateList').then((res)=>{
             if(res.data.code==0){
               _vm.proStateList=res.data.data;
-              _vm.threeBox=true;
               setTimeout(()=>{
                 _vm.threeConBox=true;
-              },150)
+                _vm.threeBox=true;
+              },200)
               setTimeout(()=>{
                 _vm.$refs.threePerBox.style.width='100%';
                 _vm.$refs.threePerBox.style.minHeight='100%';
-              })
+                loading.close();
+              },200)
             }else{
               _vm.$message.error(res.data.msg)
             }
@@ -2898,6 +2967,9 @@ export default {
         if(this.proStateMes.proGress!=null&&this.proStateMes.proGress!==''){
           formdata.append('schedule',this.proStateMes.proGress);
         };
+        if(this.proStateMes.remark!=null&&this.proStateMes.remark!==''){
+          formdata.append('remark',this.proStateMes.remark);
+        };
         this.$axios.post(this.url+'/saveProjectCourse',formdata).then((res)=>{
           if(res.data.code==0){
             this.$message.success('更新项目信息成功')
@@ -2909,8 +2981,16 @@ export default {
         })
       };
     },
-    subTurnPoint(index){//保存局点编辑
+    saveAllCess(){//保存全部项目状态
+      this.saveProState();
+      let isAll=true;
+      for(let i in this.pointList){
+        this.subTurnPoint(i,isAll)
+      }
+    },
+    subTurnPoint(index,isAll){//保存局点编辑
       let formdata=new FormData();
+      let _vm=this;
       for(let i in this.pointList[index].usingProjectCourseNodeVOList){
         formdata.append('projectCourseNodeFormList['+i+'].id',this.pointList[index].usingProjectCourseNodeVOList[i].id)
         if(this.pointList[index].usingProjectCourseNodeVOList[i].planStartTimeStr!=null&&this.pointList[index].usingProjectCourseNodeVOList[i].planStartTimeStr!=''){
@@ -2928,16 +3008,64 @@ export default {
         if(this.pointList[index].usingProjectCourseNodeVOList[i].remark!=null&&this.pointList[index].usingProjectCourseNodeVOList[i].remark!=''){
           formdata.append('projectCourseNodeFormList['+i+'].remark',this.pointList[index].usingProjectCourseNodeVOList[i].remark)
         };
-      }
-      this.$axios.post(this.url+'/updateProjectCourseNodeList',formdata).then((res)=>{
-        if(res.data.code==0){
-          this.$message.success('更新局点信息成功');
-        }else{
-          this.$message.error(res.data.msg)
+      };
+      let formdataT=new FormData();
+      for(let x in this.pointList[index].goWorkList){
+        formdataT.append('arriveRecordFormList['+x+'].leaveTime',this.pointList[index].goWorkList[x].leaveTime);
+        if(this.pointList[index].goWorkList[x].arriveTime!=null&&this.pointList[index].goWorkList[x].leaveTime!=null){
+          if(new Date(this.pointList[index].goWorkList[x].arriveTime)>new Date(this.pointList[index].goWorkList[x].leaveTime)){
+            this.$message.error('离场时间不得小于入场时间');
+            this.isUpWork=false;
+          }else{
+            this.isUpWork=true;
+            formdataT.append('arriveRecordFormList['+x+'].projectId',this.proID);
+            formdataT.append('arriveRecordFormList['+x+'].projectPointId',this.pointList[index].id);
+            formdataT.append('arriveRecordFormList['+x+'].arriveTime',this.pointList[index].goWorkList[x].arriveTime);
+            if(this.pointList[index].goWorkList[x].id!=undefined){
+              formdataT.append('arriveRecordFormList['+x+'].id',this.pointList[index].goWorkList[x].id);
+            }
+          }
+        }else if(this.pointList[index].goWorkList[x].arriveTime!=null&&this.pointList[index].goWorkList[x].arriveTime!=''){
+          this.isUpWork=true;
+          formdataT.append('arriveRecordFormList['+x+'].projectId',this.proID);
+          formdataT.append('arriveRecordFormList['+x+'].projectPointId',this.pointList[index].id);
+          formdataT.append('arriveRecordFormList['+x+'].arriveTime',this.pointList[index].goWorkList[x].arriveTime);
+          if(this.pointList[index].goWorkList[x].id!=undefined){
+            formdataT.append('arriveRecordFormList['+x+'].id',this.pointList[index].goWorkList[x].id);
+          }
         }
-      }).catch((err)=>{
-        this.$message.error('未知错误,请联系管理员')
-      })
+        console.log(this.pointList[index].goWorkList)
+      };
+      if(this.isUpWork){
+        this.$axios.post(this.url+'/saveArriveRecord',formdataT).then((res)=>{
+          console.log(res)
+          if(res.data.code==0){
+            this.pointList[index].goWorkList=[];
+            res.data.data.forEach((e)=>{
+              this.pointList[index].goWorkList.push({
+                id:e.id,
+                arriveTime:e.arriveTime,
+                leaveTime:e.leaveTime,
+              });
+            });
+            this.isUpWork=false;
+          }else{
+            console.log(res.data.msg)
+          };
+          this.$axios.post(this.url+'/updateProjectCourseNodeList',formdata).then((res)=>{
+            if(res.data.code==0){
+              if(!isAll){
+                this.$message.success('更新局点信息成功');
+              }
+            }else{
+              this.$message.error(res.data.msg)
+            }
+          }).catch((err)=>{
+            this.$message.error('未知错误,请联系管理员')
+          })
+        });
+      }
+
     },
     upPointFile(e,indexFile,fileUpIn){//项目文档上传
       let a=this.pointFileList[indexFile];
@@ -3065,6 +3193,39 @@ export default {
         vm.$message.error('未知错误,请联系管理员')
       })
     },
+    addWorkPoint(index,workIndex){
+      this.pointList[index].goWorkList.push({
+        num:this.pointList[index].goWorkList.length,
+        date:null,
+        state:null,
+        logText:null,
+      })
+    },
+    delWorkPoint(index,workIndex){//删除进出场记录
+      if(this.pointList[index].goWorkList[workIndex].id!=undefined){
+        this.$axios.get(this.url+'/deleteArriveRecord?id='+this.pointList[index].goWorkList[workIndex].id).then((res)=>{
+          if(res.data.code==0){
+            this.$message.success('删除记录成功')
+            this.pointList[index].goWorkList.splice(workIndex,1)
+          }else{
+            this.$message.error(res.data.msg)
+          }
+        })
+      }else{
+        if(this.pointList[index].goWorkList.length>1){
+          this.pointList[index].goWorkList.splice(workIndex,1)
+        }else{
+          this.$message.error('不能再删除了哦')
+        }
+      }
+    },
+    // chooseWork(index,workIndex){//选择进出场时间
+    //   if(this.pointList[index].goWorkList[workIndex].logText==='进场'){
+    //     this.pointList[index].goWorkList[workIndex].state=0;
+    //   }else{
+    //     this.pointList[index].goWorkList[workIndex].state=1;
+    //   }
+    // },
   }
 }
 </script>
@@ -3460,6 +3621,15 @@ input[type=checkbox]:checked:after {
         text-align: right;
         box-sizing: border-box;
         padding-right: 20px;
+      }
+      .cess_remark{
+        box-sizing: border-box;
+        padding-left: 140px;
+        position: relative;
+        span{
+          position: absolute;
+          left:20px;
+        }
       }
     }
     .pro_point{

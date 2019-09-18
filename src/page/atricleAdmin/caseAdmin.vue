@@ -324,6 +324,7 @@ export default {
     padding-top:60px;
     overflow-y: auto;
     padding-bottom: 30px;
+    z-index: 1;
     .mes_titleOne{
       width:200px;
       height: 40px;
