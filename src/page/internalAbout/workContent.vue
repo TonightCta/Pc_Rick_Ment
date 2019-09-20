@@ -76,7 +76,8 @@
             <li><span style="color:red;">*</span>项目</li>
             <li><span style="color:red;">*</span>进程节点</li>
             <li><span style="color:red;">*</span>工作内容</li>
-            <li style="marginTop:85px;"><span style="color:red;">*</span>工作时间段</li>
+            <li style="marginTop:90px;"><span style="color:red;">*</span>工作时间</li>
+            <li><span style="color:red;">*</span>工作时间段</li>
             <li>图片附件</li>
             <li>文档附件</li>
             <li>潜在风险描述</li>
@@ -104,6 +105,15 @@
             </li>
             <li>
               <textarea @focus="getTear" @blur="clearTear" ref="proTear" v-model="addworkMes.pushContent" placeholder="请输入工作内容"></textarea>
+            </li>
+            <li>
+              <el-date-picker
+                 v-model="addworkMes.workDate"
+                 type="date"
+                 size="medium"
+                 value-format="yyyy-MM-dd"
+                 placeholder="选择日期">
+               </el-date-picker>
             </li>
             <li style="marginTop:-5px;">
               <el-time-select
@@ -282,6 +292,7 @@ export default {
         picName:null,//图片名称
         exName:null,//文档名称
         potenText:null,//潜在风险
+        workDate:new Date(),//工作日期
       },
       workLoading:false,//日志加载
       workDate:[],//搜索日期
@@ -304,6 +315,7 @@ export default {
             picName:null,//图片名称
             exName:null,//文档名称
             potenText:null,//潜在风险
+            workDate:null,
         }
       }
     },
@@ -434,15 +446,15 @@ export default {
         formdata.append('content',_vm.addworkMes.pushContent);
         formdata.append('startTime',Number(_vm.startTime.substring(0,2)));
         formdata.append('endTime',Number(_vm.endTime.substring(0,2)));
-        let date=new Date();
-        let year = date.getFullYear();
-        let month = date.getMonth() + 1;
-        let day = date.getDate();
-        if(day > 0 && day < 9) {
-          day = '0' + day
-        }
-        let Time = year + '-' + month + '-' + day;
-        formdata.append('workTime',Time);
+        // let date=new Date();
+        // let year = date.getFullYear();
+        // let month = date.getMonth() + 1;
+        // let day = date.getDate();
+        // if(day > 0 && day < 9) {
+        //   day = '0' + day
+        // }
+        // let Time = year + '-' + month + '-' + day;
+        formdata.append('workTime',_vm.addworkMes.workDate);
         if(_vm.addworkMes.filePic!=null&&_vm.addworkMes.filePic!=''){
           formdata.append('imageFiles',_vm.addworkMes.filePic);
         }

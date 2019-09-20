@@ -85,7 +85,7 @@
           <el-col :span="2"><div class="projectTitle">项目状态</div></el-col>
           <el-col :span="2"><div class="projectTitle">产品线</div></el-col>
           <el-col :span="2"><div class="projectTitle">项目负责人</div></el-col>
-          <el-col :span="2"><div class="projectTitle">创建时间</div></el-col>
+          <el-col :span="2"><div class="projectTitle">预/实工期</div></el-col>
           <el-col :span="2"><div class="projectTitle">入场时间</div></el-col>
           <el-col :span="2"><div class="projectTitle">完工时间</div></el-col>
           <el-col :span="2"><div class="projectTitle">验收时间</div></el-col>
@@ -110,7 +110,7 @@
           <el-col :span="2" v-if="pro.technologyName!=null&&pro.technologyName!='null'"><div class="projectCon">{{pro.technologyName}}</div></el-col>
           <el-col :span="2" v-else><div class="projectCon">-</div></el-col>
           <el-col :span="2"><div class="projectCon">{{pro.creatorName}}</div></el-col>
-          <el-col :span="2"><div class="projectCon">{{pro.createTimeSec}}</div></el-col>
+          <el-col :span="2"><div class="projectCon">{{pro.dayNumber}}天/{{pro.workDayNumber}}天</div></el-col>
           <el-col :span="2" v-if="pro.startTime!=null&&pro.startTime!='null'"><div class="projectCon">{{pro.entranceTimeSec}}</div></el-col>
           <el-col :span="2" v-else><div class="projectCon">-</div></el-col>
           <el-col :span="2" v-else><div class="projectCon">-</div></el-col>
@@ -472,34 +472,7 @@ export default {
           }]
         },
       showProDay:false,//显示项目日报
-      dayList:[
-          {
-            name:'彭闯',
-            createTime:'2019/02/05',
-            proName:'天津信息所数据设备更新项目PRO20190110537776',
-            node:'进场开公',
-            workTime:'1天[14:00-17:00]',
-            workContent:' S12800*2 S5720*53',
-            file:[
-              '天津信息所数据设备更新项目PRO20190110537776.xls',
-              '天津信息所数据设备更新项目PRO20190110537776.xls',
-            ],
-            pics:[
-              'static/img/card_bg.png',
-              'static/img/skill_bg.png',
-            ]
-          },
-          {
-            name:'凌寒涛',
-            createTime:'2019/02/05',
-            proName:'天津信息所数据设备更新项目PRO20190110537776',
-            node:'进场开公',
-            workTime:'1天[14:00-17:00]',
-            workContent:' S12800*2 S5720*53',
-            file:[],
-            pics:[]
-          },
-      ],
+      dayList:[],//项目日报列表
       operClose:'./static/img/close_search.png',
       dynSize:9999,//数据条数
       //导出数据
@@ -507,8 +480,10 @@ export default {
       filename:'项目目录',
       autoWidth: true,
       bookType: 'xlsx',
-      tHeader:['项目名称', '产品线', '负责人', '入场时间', '完工时间','验收时间','项目状态'],
-      tValue:['name', 'technologyName', 'creatorName', 'entranceTimeSec', 'finishTimeSec','acceptTimeSec','stateStr'],
+      tHeader:['项目名称', '产品线', '负责人','预估时间','实际时间','入场时间','完工时间','验收时间','项目状态'],
+      tValue:['name', 'technologyName', 'creatorName','dayNumber','workDayNumber','entranceTimeSec', 'finishTimeSec','acceptTimeSec','stateStr'],
+      arrTimeList:[],//进场时间集合
+      leaveTimeList:[],//离场时间集合
     }
   },
   created(){
@@ -595,6 +570,23 @@ export default {
             }
             let aTime=aYear+'-'+aMon+'-'+aDay;
             _vc.$set(e,'acceptTimeSec',aTime);
+            if(e.arriveRecordVOList!=null){
+              for(let temp in e.arriveRecordVOList){
+                if(e.arriveRecordVOList[temp].leaveTime==null){
+                  _vc.$set(e.arriveRecordVOList[temp],'leaveTime',new Date().getTime())
+                }
+                if(new Date(e.arriveRecordVOList[temp].leaveTime).getTime()>new Date(e.arriveRecordVOList[temp].arriveTime).getTime()){
+                  _vc.arrTimeList.push(new Date(e.arriveRecordVOList[temp].arriveTime).getTime());
+                  _vc.leaveTimeList.push(new Date(e.arriveRecordVOList[temp].leaveTime).getTime());
+                };
+              };
+              let dayNum=_vc.editArr(_vc.leaveTimeList)-_vc.editArr(_vc.arrTimeList);
+              _vc.$set(e,'workDayNumber',Math.floor(dayNum/86400000));
+              _vc.arrTimeList=[];
+              _vc.leaveTimeList=[];
+            }else{
+              _vc.$set(e,'workDayNumber','-');
+            }
           });
           _vc.loadPro=false;
           _vc.proList=res.data.data.content;
@@ -604,7 +596,15 @@ export default {
         }
       }).catch((err)=>{
         _vc.loadPro=false;
+        // console.log(err)
       })
+    },
+    editArr(ar){
+      let arr=ar;
+      let s = 0;
+      arr.forEach(function(val, idx, arr) {
+          s += val;}, 0);
+          return s;
     },
     hasDetials(index){//查看项目详情
       let _vc=this;
@@ -1083,6 +1083,23 @@ export default {
               _vc.$set(e,'acceptTimeSec',aTime);
             }else{
               _vc.$set(e,'acceptTimeSec','-');
+            }
+            if(e.arriveRecordVOList!=null){
+              for(let temp in e.arriveRecordVOList){
+                if(e.arriveRecordVOList[temp].leaveTime==null){
+                  _vc.$set(e.arriveRecordVOList[temp],'leaveTime',new Date().getTime())
+                }
+                if(new Date(e.arriveRecordVOList[temp].leaveTime).getTime()>new Date(e.arriveRecordVOList[temp].arriveTime).getTime()){
+                  _vc.arrTimeList.push(new Date(e.arriveRecordVOList[temp].arriveTime).getTime());
+                  _vc.leaveTimeList.push(new Date(e.arriveRecordVOList[temp].leaveTime).getTime());
+                };
+              };
+              let dayNum=_vc.editArr(_vc.leaveTimeList)-_vc.editArr(_vc.arrTimeList);
+              _vc.$set(e,'workDayNumber',Math.floor(dayNum/86400000));
+              _vc.arrTimeList=[];
+              _vc.leaveTimeList=[];
+            }else{
+              _vc.$set(e,'workDayNumber','-');
             }
           });
           loading.close()

@@ -165,7 +165,7 @@
             <li style="margin-top:100px;"><span style="color:red;">*</span>联系人:</li>
             <li><span style="color:red;">*</span>联系电话:</li>
             <li><span style="color:red;">*</span>项目人数:</li>
-            <li><span style="color:red;">*</span>工期(天):</li>
+            <li><span style="color:red;">*</span>预估工期(天):</li>
             <!-- <li>成本预算:</li>
             <li>合同金额:</li> -->
             <li><span style="color:red;">*</span>交付标准:</li>
@@ -256,7 +256,7 @@
             <li style="margin-top:100px;"><span style="color:red;">*</span>联系人:</li>
             <li><span style="color:red;">*</span>联系电话:</li>
             <li><span style="color:red;">*</span>项目人数:</li>
-            <li><span style="color:red;">*</span>工期(天):</li>
+            <li><span style="color:red;">*</span>预估工期(天):</li>
             <!-- <li>成本预算:</li>
             <li>合同金额:</li> -->
             <li><span style="color:red;">*</span>交付标准:</li>
@@ -771,7 +771,8 @@
           </li>
           <li class="flex">
             <p>项目人数:&nbsp;&nbsp;&nbsp;<span>{{projectMes.peopleNumber}}人</span></p>
-            <p>工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.dayNumber}}天</span></p>
+            <p>预估工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.dayNumber}}天</span></p>&nbsp;&nbsp;&nbsp;
+            <p>实际工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.workDayNumber}}天</span></p>
           </li>
           <li class="flex">
             <p>交付标准:&nbsp;&nbsp;&nbsp;<span>{{projectMes.standard}}</span></p>
@@ -1224,6 +1225,8 @@ export default {
       proStateList:[],//项目状态选项
       insNum:0,//验货单排序
       isUpWork:true,//是否上传进出场记录
+      arrTimeList:[],//进场时间集合
+      leaveTimeList:[],//离场时间集合
       proStateMes:{
         remark:null,//项目说明
         stateText:null,//项目状态
@@ -1446,7 +1449,7 @@ export default {
             }
             let cTime=cYear+'-'+cMon+'-'+cDay;
             _vn.$set(e,'createTimeSec',cTime);
-          })
+          });
           _vn.proList=res.data.data.content;
           _vn.pageNum=res.data.data.totalPages*10;
           _vn.proLoad=false;
@@ -1460,6 +1463,13 @@ export default {
         _vn.proLoad=false;
         // console.log(err)
       })
+    },
+    editArr(ar){
+      let arr=ar;
+      let s = 0;
+      arr.forEach(function(val, idx, arr) {
+          s += val;}, 0);
+          return s;
     },
     handleSizeChange(val) {
 
@@ -2316,6 +2326,23 @@ export default {
           }
           let paTime=paYear+'-'+paMon+'-'+paDay;
           _vc.$set(res.data.data,'planATimeSec',paTime);
+          if(res.data.data.arriveRecordVOList!=null){
+            for(let temp in res.data.data.arriveRecordVOList){
+              if(res.data.data.arriveRecordVOList[temp].leaveTime==null){
+                _vc.$set(res.data.data.arriveRecordVOList[temp],'leaveTime',new Date().getTime())
+              }
+              if(new Date(res.data.data.arriveRecordVOList[temp].leaveTime).getTime()>new Date(res.data.data.arriveRecordVOList[temp].arriveTime).getTime()){
+                _vc.arrTimeList.push(new Date(res.data.data.arriveRecordVOList[temp].arriveTime).getTime());
+                _vc.leaveTimeList.push(new Date(res.data.data.arriveRecordVOList[temp].leaveTime).getTime());
+              };
+            };
+            let dayNum=_vc.editArr(_vc.leaveTimeList)-_vc.editArr(_vc.arrTimeList);
+            _vc.$set(res.data.data,'workDayNumber',Math.floor(dayNum/86400000));
+            _vc.arrTimeList=[];
+            _vc.leaveTimeList=[];
+          }else{
+            _vc.$set(res.data.data,'workDayNumber','- ');
+          }
           for(let i in res.data.data.projectPointVOList){
             for(let x in res.data.data.projectPointVOList[i].usingProjectCourseNodeVOList){
               //开始时间
@@ -2377,7 +2404,7 @@ export default {
         }
       }).catch((err)=>{
         this.$message.error('未知错误,请联系管理员')
-        // console.log(err)
+        console.log(err)
       })
     },
     closeMes(){//关闭项目详情
@@ -3011,8 +3038,7 @@ export default {
       };
       let formdataT=new FormData();
       for(let x in this.pointList[index].goWorkList){
-        formdataT.append('arriveRecordFormList['+x+'].leaveTime',this.pointList[index].goWorkList[x].leaveTime);
-        if(this.pointList[index].goWorkList[x].arriveTime!=null&&this.pointList[index].goWorkList[x].leaveTime!=null){
+        if(this.pointList[index].goWorkList[x].arriveTime!=null&&this.pointList[index].goWorkList[x].arriveTime!=''&&this.pointList[index].goWorkList[x].leaveTime!=null&&this.pointList[index].goWorkList[x].leaveTime!=''){
           if(new Date(this.pointList[index].goWorkList[x].arriveTime)>new Date(this.pointList[index].goWorkList[x].leaveTime)){
             this.$message.error('离场时间不得小于入场时间');
             this.isUpWork=false;
@@ -3021,6 +3047,7 @@ export default {
             formdataT.append('arriveRecordFormList['+x+'].projectId',this.proID);
             formdataT.append('arriveRecordFormList['+x+'].projectPointId',this.pointList[index].id);
             formdataT.append('arriveRecordFormList['+x+'].arriveTime',this.pointList[index].goWorkList[x].arriveTime);
+            formdataT.append('arriveRecordFormList['+x+'].leaveTime',this.pointList[index].goWorkList[x].leaveTime);
             if(this.pointList[index].goWorkList[x].id!=undefined){
               formdataT.append('arriveRecordFormList['+x+'].id',this.pointList[index].goWorkList[x].id);
             }
@@ -3034,11 +3061,9 @@ export default {
             formdataT.append('arriveRecordFormList['+x+'].id',this.pointList[index].goWorkList[x].id);
           }
         }
-        console.log(this.pointList[index].goWorkList)
       };
       if(this.isUpWork){
         this.$axios.post(this.url+'/saveArriveRecord',formdataT).then((res)=>{
-          console.log(res)
           if(res.data.code==0){
             this.pointList[index].goWorkList=[];
             res.data.data.forEach((e)=>{
