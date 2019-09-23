@@ -2,7 +2,7 @@
 <template lang="html">
   <div class="admin_order w100">
     <p class="admin_add">
-      <el-button type="primary" icon="el-icon-plus" @click="mePushOrder()">添加项目</el-button>
+      <el-button type="primary" icon="el-icon-plus" @click="mePushOrder()" size="medium">添加项目</el-button>
     </p>
     <p class="admin_reload">
       <el-tooltip class="item" effect="dark" content="刷新数据" placement="bottom">

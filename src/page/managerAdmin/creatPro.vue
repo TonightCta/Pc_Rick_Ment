@@ -95,6 +95,7 @@
         <el-col :span="1"><div class="pro_title">浏览</div></el-col>
         <el-col :span="2"><div class="pro_title">操作</div></el-col>
       </el-row>
+      <p style="width:100%;textAlign:center;lineHeight:60px;color:#666;" v-if="noPro">暂无更多数据</p>
       <div class="" style="minHeight:500px;" v-loading="proLoad">
         <el-row class="proMes" v-for="(pro,index) in proList" :key="'Pro'+index">
           <el-col :span="1"><div class="pro_oper">{{pro.num+1}}</div></el-col>
@@ -1239,6 +1240,7 @@ export default {
         endTime:null,//完工时间
         acceptTime:null,//验收时间
       },
+      noPro:false,//无数据情况
     }
   },
   created(){
@@ -1246,6 +1248,13 @@ export default {
     this.getLineList()
   },
   watch:{
+    proList(val,oldVal){
+      if(val==null||val.length<1){
+        this.noPro=true;
+      }else{
+        this.noPro=false;
+      }
+    },
     addPro(val,oldVal){
       if(!val){
         this.addProMes=this.addProMesEnd;
@@ -1640,6 +1649,7 @@ export default {
           if(res.data.code==0){
             vc.getProList();
             vc.addPro=false;
+            vc.$message.success('建项成功')
           }else{
             vc.$message.error(res.data.msg)
           }

@@ -292,7 +292,7 @@ export default {
         picName:null,//图片名称
         exName:null,//文档名称
         potenText:null,//潜在风险
-        workDate:new Date(),//工作日期
+        workDate:null,//工作日期
       },
       workLoading:false,//日志加载
       workDate:[],//搜索日期
@@ -392,11 +392,30 @@ export default {
     },
     pushWork(){//添加项目
       let formdata=new FormData();
+      const loading = this.$loading({
+          lock: true,
+          text: '拼命加载中...',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });
       formdata.append('engineerId',window.localStorage.getItem('engID'));
       this.$axios.post(this.url+'/mobile/findProjectPointAndProjectCourseNodeByEngineer',formdata).then((res)=>{
+        console.log(res)
         if(res.data.code==0){
+          let date=new Date();
+          let year = date.getFullYear();
+          let month = date.getMonth() + 1;
+          if(month > 0 && month < 9) {
+            month = '0' + month
+          }
+          let day = date.getDate();
+          if(day > 0 && day < 9) {
+            day = '0' + day
+          }
+          this.addworkMes.workDate = year + '-' + month + '-' + day;
           this.addworkMes.pushProList=res.data.data;
           this.addWork=true;
+          loading.close()
         }else{
           this.$message.error(res.data.msg)
         }
@@ -446,14 +465,7 @@ export default {
         formdata.append('content',_vm.addworkMes.pushContent);
         formdata.append('startTime',Number(_vm.startTime.substring(0,2)));
         formdata.append('endTime',Number(_vm.endTime.substring(0,2)));
-        // let date=new Date();
-        // let year = date.getFullYear();
-        // let month = date.getMonth() + 1;
-        // let day = date.getDate();
-        // if(day > 0 && day < 9) {
-        //   day = '0' + day
-        // }
-        // let Time = year + '-' + month + '-' + day;
+
         formdata.append('workTime',_vm.addworkMes.workDate);
         if(_vm.addworkMes.filePic!=null&&_vm.addworkMes.filePic!=''){
           formdata.append('imageFiles',_vm.addworkMes.filePic);
