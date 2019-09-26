@@ -4,6 +4,9 @@
     <p class="role_titleOper">
       <el-button type="primary" icon="el-icon-plus" size="medium" @click="addRole=true">添加角色</el-button>
       <span class="dataLength">共有数据:&nbsp;<span style="color:#eb7a1d;font-weight:bold;">{{dataLength}}</span>&nbsp;条</span>
+      <el-tooltip>
+        
+      </el-tooltip>
       <i class="el-icon-refresh"></i>
     </p>
     <div class="" style="minHeight:550px;width:98%;margin:0 auto;">

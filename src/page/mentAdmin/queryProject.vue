@@ -145,14 +145,15 @@
             <li>
               <p>项目合同单号:&nbsp;&nbsp;&nbsp;<span>{{projectMes.contractNumber}}</span></p>
             </li>
-            <li>项目内容:&nbsp;&nbsp;&nbsp;<span>{{projectMes.content}}</span></li>
+            <li>项目内容:&nbsp;&nbsp;&nbsp;<pre>{{projectMes.content}}</pre></li>
             <li class="flex">
               <p>联系人:&nbsp;&nbsp;&nbsp;<span>{{projectMes.linkman}}</span></p>
               <p>联系电话:&nbsp;&nbsp;&nbsp;<span>{{projectMes.phone}}</span></p>
             </li>
             <li class="flex">
               <p>项目人数:&nbsp;&nbsp;&nbsp;<span>{{projectMes.peopleNumber}}人</span></p>
-              <p>工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.dayNumber}}天</span></p>
+              <p>预估工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.dayNumber}}天</span></p>&nbsp;&nbsp;&nbsp;
+              <p>实际工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.workDayNumber}}天</span></p>
             </li>
             <li class="flex">
               <p>交付标准:&nbsp;&nbsp;&nbsp;<span>{{projectMes.standard}}</span></p>
@@ -191,6 +192,11 @@
                 <span v-if="projectMes.acceptTime!=null&&projectMes.acceptTime!='null'">{{projectMes.acceptTimeSec}}</span>
                 <span v-else>-</span>
               </p>
+            </li>
+            <li>
+              <pre>
+                项目说明:&nbsp;&nbsp;&nbsp;<span v-if="projectMes.remark!=null">{{projectMes.remark}}</span><span v-else>-</span>
+              </pre>
             </li>
           </ul>
         </div>
@@ -688,6 +694,23 @@ export default {
           }
           let paTime=paYear+'-'+paMon+'-'+paDay;
           _vc.$set(res.data.data,'planATimeSec',paTime);
+          if(res.data.data.arriveRecordVOList!=null){
+            for(let temp in res.data.data.arriveRecordVOList){
+              if(res.data.data.arriveRecordVOList[temp].leaveTime==null){
+                _vc.$set(res.data.data.arriveRecordVOList[temp],'leaveTime',new Date().getTime())
+              }
+              if(new Date(res.data.data.arriveRecordVOList[temp].leaveTime).getTime()>new Date(res.data.data.arriveRecordVOList[temp].arriveTime).getTime()){
+                _vc.arrTimeList.push(new Date(res.data.data.arriveRecordVOList[temp].arriveTime).getTime());
+                _vc.leaveTimeList.push(new Date(res.data.data.arriveRecordVOList[temp].leaveTime).getTime());
+              };
+            };
+            let dayNum=_vc.editArr(_vc.leaveTimeList)-_vc.editArr(_vc.arrTimeList);
+            _vc.$set(res.data.data,'workDayNumber',Math.floor(dayNum/86400000));
+            _vc.arrTimeList=[];
+            _vc.leaveTimeList=[];
+          }else{
+            _vc.$set(res.data.data,'workDayNumber','- ');
+          }
           for(let i in res.data.data.projectPointVOList){
             for(let x in res.data.data.projectPointVOList[i].usingProjectCourseNodeVOList){
               //开始时间

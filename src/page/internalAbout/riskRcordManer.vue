@@ -39,7 +39,7 @@
             <el-col :span="4"><div class="risk_mes">{{risk.projectPointVO.projectName.substring(0,10)}}...</div></el-col>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" :content="risk.content" placement="bottom">
-            <el-col :span="10"><div class="risk_mes">{{risk.content.substring(0,18)}}...</div></el-col>
+            <el-col :span="10"><div class="risk_mes" style="cursor:pointer;">{{risk.content.substring(0,18)}}...</div></el-col>
           </el-tooltip>
           <el-col :span="3"><div class="risk_mes">{{risk.engineerName}}</div></el-col>
           <el-col :span="3"><div class="risk_mes">{{risk.createTime}}</div></el-col>
@@ -134,7 +134,7 @@ export default {
           _vm.pageNum=res.data.data.totalPages*10;
           _vm.length=_vm.page*10;
           _vm.riskList.forEach((e)=>{
-            _vm.$set(e,'num',_vm.length)
+            _vm.$set(e,'num',_vm.length++)
           })
         }else{
           _vm.riskLoading=false;
@@ -200,7 +200,7 @@ export default {
             _vm.pageNum=res.data.data.totalPages*10;
             _vm.length=_vm.page*10;
             _vm.riskList.forEach((e)=>{
-              _vm.$set(e,'num',_vm.length)
+              _vm.$set(e,'num',_vm.length++)
             })
           }else{
             _vm.riskLoading=false;

@@ -16,7 +16,7 @@
             >
             <el-submenu v-for="(fun,key) in route" :key="'F'+key" :index="fun.in">
               <template slot="title">
-                 <i :class="'el-icon-'+fun.icon"></i>
+                 <i :class="'iconfont icon-'+fun.icon" style="fontSize:20px;"></i>
                 <span>{{fun.name}}</span>
               </template>
               <el-menu-item-group>
@@ -74,13 +74,13 @@ export default {
        ],
        length:0,
        iconList:[
-         'info','star-on','question','sold-out','news','service','menu','date','more','edit-outline','setting','more-outline','upload2','bell','time'
+         'shujufenxi','pingtaizijiankong','huaban-','kehufuwu','chengshijinglitianch','laoban','shangwu','ziyuanxuqiu','wenzhang','renwuguanli','tongji','guanli1'
        ],
        route:[
          {
            name:'平台内部管理',
            in:'1-1',
-           sort:1,
+           sort:2,
            usingChannelVOList:[
              {
                name:'内部工程师管理',
@@ -103,7 +103,7 @@ export default {
          {
            name:'管理层',
            in:'1-2',
-           sort:2,
+           sort:6,
            usingChannelVOList:[
              {
                name:'项目浏览查询',
@@ -118,7 +118,7 @@ export default {
          {
            name:'技能管理',
            in:'1-3',
-           sort:3,
+           sort:12,
            usingChannelVOList:[
              {
                name:'技能管理',
@@ -129,7 +129,6 @@ export default {
          {
            name:'企业账户管理',
            in:'1-4',
-           sort:4,
            usingChannelVOList:[
              {
                name:'新注册企业管理',
@@ -148,7 +147,7 @@ export default {
          {
            name:'任务管理',
            in:'1-5',
-           sort:5,
+           sort:10,
            usingChannelVOList:[
              {
                name:'任务管理',
@@ -159,7 +158,7 @@ export default {
          {
            name:'项目经理相关',
            in:'1-6',
-           sort:6,
+           sort:5,
            usingChannelVOList:[
              {
                name:'项目管理',
@@ -178,7 +177,7 @@ export default {
          {
            name:'工程师相关',
            in:'1-7',
-           sort:7,
+           sort:3,
            usingChannelVOList:[
              {
                name:'工作内容管理',
@@ -201,7 +200,7 @@ export default {
          {
            name:'基础数据管理',
            in:'1-8',
-           sort:8,
+           sort:1,
            usingChannelVOList:[
              {
                name:'频道管理',
@@ -232,7 +231,7 @@ export default {
          {
            name:'需求管理',
            in:'1-9',
-           sort:9,
+           sort:8,
            usingChannelVOList:[
              {
                name:'需求列表',
@@ -243,7 +242,6 @@ export default {
          {
            name:'报销申请',
            in:'1-10',
-           sort:10,
            usingChannelVOList:[
              {
                name:'差旅申请',
@@ -254,7 +252,6 @@ export default {
          {
            name:'财务相关',
            in:'1-11',
-           sort:11,
            usingChannelVOList:[
              {
                name:'报销申请审核',
@@ -269,7 +266,6 @@ export default {
          {
            name:'审核规则',
            in:'1-12',
-           sort:12,
            usingChannelVOList:[
              {
                name:'审核规则',
@@ -280,7 +276,6 @@ export default {
          {
            name:'员工相关',
            in:'1-13',
-           sort:13,
            usingChannelVOList:[
              {
                name:'部门管理',
@@ -295,7 +290,6 @@ export default {
          {
            name:'出差相关',
            in:'1-14',
-           sort:14,
            usingChannelVOList:[
              {
                name:'出差目的地管理',
@@ -306,7 +300,7 @@ export default {
          {
            name:'文章管理',
            in:'1-15',
-           sort:15,
+           sort:9,
            usingChannelVOList:[
              {
                name:'新闻管理',
@@ -347,7 +341,7 @@ export default {
        if(this.iconList[e.sort-1]!=undefined){
          this.$set(e,'icon',this.iconList[e.sort-1])
        }else{
-         this.$set(e,'icon','d-caret')
+         this.$set(e,'icon','tianqizitiku51')
        }
      });
    },

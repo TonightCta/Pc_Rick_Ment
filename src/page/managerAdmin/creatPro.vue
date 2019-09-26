@@ -99,8 +99,9 @@
       <div class="" style="minHeight:500px;" v-loading="proLoad">
         <el-row class="proMes" v-for="(pro,index) in proList" :key="'Pro'+index">
           <el-col :span="1"><div class="pro_oper">{{pro.num+1}}</div></el-col>
-          <el-tooltip  class="item" effect="dark" :content="pro.name" placement="bottom">
-            <el-col :span="3"><div class="pro_oper" style="cursor:pointer;">{{pro.name.substring(0,8)}}...</div></el-col>
+          <el-tooltip class="item" effect="dark" :content="pro.name+'['+pro.contractNumber+']'" placement="bottom">
+            <el-col :span="3" v-if="pro.name!=null&&pro.name!='null'"><div class="pro_oper" style="cursor:pointer;">{{pro.name.substring(0,8)}}...</div></el-col>
+            <el-col :span="3" v-else><div class="pro_oper" style="cursor:pointer;">-</div></el-col>
           </el-tooltip>
           <el-col :span="1"><div class="pro_oper ">{{pro.technologyName}}</div></el-col>
           <el-col :span="2"><div class="pro_oper">
@@ -317,7 +318,7 @@
                 </el-option>
               </el-select>
             </li>
-            <li>
+            <li  v-if="editPro">
               <p v-for="(engType,index) in editProMes.skillList" :key="'type'+index" style="">
                 <span style="">{{engType.name}}</span>
                 <el-checkbox-group @change="editChoose"  v-model="ucc">
@@ -594,16 +595,16 @@
           <p class="point_title" style="margin-top:20px;">局点进程</p>
           <div class="">
             <el-row>
-              <el-col :span="3"><div class="edit_title">节点</div></el-col>
-              <el-col :span="4"><div class="edit_title">计划开始时间</div></el-col>
-              <el-col :span="4"><div class="edit_title">计划结束时间</div></el-col>
+              <el-col :span="6"><div class="edit_title">节点</div></el-col>
+              <!-- <el-col :span="4"><div class="edit_title">计划开始时间</div></el-col>
+              <el-col :span="4"><div class="edit_title">计划结束时间</div></el-col> -->
               <el-col :span="4"><div class="edit_title">实际开始时间</div></el-col>
               <el-col :span="4"><div class="edit_title">实际完成时间</div></el-col>
-              <el-col :span="5"><div class="edit_title">备注</div></el-col>
+              <el-col :span="10"><div class="edit_title">备注</div></el-col>
             </el-row>
             <el-row class="proMes" v-for="(editMes,indexK) in point.usingProjectCourseNodeVOList" :key="'EditMes'+indexK">
-              <el-col :span="3"><div class="edit_mes">{{editMes.courseNodeName}}</div></el-col>
-              <el-col :span="4"><div class="edit_mes">
+              <el-col :span="6"><div class="edit_mes">{{editMes.courseNodeName}}</div></el-col>
+              <!-- <el-col :span="4"><div class="edit_mes">
                 <el-date-picker
                   v-model="editMes.planStartTimeStr"
                   type="date"
@@ -620,7 +621,7 @@
                   size="medium"
                   placeholder="选择日期">
                 </el-date-picker>
-              </div></el-col>
+              </div></el-col> -->
               <el-col :span="4"><div class="edit_mes">
                 <el-date-picker
                   v-model="editMes.startTimeStr"
@@ -639,7 +640,7 @@
                   placeholder="选择日期">
                 </el-date-picker>
               </div></el-col>
-              <el-col :span="5"><div class="edit_mes">
+              <el-col :span="10"><div class="edit_mes">
                 <el-input type="primary" size="small" placeholder="请输入备注信息" v-model="editMes.remark"></el-input>
               </div></el-col>
             </el-row>
@@ -765,7 +766,7 @@
           <li>
             <p>项目合同单号:&nbsp;&nbsp;&nbsp;<span>{{projectMes.contractNumber}}</span></p>
           </li>
-          <li>项目内容:&nbsp;&nbsp;&nbsp;<span>{{projectMes.content}}</span></li>
+          <li>项目内容:&nbsp;&nbsp;&nbsp;<pre>{{projectMes.content}}</pre></li>
           <li class="flex">
             <p>联系人:&nbsp;&nbsp;&nbsp;<span>{{projectMes.linkman}}</span></p>
             <p>联系电话:&nbsp;&nbsp;&nbsp;<span>{{projectMes.phone}}</span></p>
@@ -812,6 +813,11 @@
               <span v-if="projectMes.acceptTime!=null&&projectMes.acceptTime!='null'">{{projectMes.acceptTimeSec}}</span>
               <span v-else>-</span>
             </p>
+          </li>
+          <li>
+            <pre>
+              项目说明:&nbsp;&nbsp;&nbsp;<span v-if="projectMes.remark!=null">{{projectMes.remark}}</span><span v-else>-</span>
+            </pre>
           </li>
         </ul>
       </div>
@@ -1300,6 +1306,7 @@ export default {
       let formdata=new FormData();
       let opID=window.localStorage.getItem('Uid');
       formdata.append('operatorId',opID);
+      formdata.append('page',this.page);
       formdata.append('operateType','creator');
       if(this.searchMes.proName!=null&&this.searchMes.proName!=''){
         formdata.append('name',this.searchMes.proName)
@@ -1485,10 +1492,11 @@ export default {
     },
     handleCurrentChange(val) {
       this.page=val-1;
-      if(this.searchMes.proName!=null||this.searchMes.cusName!=null||this.searchMes.manName!=null||this.searchMes.lineID!=null||this.searchMes.proStatus!=null||this.searchMes.dateChoose!=null||this.searchMes.conNumber){
-        this.serchPro()
+      let _vc=this;
+      if(this.searchMes.proName!=null||this.searchMes.cusName!=null||this.searchMes.manName!=null||this.searchMes.lineID!=null||this.searchMes.proStatus!=null||this.searchMes.dateChoose!=[]||this.searchMes.conNumber){
+        _vc.serchPro()
       }else{
-        this.getProList()
+        _vc.getProList()
       }
     },
     remoteMethod(query) {//远程查询客户列表
@@ -2536,13 +2544,15 @@ export default {
                     }
                   }
                 }
-
               });
+              console.log(_vm.editProMes.skillList)
               _vm.$axios.get(_vm.url+'/getProjectTypeList').then((res)=>{
                 if(res.data.code==0){
                   _vm.editProMes.typeList=res.data.data;
-                  _vm.editPro=true;
-                  _vm.isDown=true;
+                  // setTimeout(()=>{
+                    _vm.editPro=true;
+                    _vm.isDown=true;
+                  // },2000)
                 }
               })
             }else{
@@ -3030,12 +3040,12 @@ export default {
       let _vm=this;
       for(let i in this.pointList[index].usingProjectCourseNodeVOList){
         formdata.append('projectCourseNodeFormList['+i+'].id',this.pointList[index].usingProjectCourseNodeVOList[i].id)
-        if(this.pointList[index].usingProjectCourseNodeVOList[i].planStartTimeStr!=null&&this.pointList[index].usingProjectCourseNodeVOList[i].planStartTimeStr!=''){
-          formdata.append('projectCourseNodeFormList['+i+'].planStartTime',this.pointList[index].usingProjectCourseNodeVOList[i].planStartTimeStr)
-        };
-        if(this.pointList[index].usingProjectCourseNodeVOList[i].planEndTimeStr!=null&&this.pointList[index].usingProjectCourseNodeVOList[i].planEndTimeStr!=''){
-          formdata.append('projectCourseNodeFormList['+i+'].planEndTime',this.pointList[index].usingProjectCourseNodeVOList[i].planEndTimeStr)
-        };
+        // if(this.pointList[index].usingProjectCourseNodeVOList[i].planStartTimeStr!=null&&this.pointList[index].usingProjectCourseNodeVOList[i].planStartTimeStr!=''){
+        //   formdata.append('projectCourseNodeFormList['+i+'].planStartTime',this.pointList[index].usingProjectCourseNodeVOList[i].planStartTimeStr)
+        // };
+        // if(this.pointList[index].usingProjectCourseNodeVOList[i].planEndTimeStr!=null&&this.pointList[index].usingProjectCourseNodeVOList[i].planEndTimeStr!=''){
+        //   formdata.append('projectCourseNodeFormList['+i+'].planEndTime',this.pointList[index].usingProjectCourseNodeVOList[i].planEndTimeStr)
+        // };
         if(this.pointList[index].usingProjectCourseNodeVOList[i].startTimeStr!=null&&this.pointList[index].usingProjectCourseNodeVOList[i].startTimeStr!=''){
           formdata.append('projectCourseNodeFormList['+i+'].startTime',this.pointList[index].usingProjectCourseNodeVOList[i].startTimeStr)
         };

@@ -49,7 +49,9 @@
             <el-tooltip class="item" effect="dark" content="工作详情" placement="bottom">
               <i class="el-icon-document" style="color:#eb7a1d;" @click="workDetails(index)"></i>
             </el-tooltip>
-            <i class="el-icon-delete"></i>
+            <el-tooltip class="item" effect="dark" content="删除当前记录" placement="bottom">
+              <i class="el-icon-delete" @click="delWork(index)"></i>
+            </el-tooltip>
           </div></el-col>
         </el-row>
       </div>
@@ -86,10 +88,10 @@
             <li>
               <el-select v-model="addworkMes.pushName" @change="choosePro" placeholder="请选择项目" size="medium" style="width:365px;">
                 <el-option
-                  v-for="item in addworkMes.pushProList"
-                  :key="item.id"
-                  :label="item.projectName"
-                  :value="item.projectName">
+                  v-for="(item,index) in addworkMes.pushProList"
+                  :key="index"
+                  :label="item.projectName+'/'+item.placeName"
+                  :value="item.projectName+'/'+item.placeName">
                 </el-option>
               </el-select>
             </li>
@@ -231,8 +233,8 @@
 export default {
   data(){
     return{
-      startTime:null,
-      endTime:null,
+      startTime:'09:00',
+      endTime:'18:00',
       // 临时数据
       pageNum:10,//总页数
       currentPage3:1,//分页器类型
@@ -400,7 +402,7 @@ export default {
         });
       formdata.append('engineerId',window.localStorage.getItem('engID'));
       this.$axios.post(this.url+'/mobile/findProjectPointAndProjectCourseNodeByEngineer',formdata).then((res)=>{
-        console.log(res)
+        // console.log(res)
         if(res.data.code==0){
           let date=new Date();
           let year = date.getFullYear();
@@ -425,7 +427,7 @@ export default {
     },
     choosePro(val){//选择项目
       this.addworkMes.pushProList.forEach((e)=>{
-        if(e.projectName==val){
+        if(e.projectName+'/'+e.placeName==val){
           this.addworkMes.pushProID=e.id;
           this.addworkMes.pointList=e.usingProjectCourseNodeVOList;
         }
@@ -532,7 +534,30 @@ export default {
       }else{
         this.$message.error('未选择时间')
       }
-    }
+    },
+    delWork(index){//删除日志
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+         confirmButtonText: '确定',
+         cancelButtonText: '取消',
+         type: 'warning'
+       }).then(() => {
+         let formdata=new FormData();
+         formdata.append('id',this.workList[index].id)
+         this.$axios.post(this.url+'/deleteWorkRecord',formdata).then((res)=>{
+           if(res.data.code==0){
+             this.$message.success('删除成功');
+             this.getWorkList()
+           }else{
+             this.$message.error(res.data.msg)
+           }
+         })
+       }).catch(() => {
+         this.$message({
+           type: 'info',
+           message: '已取消删除'
+         });
+       });
+    },
   }
 }
 </script>

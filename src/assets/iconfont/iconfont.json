@@ -1,0 +1,114 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "494873",
+      "name": "未知",
+      "font_class": "tianqizitiku51",
+      "unicode": "e642",
+      "unicode_decimal": 58946
+    },
+    {
+      "icon_id": "534284",
+      "name": "数据分析",
+      "font_class": "shujufenxi",
+      "unicode": "e625",
+      "unicode_decimal": 58917
+    },
+    {
+      "icon_id": "1149091",
+      "name": "管理1",
+      "font_class": "guanli1",
+      "unicode": "e6a8",
+      "unicode_decimal": 59048
+    },
+    {
+      "icon_id": "1263363",
+      "name": "需求",
+      "font_class": "xuqiu",
+      "unicode": "e641",
+      "unicode_decimal": 58945
+    },
+    {
+      "icon_id": "3819718",
+      "name": "资源需求",
+      "font_class": "ziyuanxuqiu",
+      "unicode": "e7b6",
+      "unicode_decimal": 59318
+    },
+    {
+      "icon_id": "3851381",
+      "name": "文章",
+      "font_class": "wenzhang",
+      "unicode": "e668",
+      "unicode_decimal": 58984
+    },
+    {
+      "icon_id": "3978021",
+      "name": "平台自监控",
+      "font_class": "pingtaizijiankong",
+      "unicode": "e626",
+      "unicode_decimal": 58918
+    },
+    {
+      "icon_id": "4933384",
+      "name": "商务",
+      "font_class": "shangwu",
+      "unicode": "e74f",
+      "unicode_decimal": 59215
+    },
+    {
+      "icon_id": "5037329",
+      "name": "统计",
+      "font_class": "tongji",
+      "unicode": "e623",
+      "unicode_decimal": 58915
+    },
+    {
+      "icon_id": "6158239",
+      "name": "Boss-老板-1",
+      "font_class": "laoban",
+      "unicode": "e60a",
+      "unicode_decimal": 58890
+    },
+    {
+      "icon_id": "6899011",
+      "name": "任务管理",
+      "font_class": "renwuguanli",
+      "unicode": "e688",
+      "unicode_decimal": 59016
+    },
+    {
+      "icon_id": "7351528",
+      "name": "安全帽，技术员，工程师",
+      "font_class": "huaban-",
+      "unicode": "e67b",
+      "unicode_decimal": 59003
+    },
+    {
+      "icon_id": "7674876",
+      "name": "客户经理",
+      "font_class": "chengshijinglitianch",
+      "unicode": "e712",
+      "unicode_decimal": 59154
+    },
+    {
+      "icon_id": "8084572",
+      "name": "统计",
+      "font_class": "tongji1",
+      "unicode": "e619",
+      "unicode_decimal": 58905
+    },
+    {
+      "icon_id": "8944570",
+      "name": "客户服务",
+      "font_class": "kehufuwu",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    }
+  ]
+}

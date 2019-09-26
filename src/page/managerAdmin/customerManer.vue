@@ -67,7 +67,7 @@
           </div></el-col>
           <el-col :span="2"><div class="cusMesCon">
             <el-tooltip class="item" effect="dark" content="启用" placement="bottom" v-if="cusMes.state==-1">
-              <i class="el-icon-circle-check-outline" style="color:#eb7a1d;" @click="disCon(index)"></i>
+              <i class="el-icon-circle-check" style="color:#eb7a1d;" @click="disCon(index)"></i>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="停用" placement="bottom" v-else>
               <i class="el-icon-remove-outline" @click="disCon(index)"></i>
@@ -284,6 +284,17 @@ export default {
     editCus(val,oldVal){
       if(!val){
         this.placeID=null;
+        this.editCusMes={
+          name:null,
+          address:null,
+          linkman:null,
+          phone:null,
+          operatorName:null,
+          placeVO:{
+            parentName:null,
+            name:null
+          }
+        }
       }else{
         return 1;
       }
@@ -325,7 +336,7 @@ export default {
         _vm.cusLoading=false;
       })
     },
-    searchCus(){
+    searchCus(){//搜索客户
       let _vm=this;
       let formdata=new FormData();
       if(this.cusDate!=null&&this.cusDate.length>1){
@@ -394,6 +405,12 @@ export default {
       _vm.$axios.get(_vm.url+'/mobile/getUsingPlaceList').then((res)=>{
         if(res.data.code==0){
           this.editCusMes=this.cusList[index];
+          if(this.editCusMes.placeVO==null){
+            this.editCusMes.placeVO={
+              parentName:null,
+              name:null
+            }
+          };
           this.placeID=this.cusList[index].placeId;
           this.cusID=this.cusList[index].id;
           this.editCus=true;
