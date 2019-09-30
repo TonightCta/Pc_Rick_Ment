@@ -666,14 +666,14 @@
           <li v-for="(fileUpDom,fileUpIn) in pointFile.fileList" :key="'FileUp'+fileUpIn">
             <span>{{fileUpDom.name}}:</span>
             <el-input type="primary" style="width:600px;" v-model="fileUpDom.fileName"></el-input>
-            <input type="file" name="" value="" @change="upPointFile($event,indexFile,fileUpIn)">
+            <input type="file" name=""  Accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" value="" @change="upPointFile($event,indexFile,fileUpIn)">
             <el-button type="primary" icon="el-icon-search" size="small">浏览文件</el-button>
             <el-button type="primary" icon="el-icon-upload" size="small" @click="upFile(indexFile,fileUpIn)">上传</el-button>
-            <a :href="url+fileUpDom.path">
+            <a :href="url+fileUpDom.path" target="_blank">
               <el-button type="primary" icon="el-icon-download" size="small">下载模板</el-button>
             </a>
             <p v-for="(fileBack,indexBack) in pointFile.projectFileVOList" v-if="fileBack.fileType==fileUpDom.code">
-              <a :href="url+'/'+fileBack.fileName">{{fileBack.fileName}}</a>
+              <a :href="url+'/'+fileBack.fileName" target="_blank">{{fileBack.fileName}}</a>
             </p>
           </li>
         </ul>
@@ -694,10 +694,10 @@
           <el-input type="primary" size='small' style="width:500px;" v-model="pointIns.fileName"></el-input>
           <el-button type="primary" size="small" icon="el-icon-search">浏览文件</el-button>
           <el-button type="primary" size="small" icon="el-icon-d-arrow-left" @click="upInsFile(key)">导入Excel</el-button>
-          <a :href="url+'/inspectionTemplate.xlsx'">
+          <a :href="url+'/inspectionTemplate.xlsx'" target="_blank">
             <el-button type="primary" size="small" icon="el-icon-download">下载模板</el-button>
           </a>
-          <a :href="url+'/exportInspectionExcel?projectPointId='+pointIns.id">
+          <a :href="url+'/exportInspectionExcel?projectPointId='+pointIns.id" target="_blank">
             <el-button type="primary" size="small" icon="el-icon-d-arrow-right">导出Excel</el-button>
           </a>
           <span class="place_mask"></span>
@@ -773,8 +773,8 @@
           </li>
           <li class="flex">
             <p>项目人数:&nbsp;&nbsp;&nbsp;<span>{{projectMes.peopleNumber}}人</span></p>
-            <p>预估工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.dayNumber}}天</span></p>&nbsp;&nbsp;&nbsp;
-            <p>实际工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.workDayNumber}}天</span></p>
+            <p style="width:200px;">预估工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.dayNumber}}天</span></p>&nbsp;&nbsp;&nbsp;
+            <p style="width:200px;">实际工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.workDayNumber}}天</span></p>
           </li>
           <li class="flex">
             <p>交付标准:&nbsp;&nbsp;&nbsp;<span>{{projectMes.standard}}</span></p>
@@ -814,9 +814,9 @@
               <span v-else>-</span>
             </p>
           </li>
-          <li>
+          <li>项目说明:&nbsp;&nbsp;&nbsp;
             <pre>
-              项目说明:&nbsp;&nbsp;&nbsp;<span v-if="projectMes.remark!=null">{{projectMes.remark}}</span><span v-else>-</span>
+              <span v-if="projectMes.remark!=null">{{projectMes.remark}}</span><span v-else>-</span>
             </pre>
           </li>
         </ul>
@@ -884,7 +884,7 @@
                   <span v-show="file.fileType==8">【验收报告】</span>
                   <span v-show="file.fileType==9">【进场报告】</span>
                   <span v-show="file.fileType==10">【离场报告】</span>
-                  <a :href="url+'/'+file.fileName">{{file.fileName}}</a>
+                  <a :href="url+'/'+file.fileName" target="_blank">{{file.fileName}}</a>
                 </p>
             </el-collapse-item>
             <el-collapse-item :name="point.openKey">
@@ -1005,7 +1005,7 @@
           </p>
           <p class="proContent">工作内容:&nbsp;{{proDay.content}}</p>
           <p>日报附件:
-            <a :href="url+'/'+dayFile.fileName" v-for="(dayFile,index) in proDay.fileUploads">{{dayFile.fileName}}</a>
+            <a :href="url+'/'+dayFile.fileName" v-for="(dayFile,index) in proDay.fileUploads" target="_blank">{{dayFile.fileName}}</a>
           </p>
           <p>日报图片:
             <viewer :images="proDay.imgUploads">
@@ -1286,7 +1286,6 @@ export default {
           skillList:[],
         };
         this.isDown=false;
-        // console.log(this.editProMes)
       }
     }
   },
@@ -2062,7 +2061,7 @@ export default {
           if(a!=null&&a!=''){
             for(let i in a){
               _vm.$set(a[i],'fileList',[]);
-              _vm.$axios.get(_vm.url+'//projectFileTypeList').then((res)=>{
+              _vm.$axios.get(_vm.url+'/projectFileTypeList').then((res)=>{
                 if(res.data.code==0){
                   for(let x in res.data.data){
                     a[i].fileList.push(res.data.data[x]);
@@ -2149,11 +2148,11 @@ export default {
                 })
               }
             });
+            setTimeout(()=>{
+              _vm.insConBox=true;
+            },250)
           };
           _vm.insBox=true;
-          setTimeout(()=>{
-            _vm.insConBox=true;
-          },250)
           setTimeout(()=>{
             _vm.$refs.insPerBox.style.width='100%';
             _vm.$refs.insPerBox.style.minHeight='100%';
@@ -2230,7 +2229,7 @@ export default {
              });
            }
          }).catch((err)=>{
-           console.log(err)
+           // console.log(err)
            vm.$message.error('未知错误,请联系管理员')
          })
        }).catch(() => {
@@ -2422,7 +2421,7 @@ export default {
         }
       }).catch((err)=>{
         this.$message.error('未知错误,请联系管理员')
-        console.log(err)
+        // console.log(err)
       })
     },
     closeMes(){//关闭项目详情
@@ -2545,7 +2544,6 @@ export default {
                   }
                 }
               });
-              console.log(_vm.editProMes.skillList)
               _vm.$axios.get(_vm.url+'/getProjectTypeList').then((res)=>{
                 if(res.data.code==0){
                   _vm.editProMes.typeList=res.data.data;
@@ -2911,7 +2909,6 @@ export default {
             this.$message.success('添加工程师成功');
             _vm.$axios.get(_vm.url+'/projectInfo?projectId='+_vm.proID).then((res)=>{
               if(res.data.code==0){
-                console.log(res)
                 _vm.gateList=res.data.data.projectPointVOList;
                 if(_vm.gateList==null||_vm.gateList.length<0){
                   _vm.hasPoint=true;
@@ -3095,7 +3092,7 @@ export default {
             });
             this.isUpWork=false;
           }else{
-            console.log(res.data.msg)
+            this.$message.error(res.data.msg)
           };
           this.$axios.post(this.url+'/updateProjectCourseNodeList',formdata).then((res)=>{
             if(res.data.code==0){
@@ -3231,9 +3228,9 @@ export default {
           this.pointInsList[key].inspectionVOList.forEach((e)=>{
             vm.$set(e,'num',vm.insNum++);
           })
-        }else[
+        }else{
           vm.$message.error(res.data.msg)
-        ]
+        }
       }).catch((err)=>{
         vm.$message.error('未知错误,请联系管理员')
       })

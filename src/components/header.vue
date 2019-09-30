@@ -51,6 +51,7 @@ export default {
 <style lang="scss" scoped>
 .header{
   width: 100%;
+  min-width: 1300px;
   height: 80px;
   box-shadow: 0px 0px 5px #999;
   position: absolute;

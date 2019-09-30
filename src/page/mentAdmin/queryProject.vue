@@ -152,8 +152,8 @@
             </li>
             <li class="flex">
               <p>项目人数:&nbsp;&nbsp;&nbsp;<span>{{projectMes.peopleNumber}}人</span></p>
-              <p>预估工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.dayNumber}}天</span></p>&nbsp;&nbsp;&nbsp;
-              <p>实际工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.workDayNumber}}天</span></p>
+              <p style="width:200px;">预估工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.dayNumber}}天</span></p>&nbsp;&nbsp;&nbsp;
+              <p style="width:200px;">实际工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.workDayNumber}}天</span></p>
             </li>
             <li class="flex">
               <p>交付标准:&nbsp;&nbsp;&nbsp;<span>{{projectMes.standard}}</span></p>
@@ -193,9 +193,9 @@
                 <span v-else>-</span>
               </p>
             </li>
-            <li>
+            <li>项目说明:&nbsp;&nbsp;&nbsp;
               <pre>
-                项目说明:&nbsp;&nbsp;&nbsp;<span v-if="projectMes.remark!=null">{{projectMes.remark}}</span><span v-else>-</span>
+                <span v-if="projectMes.remark!=null">{{projectMes.remark}}</span><span v-else>-</span>
               </pre>
             </li>
           </ul>
@@ -263,7 +263,7 @@
                     <span v-show="file.fileType==8">【验收报告】</span>
                     <span v-show="file.fileType==9">【进场报告】</span>
                     <span v-show="file.fileType==10">【离场报告】</span>
-                    <a :href="url+'/'+file.fileName">{{file.fileName}}</a>
+                    <a :href="url+'/'+file.fileName" target="_blank">{{file.fileName}}</a>
                   </p>
               </el-collapse-item>
               <el-collapse-item :name="point.openKey">
@@ -398,7 +398,7 @@
             </p>
             <p class="proContent">工作内容:&nbsp;{{proDay.content}}</p>
             <p>日报附件:
-              <a :href="url+'/'+dayFile.fileName" v-for="(dayFile,index) in proDay.fileUploads">{{dayFile.fileName}}</a>
+              <a :href="url+'/'+dayFile.fileName" v-for="(dayFile,index) in proDay.fileUploads" target="_blank">{{dayFile.fileName}}</a>
             </p>
             <p>日报图片:
               <viewer :images="proDay.imgUploads">
@@ -758,7 +758,6 @@ export default {
             }
           }
           _vc.projectMes=res.data.data;
-          console.log(_vc.projectMes)
           _vc.openDetils=true;
           setTimeout(()=>{
             _vc.$refs.project_mes.style.width='100%'
@@ -772,7 +771,7 @@ export default {
         }
       }).catch((err)=>{
         this.$message.error('未知错误,请联系管理员')
-        console.log(err)
+        // console.log(err)
       })
     },
     closeMes(){//关闭项目详情
@@ -883,7 +882,7 @@ export default {
         }
       }).catch((err)=>{
         this.$message.error('未知错误,请联系管理员')
-        console.log(err)
+        // console.log(err)
       })
     },
     cancelPro(){//取消筛选
@@ -1343,6 +1342,7 @@ export default {
       }
       .flex{
         width: 100%;
+        min-width: 1300px;
         display: flex;
         p:first-child{
           width: 55%;

@@ -344,7 +344,7 @@ export default {
         this.engMes.places=null;
         this.staging=[];
       }else{
-        console.log(1)
+        // console.log(1)
       }
     },
     editOrder(val,oldVal){
@@ -409,7 +409,6 @@ export default {
       this.editOrder=true;
     },
     subedit(){//上传修改信息
-      console.log(this.placeID);
       let _vm=this;
       let formdata=new FormData;
       if(_vm.editName==''){
@@ -428,7 +427,6 @@ export default {
         formdata.append('placeId',_vm.placeID);
         formdata.append('id',_vm.proID)
         _vm.$axios.post(_vm.url+'/mission/saveMission',formdata).then((res)=>{
-          console.log(res);
           if(res.data.code==0){
             _vm.editName='';
             _vm.placeID=null;
@@ -720,7 +718,6 @@ export default {
       }
     },
     moveDis(index){//删除当前项目
-      console.log(this.msgList[index]);
       this.$confirm('此操作将删除当前项目, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -739,7 +736,6 @@ export default {
               this.$message.error(res.data.msg)
             }
           }).catch((err)=>{
-            console.log(err)
             this.$message.error('未知异常,请联系管理员')
           })
         }).catch(() => {

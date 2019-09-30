@@ -37,7 +37,7 @@
                 <router-link tag="span" :to="crum.url">{{crum.name}}</router-link>
                 <i class="el-icon-error" ref="close" @click.stop="delCru(index)"></i>
               </li>
-              <li class="full">
+              <li class="full" style="min-width:60px;">
                 <el-tooltip class="item" effect="dark" content="全屏模式" placement="bottom">
                   <img src="../../static/img/fulle_icon.png" alt="" class="fullBtn" @click="full()" ref="fullBtn" v-show="isFull">
                 </el-tooltip>
@@ -504,7 +504,7 @@ export default {
         .full{
           position: fixed;
           height: 29px;
-          right:-30px;
+          right:-5px;
           z-index: 1;
           border:0;
           border-bottom:1px solid #eb7a1d;

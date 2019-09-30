@@ -733,7 +733,6 @@ export default {
         };
         setTimeout(()=>{
           _vm.$axios.post(_vm.url+'/saveEngineer_n',formdata).then((res)=>{
-            console.log(res)
             if(res.data.code==0){
               _vm.addEngMes=_vm.succMes;
               _vm.isManBoolean=null;
@@ -761,7 +760,6 @@ export default {
     editEng(index){//编辑工程师
       let _vc=this;
       _vc.editEngMes=_vc.engList[index];
-      console.log(_vc.editEngMes)
       _vc.$axios.get(_vc.url+'/usingTechnologyList?engineerId='+_vc.engList[index].id).then((res)=>{
         if(res.data.code==0){
           _vc.abilityList=res.data.data;
@@ -857,7 +855,6 @@ export default {
           formdata.append('serviceScope',vm.editEngMes.serviceScope)
         };
         vm.$axios.post(vm.url+'/saveEngineer_n',formdata).then((res)=>{
-          console.log(res)
           if(res.data.code==0){
             vm.$message.success('更新工程师成功');
             vm.cardFile=[];

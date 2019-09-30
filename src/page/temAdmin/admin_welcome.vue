@@ -22,17 +22,12 @@ export default {
 
 <style lang="scss" scoped>
 .admin_wel{
-  margin:0 auto;
   z-index: 866;
-  // .mask{
-  //   width: 100%;
-  //   height: 5000px;
-  //   position: fixed;
-  //   background: black;
-  //   top:300px;
-  //   z-index: -1;
-  //   // filter: blur(5px);
-  // }
+  width: 100%;
+  margin:0 auto;
+  height: 110%;
+  position: relative;
+  overflow-x: hidden;
   .wel_title{
     position: fixed;
     width: 70%;
@@ -40,7 +35,7 @@ export default {
     color:#eb7a1d;
     font-size: 40px;
     font-weight: bold;
-    top:38%;
+    top:78%;
     left:50%;
     margin-left: -35%;
   }

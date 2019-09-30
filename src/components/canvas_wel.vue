@@ -7,20 +7,20 @@
 
 <script>
 export default {
+  mounted(){
+
+  }
 }
 </script>
 
-<style lang="css" scoped>
+<style lang="scss" scoped>
 .canvas_wel{
   display: grid;
-  place-content: center;
-  height: 1500px;
+  height: 100%;
   width: 100%;
-  top:110px;
   background: black;
   position: absolute;
   top:0;
-  overflow: hidden;
 }
 p{
   width: 300px;
@@ -28,7 +28,7 @@ p{
   position: absolute;
   left:50%;
   margin-left: -150px;
-  top:12%;
+  top:20%;
   color:#eb7a1d;
   font-size: 40px;
   font-weight: bold;

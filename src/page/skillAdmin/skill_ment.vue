@@ -73,10 +73,10 @@
           </div></el-col>
           <el-col :span="4"><div class="list_con oper">
             <el-tooltip class="item" effect="dark" content="启用" placement="bottom">
-              <i class="el-icon-circle-check-outline" style="color:green;" v-show="skill.state==-1" @click="upStatus(index)"></i>
+              <i class="el-icon-circle-check" style="color:#eb7a1d;" v-show="skill.state==-1" @click="upStatus(index)"></i>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="停用" placement="bottom">
-              <i class="el-icon-remove-outline" style="color:red;" v-show="skill.state==2" @click="upStatus(index)"></i>
+              <i class="el-icon-remove-outline" style="color:black;" v-show="skill.state==2" @click="upStatus(index)"></i>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="编辑" placement="bottom">
               <i class="el-icon-edit cen" style="color:#eb7a1d;" @click="changeSkill(index)"></i>
@@ -218,7 +218,6 @@ export default {
       _vc.skillLoad=true;
       formdata.append('page',_vc.page);
       _vc.$axios.post(_vc.url+'/skillTag/findSkillTagListByCondition',formdata).then((res)=>{
-        console.log(res);
         if(res.data.code==0){
           _vc.skillLoad=false;
           _vc.dataLength=res.data.data.totalElements;
@@ -234,7 +233,7 @@ export default {
         }
       }).catch((err)=>{
         _vc.skillLoad=false;
-        console.log(err)
+        // console.log(err)
       })
     },
     SchooseType(value){//Search选择技能ID
@@ -269,7 +268,6 @@ export default {
         formdata.append('name',_vc.searchName)
       }
       _vc.$axios.post(_vc.url+'/skillTag/findSkillTagListByCondition',formdata).then((res)=>{
-        console.log(res);
         if(res.data.code==0){
           _vc.dataLength=res.data.data.totalElements;
           _vc.dataNum=_vc.page*10;
@@ -280,7 +278,7 @@ export default {
           _vc.skillList=res.data.data.content;
         }
       }).catch((err)=>{
-        console.log(err)
+        // console.log(err)
       })
     },
     cancelSearch(){//取消筛选
@@ -341,12 +339,10 @@ export default {
         }).catch((err)=>{
           this.isUpSkill=false;
           this.$message.error('未知错误,请联系管理员')
-          console.log(err)
         })
       }
     },
     delSkill(index){//删除当前技能
-      console.log(this.skillList[index]);
       this.delSkillID=this.skillList[index].id;
       this.delSkillBox=true;
     },
@@ -362,7 +358,6 @@ export default {
         }
       }).catch((err)=>{
         this.$message.error('未知错误,请联系管理员')
-        console.log(err)
       })
     },
     changeSkill(index){//修改技能
@@ -384,7 +379,6 @@ export default {
           this.$message.error(res.data.msg)
         }
       }).catch((err)=>{
-        console.log(err)
         this.$message.error('未知错误,请联系管理员')
       })
     },

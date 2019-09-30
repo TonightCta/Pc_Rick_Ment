@@ -235,7 +235,6 @@ export default {
       formdata.append('states',1);
       formdata.append('isCompany',true)
       _vm.$axios.post(_vm.url+'/findEngineerListByCondition',formdata).then((res)=>{
-        console.log(res)
         if(res.data.code==0){
           _vm.engLoad=false;
           _vm.length=_vm.page*10;
@@ -250,7 +249,6 @@ export default {
           });
           _vm.dataLength=res.data.data.totalElements;
           _vm.engList=res.data.data.content;
-          console.log(_vm.engList)
         }else{
           _vm.engLoad=false;
           _vm.$message.error(res.data.msg);

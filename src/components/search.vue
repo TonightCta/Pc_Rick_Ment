@@ -11,10 +11,11 @@
            range-separator="至"
            start-placeholder="开始日期"
            end-placeholder="结束日期"
+           size="medium"
            :picker-options="pickerOptions2">
          </el-date-picker></li>
        <li>
-         工程师信息:&nbsp;&nbsp;<el-input v-model="engName" placeholder="请输入筛选名称" style="width:300px;" />
+         工程师信息:&nbsp;&nbsp;<el-input v-model="engName" placeholder="请输入筛选名称" style="width:300px;" size="medium"/>
          <el-button type="primary" size="medium" icon="el-icon-search" style="margin-left:25px;" @click="searchPreEng()">搜索</el-button>
        </li>
     </ul>

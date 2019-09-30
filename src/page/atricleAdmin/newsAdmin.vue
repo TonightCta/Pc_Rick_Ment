@@ -193,7 +193,7 @@ export default {
       },400);
     },
     submitNews(){//提交新闻
-      console.log(this.editorContent)
+      // console.log(this.editorContent)
     },
   }
 }

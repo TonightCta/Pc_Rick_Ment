@@ -46,12 +46,15 @@
         <el-row class="operTwo" v-for="(cusMes,index) in cusList" :key="'CusMes'+index">
           <el-col :span="2"><div class="cusMesCon">{{cusMes.num+1}}</div></el-col>
           <el-tooltip class="item" effect="dark" :content="cusMes.name" placement="bottom">
-            <el-col :span="5"><div class="cusMesCon">{{cusMes.name.substring(0,14)}}...</div></el-col>
+            <el-col :span="5"><div class="cusMesCon" style="cursor:pointer;">{{cusMes.name.substring(0,14)}}...</div></el-col>
           </el-tooltip>
-          <el-col :span="3" v-if="cusMes.placeStr!=null&&cusMes.placeStr!=''"><div class="cusMesCon">{{cusMes.placeStr}}</div></el-col>
+          <el-tooltip class="item" effect="dark" :content="cusMes.placeStr" placement="bottom" v-if="cusMes.placeStr!=null&&cusMes.placeStr!=''">
+            <el-col :span="3"><div class="cusMesCon" style="cursor:pointer;">{{cusMes.placeStr.substring(0,9)}}...</div></el-col>
+
+          </el-tooltip>
           <el-col :span="3" v-else><div class="cusMesCon">-</div></el-col>
           <el-tooltip class="item" effect="dark" :content="cusMes.address" placement="bottom"v-if="cusMes.address!=null&&cusMes.address!=''">
-            <el-col :span="4"><div class="cusMesCon">{{cusMes.address.substring(0,10)}}...</div></el-col>
+            <el-col :span="4"><div class="cusMesCon" style="cursor:pointer;">{{cusMes.address.substring(0,10)}}...</div></el-col>
           </el-tooltip>
           <el-col :span="4" v-else><div class="cusMesCon">-</div></el-col>
           <el-col :span="2" v-if="cusMes.linkman!=null&&cusMes.linkman!=''"><div class="cusMesCon">{{cusMes.linkman}}</div></el-col>

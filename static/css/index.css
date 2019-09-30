@@ -11,8 +11,11 @@ sub{vertical-align:text-bottom}
 input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit}
 input,textarea,select{*font-size:100%}
 a{text-decoration: none;color:#000;}
+html{font-family: '微软雅黑'}
 body{
-	overflow: hidden;
+	min-width: 1300px;
+	/* position: absolute; */
+	overflow-y: hidden;
 }
 .swiper-pagination-bullet-active{
 		background: #e86521!important;
@@ -60,7 +63,6 @@ body{
 .el-table{
 	z-index: -1!important;
 }
-
 
 a{
 	color:#eb7a1d;

@@ -135,7 +135,7 @@ export default {
       this.riskList[0].riskName=data.label;
     },
     delChannel(data,node){//删除频道
-      console.log(data)
+      // console.log(data)
     },
     addRisk(index){//添加频道
       this.riskList.push({

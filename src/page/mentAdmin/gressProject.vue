@@ -231,7 +231,7 @@ export default {
         }
       }).catch((err)=>{
         _vm.$message.error('未知错误,请联系管理员')
-        console.log(err)
+        // console.log(err)
       })
     },
     chanceTime(){//筛选图表数据
@@ -288,7 +288,7 @@ export default {
         }
       }).catch((err)=>{
         _vc.$message.error('未知错误,请联系管理员')
-        console.log(err)
+        // console.log(err)
       })
     }
   }

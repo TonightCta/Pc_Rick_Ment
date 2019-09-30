@@ -204,7 +204,7 @@
             <span>文档附件:</span>
           </p>
           <p class="work_right" style="minHeight:15px;">
-            <a :href="url+'/'+file.fileName" v-for="(file,index) in workMes.fileUploads">{{file.fileName}}</a>
+            <a :href="url+'/'+file.fileName" v-for="(file,index) in workMes.fileUploads" target="_blank">{{file.fileName}}</a>
           </p>
         </div>
         <div class="work_detials" style="marginTop:15px;">
@@ -402,7 +402,6 @@ export default {
         });
       formdata.append('engineerId',window.localStorage.getItem('engID'));
       this.$axios.post(this.url+'/mobile/findProjectPointAndProjectCourseNodeByEngineer',formdata).then((res)=>{
-        // console.log(res)
         if(res.data.code==0){
           let date=new Date();
           let year = date.getFullYear();
