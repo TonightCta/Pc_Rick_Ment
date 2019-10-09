@@ -31,7 +31,7 @@
         <el-row class="el_con" v-for="(eng,index) in engList" :key="'el'+index">
           <el-col :span="1"><div class="listCon">{{eng.num+1}}</div></el-col>
           <el-tooltip class="item" effect="dark" :content="eng.name" placement="bottom">
-            <el-col :span="3"><div class="listCon" style="cursor:pointer;">{{eng.name.substring(0,10)}}...</div></el-col>
+            <el-col :span="3"><div class="listCon" style="cursor:pointer;">{{eng.name.substring(0,8)}}...</div></el-col>
           </el-tooltip>
           <el-col :span="2" v-if="eng.linkName!=null&&eng.linkName!=''"><div class="listCon">{{eng.linkName}}</div></el-col>
           <el-col :span="2" v-else><div class="listCon">-</div></el-col>
@@ -934,10 +934,6 @@ export default {
       .icon{
         font-size: 23px;
         cursor:pointer;
-        i:nth-child(3){
-          margin-left: 13px;
-          margin-right: 13px;
-        }
       }
     }
     .el_con:nth-of-type(even){

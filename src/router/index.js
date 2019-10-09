@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
+import {Message} from 'element-ui'
 Vue.use(Router)
 
 const router = new Router({
@@ -206,8 +206,23 @@ const router = new Router({
     }
   ]
 });
+
+//404检测
+router.beforeEach((to,from,next)=>{
+  const notList=['index','Wel','Order','InternalEng','NewEng','ExternalEng','CertifiedEng','QueryProject','GressProject','skillMent','internalCom','newCom',
+                 'certifiedCom','CreatPro','CustTion','custTionManer','WorkContent','RiskRecord','riskRcordManer','ProjectFile','Channel','Role',
+                 'OperMan','Place','Point','Field','DeMand','BusinessOA','StaffAdmin','DepAdmin','PlaceOA','OAList','QueryOA','RuleList','NewsAdmin',
+                 'CaseAdmin'
+               ];
+  if(notList.indexOf(to.name)<0){
+    Message.warning('访问的页面不存在哦')
+  }else{
+    next();
+  }
+});
+
 //全局拦截
-// router.beforeEach((to,from,next)=>{
+//  router.beforeEach((to,from,next)=>{
 //   const adminList=['Admin','Wel','Order'];
 //   if(adminList.indexOf(to.name)>-1){
 //     if(!window.sessionStorage.getItem('adminMes')){

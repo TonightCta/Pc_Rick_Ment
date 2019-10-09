@@ -209,7 +209,13 @@
             <li>详细地址:&nbsp;&nbsp;&nbsp;<span>{{point.address}}</span></li>
             <li>备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注:&nbsp;&nbsp;&nbsp;<span>{{point.remark}}</span></li>
             <li>人员组成:&nbsp;&nbsp;&nbsp;<span>{{point.engineerNameListStr}}</span></li>
-
+            <li>
+              <p>进场/离场记录:</p>
+              <p class="arrTime">
+                <span v-show="point.arriveRecordVOList!=null" v-for="(aeeTime,arrIndex) in point.arriveRecordVOList">{{aeeTime.arriveTime}}&nbsp;&nbsp;至&nbsp;&nbsp;{{aeeTime.leaveTime}}</span>
+                <span v-show="point.arriveRecordVOList==null">-</span>
+              </p>
+            </li>
           </ul>
           <div class="coll">
             <el-collapse v-model="activeNames" @change="handleChange">
@@ -1338,6 +1344,18 @@ export default {
           text-align: center;
           line-height: 40px;
           border:1px solid #eee;
+        }
+      }
+      li:last-child{
+        display: flex;
+        .arrTime{
+          display: block;
+          span{
+            display: block;
+            text-align: center;
+            box-sizing: border-box;
+            padding-left: 20px;
+          }
         }
       }
       .flex{

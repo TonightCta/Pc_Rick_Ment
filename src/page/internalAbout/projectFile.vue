@@ -242,7 +242,6 @@ export default {
     insUp(indexFile){//验货单
       let _vm=this;
       _vm.pointInsList=this.proList[indexFile].projectPointVO;
-      console.log(_vm.pointInsList)
       _vm.insNum=0;
       _vm.$set(_vm.pointInsList,'fileName',null)
       _vm.$set(_vm.pointInsList,'file',null)

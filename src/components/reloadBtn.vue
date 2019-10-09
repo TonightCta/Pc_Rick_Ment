@@ -48,7 +48,6 @@ export default {
       }
       formdata.append('page',_vc.page);
       _vc.$axios.post(_vc.url+_vc.reloadData.url,formdata).then((res)=>{
-        console.log(res)
         if(res.data.code==0){
           _vc.length=_vc.page*10;
           res.data.data.content.forEach((e)=>{

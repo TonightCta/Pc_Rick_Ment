@@ -93,7 +93,7 @@ export default {
             b.push(c.selected)
           });
           if(b.indexOf(false)>=0){
-            console.log(1)
+            // console.log(1)
           }else{
             _vm.isAll.push(_vm.choseVal);
             _vm.isAll.forEach((x)=>{
@@ -130,7 +130,7 @@ export default {
         }
       }).catch((err)=>{
         _vm.$Toast('未知错误')
-        console.log(err)
+        // console.log(err)
       })
     },
     showChooseLoca(){//工作区域选择
@@ -169,7 +169,7 @@ export default {
         b.push(c.selected)
       });
       if(b.indexOf(false)>=0){
-        console.log(1)
+        // console.log(1)
       }else{
         _vm.isAll.push(_vm.choseVal);
         _vm.isAll.forEach((x)=>{
@@ -302,7 +302,7 @@ export default {
       }else{
         vm.$emit('getPlace',vm.cityID);
         vm.placeStr=vm.choseText;
-        console.log(vm.placeStr)
+        // console.log(vm.placeStr)
         setTimeout(()=>{
           vm.placeBox=false;
         })

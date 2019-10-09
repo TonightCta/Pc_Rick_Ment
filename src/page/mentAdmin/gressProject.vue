@@ -72,7 +72,7 @@ export default {
         //图例，选择要显示的项目
         legend:{
           orient:'vertical',
-          left:'left',
+          left:'bottom',
           textStyle:{
             fontSize:'16',
             color:'black'
@@ -95,7 +95,7 @@ export default {
             },
             label: { //饼图图形的文本标签
               normal: {  //下同，normal指在普通情况下样式，而非高亮时样式
-                formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
+                formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}   ',
                     backgroundColor: '#eee',
                     borderColor: '#aaa',
                     borderWidth: 1,
@@ -108,30 +108,30 @@ export default {
                     rich: {
                         a: {
                             color: 'black',
-                            lineHeight: 22,
+                            lineHeight: 18,
                             align: 'center'
                         },
                         hr: {
-                            borderColor: '#aaa',
+                            borderColor: 'black',
                             width: '100%',
                             borderWidth: 0.5,
                             height: 0
                         },
                         b: {
-                            fontSize: 16,
+                            fontSize: 12,
                             lineHeight: 33,
                             color:'black'
                         },
                         per: {
-                            color: '#eee',
+                            color: 'red',
                             backgroundColor: '#334455',
-                            padding: [2, 4],
+                            padding: [1, 2],
                             borderRadius: 2
                         }
                     },
                 textStyle: {
                   color: 'black',
-                  fontSize:'15'
+                  fontSize:'14'
                 }
               }
             },

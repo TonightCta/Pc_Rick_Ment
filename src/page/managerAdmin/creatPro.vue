@@ -674,6 +674,7 @@
             </a>
             <p v-for="(fileBack,indexBack) in pointFile.projectFileVOList" v-if="fileBack.fileType==fileUpDom.code">
               <a :href="url+'/'+fileBack.fileName" target="_blank">{{fileBack.fileName}}</a>
+              <i class="el-icon-delete" style="fontSize:16px;margin-left:10px;cursor:pointer;" @click="delServiceFile(indexFile,indexBack)"></i>
             </p>
           </li>
         </ul>
@@ -830,7 +831,13 @@
           <li>详细地址:&nbsp;&nbsp;&nbsp;<span>{{point.address}}</span></li>
           <li>备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注:&nbsp;&nbsp;&nbsp;<span>{{point.remark}}</span></li>
           <li>人员组成:&nbsp;&nbsp;&nbsp;<span>{{point.engineerNameListStr}}</span></li>
-
+          <li>
+            <p>进场/离场记录:</p>
+            <p class="arrTime">
+              <span v-show="point.arriveRecordVOList!=null" v-for="(aeeTime,arrIndex) in point.arriveRecordVOList">{{aeeTime.arriveTime}}&nbsp;&nbsp;至&nbsp;&nbsp;{{aeeTime.leaveTime}}</span>
+              <span v-show="point.arriveRecordVOList==null">-</span>
+            </p>
+          </li>
         </ul>
         <div class="coll">
           <el-collapse v-model="activeNames" @change="handleChange">
@@ -1377,7 +1384,7 @@ export default {
         setTimeout(()=>{
           this.searchList=true;
         },200)
-      }
+      };
     },
     chooseStatus(){//选择项目状态
       if(this.searchMes.proStatus==='未开工'){
@@ -3060,7 +3067,6 @@ export default {
             this.$message.error('离场时间不得小于入场时间');
             this.isUpWork=false;
           }else{
-            this.isUpWork=true;
             formdataT.append('arriveRecordFormList['+x+'].projectId',this.proID);
             formdataT.append('arriveRecordFormList['+x+'].projectPointId',this.pointList[index].id);
             formdataT.append('arriveRecordFormList['+x+'].arriveTime',this.pointList[index].goWorkList[x].arriveTime);
@@ -3068,15 +3074,18 @@ export default {
             if(this.pointList[index].goWorkList[x].id!=undefined){
               formdataT.append('arriveRecordFormList['+x+'].id',this.pointList[index].goWorkList[x].id);
             }
+            this.isUpWork=true;
           }
         }else if(this.pointList[index].goWorkList[x].arriveTime!=null&&this.pointList[index].goWorkList[x].arriveTime!=''){
-          this.isUpWork=true;
           formdataT.append('arriveRecordFormList['+x+'].projectId',this.proID);
           formdataT.append('arriveRecordFormList['+x+'].projectPointId',this.pointList[index].id);
           formdataT.append('arriveRecordFormList['+x+'].arriveTime',this.pointList[index].goWorkList[x].arriveTime);
           if(this.pointList[index].goWorkList[x].id!=undefined){
             formdataT.append('arriveRecordFormList['+x+'].id',this.pointList[index].goWorkList[x].id);
           }
+          this.isUpWork=true;
+        }else{
+          this.isUpWork=false;
         }
       };
       if(this.isUpWork){
@@ -3092,7 +3101,7 @@ export default {
             });
             this.isUpWork=false;
           }else{
-            this.$message.error(res.data.msg)
+            this.$message.error(res.data.msg);
           };
           this.$axios.post(this.url+'/updateProjectCourseNodeList',formdata).then((res)=>{
             if(res.data.code==0){
@@ -3140,6 +3149,20 @@ export default {
       }else{
         this.$message.error('未选择文件')
       };
+    },
+    delServiceFile(indexFile,indexBack){//删除已上传文档
+      let formdata=new FormData();
+      formdata.append('projectFileId',this.pointFileList[indexFile].projectFileVOList[indexBack].id);
+      this.$axios.post(this.url+'/deleteProjectFile',formdata).then((res)=>{
+        if(res.data.code==0){
+          this.$message.success('删除文件成功')
+          this.pointFileList[indexFile].projectFileVOList.splice(indexBack,1);
+        }else{
+          this.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        this.$message.error('未知错误,请联系管理员')
+      })
     },
     upPiontIns(e,key){//验货单局点文件上传
       this.pointInsList[key].fileName=e.target.files[0].name;
@@ -3917,6 +3940,18 @@ input[type=checkbox]:checked:after {
           text-align: center;
           line-height: 40px;
           border:1px solid #eee;
+        }
+      }
+      li:last-child{
+        display: flex;
+        .arrTime{
+          display: block;
+          span{
+            display: block;
+            text-align: center;
+            box-sizing: border-box;
+            padding-left: 20px;
+          }
         }
       }
       .flex{

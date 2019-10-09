@@ -111,7 +111,7 @@ export default {
           });
           setTimeout(()=>{
             if(b.indexOf(false)>=0){
-              console.log(1)
+              // console.log(1)
             }else{
               _vm.isAll.push(_vm.choseVal);
               _vm.isAll.forEach((x)=>{
@@ -132,7 +132,7 @@ export default {
                   _vm.$refs.city[c].style.color='#eb7a1d';
                   _vm.$refs.city[c].children[1].style.display='block';
                 }else{
-                  console.log(1)
+                  // console.log(1)
                 }
               })
             })
@@ -142,7 +142,7 @@ export default {
         }
       }).catch((err)=>{
         _vm.$message.error('未知错误')
-        console.log(err)
+        // console.log(err)
       })
     },
     showChooseLoca(){//工作区域选择
@@ -180,7 +180,7 @@ export default {
         b.push(c.selected)
       });
       if(b.indexOf(false)>=0){
-        console.log(1)
+        // console.log(1)
       }else{
         _vm.isAll.push(_vm.choseVal);
         _vm.isAll.forEach((x)=>{

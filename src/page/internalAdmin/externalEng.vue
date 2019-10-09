@@ -56,7 +56,7 @@
               <i class="el-icon-remove-outline" style="color:black;" v-show="eng.state==2" @click="isUse(index)"></i>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="启用" placement="bottom">
-              <i class="el-icon-circle-check-outline" style="color:#eb7a1d;" v-show="eng.state==-1" @click="isUse(index)"></i>
+              <i class="el-icon-circle-check" style="color:#eb7a1d;" v-show="eng.state==-1" @click="isUse(index)"></i>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="编辑工程师" placement="bottom">
               <i class="el-icon-edit" style="color:#eb7a1d;" @click="editEng(index)"></i>

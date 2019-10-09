@@ -6,7 +6,6 @@
       <p class="addEng">
         <el-button type="primary" icon="el-icon-plus" size="medium" @click="pushEng()" @keyup.enter.native="abc($event)">添加工程师</el-button>
         <span class="dataLength">共有数据:&nbsp;<span style="color:#eb7a1d;font-weight:bold;">{{dataLength}}</span>&nbsp;条</span>
-
       </p>
       <p class="admin_reload">
         <el-tooltip class="item" effect="dark" content="刷新数据" placement="bottom">
@@ -59,7 +58,7 @@
               <i class="el-icon-remove-outline" style="color:black;" v-show="eng.state==2" @click="isStop(index)"></i>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="启用" placement="bottom">
-              <i class="el-icon-circle-check-outline" style="color:#eb7a1d;" v-show="eng.state==-1" @click="isStop(index)"></i>
+              <i class="el-icon-circle-check" style="color:#eb7a1d;" v-show="eng.state==-1" @click="isStop(index)"></i>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="编辑工程师" placement="bottom">
               <i class="el-icon-edit" style="color:#eb7a1d;" @click="editEng(index)"></i>
