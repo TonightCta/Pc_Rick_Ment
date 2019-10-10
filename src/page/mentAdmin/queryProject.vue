@@ -193,6 +193,9 @@
                 <span v-else>-</span>
               </p>
             </li>
+            <li>
+              <p>创建时间:&nbsp;&nbsp;&nbsp;<span>{{projectMes.createTimeSec}}</span></p>
+            </li>
             <li>项目说明:&nbsp;&nbsp;&nbsp;
               <pre>
                 <span v-if="projectMes.remark!=null">{{projectMes.remark}}</span><span v-else>-</span>
@@ -259,7 +262,7 @@
                   </template>
                   <p v-for="(file,index) in point.projectFileVOList" :key="'file'+index" style="line-height:40px;">
                     <span v-show="file.fileType==0">【项目经理任命】</span>
-                    <span v-show="file.fileType==1">【开会检查项】</span>
+                    <span v-show="file.fileType==1">【开工检查项】</span>
                     <span v-show="file.fileType==2">【会议纪要】</span>
                     <span v-show="file.fileType==3">【技术方案】</span>
                     <span v-show="file.fileType==4">【安装报告】</span>
@@ -622,6 +625,19 @@ export default {
       let _vc=this;
       _vc.$axios.get(_vc.url+'/projectInfo?projectId='+_vc.proList[index].id).then((res)=>{
         if(res.data.code==0){
+          //创建时间
+          let creatDate=new Date(res.data.data.createTime);
+          let cYear=creatDate.getFullYear();
+          let cMon=creatDate.getMonth()+1;
+          if(cMon<10){
+            cMon='0'+cMon
+          };
+          let cDay=creatDate.getDate();
+          if(cDay<10){
+            cDay='0'+cDay
+          }
+          let cTime=cYear+'-'+cMon+'-'+cDay;
+          _vc.$set(res.data.data,'createTimeSec',cTime);
           //入场时间
           let startDate=new Date(res.data.data.startTime);
           let sYear=startDate.getFullYear();

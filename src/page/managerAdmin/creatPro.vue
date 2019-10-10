@@ -86,10 +86,10 @@
         <el-col :span="2"><div class="pro_title">项目状态</div></el-col>
         <el-col :span="2"><div class="pro_title">项目进度</div></el-col>
         <el-col :span="1"><div class="pro_title">创建人</div></el-col>
-        <el-col :span="3"><div class="pro_title">创建时间</div></el-col>
+        <el-col :span="2"><div class="pro_title">创建时间</div></el-col>
         <el-col :span="2"><div class="pro_title speFont">第一步</br>实施节点及计划</div></el-col>
         <el-col :span="2"><div class="pro_title speFont">第二步</br>人员委派</div></el-col>
-        <el-col :span="1"><div class="pro_title speFont">第三步</br>进程管理</div></el-col>
+        <el-col :span="2"><div class="pro_title speFont">第三步</br>进程管理</div></el-col>
         <el-col :span="2"><div class="pro_title">项目文档</div></el-col>
         <el-col :span="1"><div class="pro_title">验货单</div></el-col>
         <el-col :span="1"><div class="pro_title">浏览</div></el-col>
@@ -113,14 +113,14 @@
           </div></el-col>
           <el-col :span="2"><div class="pro_oper">{{pro.schedule}}%</div></el-col>
           <el-col :span="1"><div class="pro_oper">{{pro.creatorName}}</div></el-col>
-          <el-col :span="3"><div class="pro_oper">{{pro.createTimeSec}}</div></el-col>
+          <el-col :span="2"><div class="pro_oper">{{pro.createTimeSec}}</div></el-col>
           <el-col :span="2"><div class="pro_oper">
             <i class="el-icon-edit" @click="firstStep(index)" v-loading.fullscreen.lock="fullscreenLoading"></i>
           </div></el-col>
           <el-col :span="2"><div class="pro_oper">
             <i class="el-icon-edit" @click="secondStep(index)"></i>
           </div></el-col>
-          <el-col :span="1"><div class="pro_oper">
+          <el-col :span="2"><div class="pro_oper">
             <i class="el-icon-edit" @click="threeStep(index)"></i>
           </div></el-col>
           <el-col :span="2"><div class="pro_oper">
@@ -815,6 +815,9 @@
               <span v-else>-</span>
             </p>
           </li>
+          <li>
+            <p>创建时间:&nbsp;&nbsp;&nbsp;<span>{{projectMes.createTimeSec}}</span></p>
+          </li>
           <li>项目说明:&nbsp;&nbsp;&nbsp;
             <pre>
               <span v-if="projectMes.remark!=null">{{projectMes.remark}}</span><span v-else>-</span>
@@ -881,7 +884,7 @@
                 </template>
                 <p v-for="(file,index) in point.projectFileVOList" :key="'file'+index" style="line-height:40px;">
                   <span v-show="file.fileType==0">【项目经理任命】</span>
-                  <span v-show="file.fileType==1">【开会检查项】</span>
+                  <span v-show="file.fileType==1">【开工检查项】</span>
                   <span v-show="file.fileType==2">【会议纪要】</span>
                   <span v-show="file.fileType==3">【技术方案】</span>
                   <span v-show="file.fileType==4">【安装报告】</span>
@@ -2272,6 +2275,19 @@ export default {
       let _vc=this;
       _vc.$axios.get(_vc.url+'/projectInfo?projectId='+_vc.proList[index].id).then((res)=>{
         if(res.data.code==0){
+          //创建时间
+          let creatDate=new Date(res.data.data.createTime);
+          let cYear=creatDate.getFullYear();
+          let cMon=creatDate.getMonth()+1;
+          if(cMon<10){
+            cMon='0'+cMon
+          };
+          let cDay=creatDate.getDate();
+          if(cDay<10){
+            cDay='0'+cDay
+          }
+          let cTime=cYear+'-'+cMon+'-'+cDay;
+          _vc.$set(res.data.data,'createTimeSec',cTime);
           //入场时间
           let startDate=new Date(res.data.data.startTime);
           let sYear=startDate.getFullYear();
