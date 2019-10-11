@@ -97,7 +97,7 @@
       </el-row>
       <p style="width:100%;textAlign:center;lineHeight:60px;color:#666;" v-if="noPro">暂无更多数据</p>
       <div class="" style="minHeight:500px;" v-loading="proLoad">
-        <el-row class="proMes" v-for="(pro,index) in proList" :key="'Pro'+index">
+        <el-row class="proMes publicHover" v-for="(pro,index) in proList" :key="'Pro'+index">
           <el-col :span="1"><div class="pro_oper">{{pro.num+1}}</div></el-col>
           <el-tooltip class="item" effect="dark" :content="pro.name+'['+pro.contractNumber+']'" placement="bottom">
             <el-col :span="3" v-if="pro.name!=null&&pro.name!='null'"><div class="pro_oper" style="cursor:pointer;">{{pro.name.substring(0,8)}}...</div></el-col>
@@ -413,7 +413,7 @@
           <el-col :span="7"><div class="gate_title">已选择工程师</div></el-col>
         </el-row>
         <p style="line-height:100px;fontSize:18px;color:#666;width:100%;textAlign:center;" v-if="hasPoint">暂无局点，请前往建立</p>
-        <el-row class="proMes" v-for="(choseEng,index) in gateList" :key="'ChoseEng'+index">
+        <el-row class="proMes publicHover" v-for="(choseEng,index) in gateList" :key="'ChoseEng'+index">
           <el-col :span="2"><div class="gate_mes">{{choseEng.num+1}}</div></el-col>
           <el-col :span="3"><div class="gate_mes">{{choseEng.placeName}}</div></el-col>
           <el-col :span="5"><div class="gate_mes">{{choseEng.address}}</div></el-col>
@@ -602,7 +602,7 @@
               <el-col :span="4"><div class="edit_title">实际完成时间</div></el-col>
               <el-col :span="10"><div class="edit_title">备注</div></el-col>
             </el-row>
-            <el-row class="proMes" v-for="(editMes,indexK) in point.usingProjectCourseNodeVOList" :key="'EditMes'+indexK">
+            <el-row class="proMes publicHover" v-for="(editMes,indexK) in point.usingProjectCourseNodeVOList" :key="'EditMes'+indexK">
               <el-col :span="6"><div class="edit_mes">{{editMes.courseNodeName}}</div></el-col>
               <!-- <el-col :span="4"><div class="edit_mes">
                 <el-date-picker
@@ -775,7 +775,8 @@
           <li class="flex">
             <p>项目人数:&nbsp;&nbsp;&nbsp;<span>{{projectMes.peopleNumber}}人</span></p>
             <p style="width:200px;">预估工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.dayNumber}}天</span></p>&nbsp;&nbsp;&nbsp;
-            <p style="width:200px;">实际工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.workDayNumber}}天</span></p>
+            <p style="width:200px;" v-if="projectMes.workDayNumber!='- '">实际工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.workDayNumber+1}}天</span></p>
+            <p style="width:200px;" v-else>实际工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.workDayNumber}}天</span></p>
           </li>
           <li class="flex">
             <p>交付标准:&nbsp;&nbsp;&nbsp;<span>{{projectMes.standard}}</span></p>
@@ -855,7 +856,7 @@
                   <el-col :span="6"><div class="gress_title">项目说明</div></el-col>
                   <el-col :span="4"><div class="gress_title">项目日报</div></el-col>
                 </el-row>
-                <el-row v-for="(gress,index) in point.usingProjectCourseNodeVOList" :key="'gress'+index">
+                <el-row class="publicHover" v-for="(gress,index) in point.usingProjectCourseNodeVOList" :key="'gress'+index">
                   <el-col :span="4"><div class="gress_con">{{gress.courseNodeName}}</div></el-col>
                   <el-col :span="5"><div class="gress_con">
                     <span v-if="gress.startTime!=null&&gress.startTime!='null'">{{gress.startTimeSec}}</span>
@@ -989,7 +990,7 @@
                 <el-col :span="2"><div class="warnTitle" style="text-align:center;background:rgba(235,122,29,1);">提交人员</div></el-col>
                 <el-col :span="2"><div class="warnTitle" style="text-align:center;background:rgba(235,122,29,1);">创建时间</div></el-col>
               </el-row>
-              <el-row class="el_con" v-for="(warnMes,indexWarn) in point.warnRecordVOList" :key="indexWarn">
+              <el-row class="el_con publicHover" v-for="(warnMes,indexWarn) in point.warnRecordVOList" :key="indexWarn">
                 <el-col :span="20"><div class="warnCon" style="text-align:left;box-sizing:border-box;padding-left:30px;">{{warnMes.content}}</div></el-col>
                 <el-col :span="2"><div class="warnCon" style="text-align:center;">{{warnMes.engineerName}}</div></el-col>
                 <el-col :span="2"><div class="warnCon" style="text-align:center;">{{warnMes.warnTimeCreat}}</div></el-col>
@@ -1312,6 +1313,7 @@ export default {
       })
     },
     serchPro(){//搜索项目
+      let _vc=this;
       let formdata=new FormData();
       let opID=window.localStorage.getItem('Uid');
       formdata.append('operatorId',opID);
@@ -1355,6 +1357,23 @@ export default {
             }
             let cTime=cYear+'-'+cMon+'-'+cDay;
             this.$set(e,'createTimeSec',cTime);
+            if(res.data.data.arriveRecordVOList!=null){
+              for(let temp in res.data.data.arriveRecordVOList){
+                if(res.data.data.arriveRecordVOList[temp].leaveTime==null){
+                  _vc.$set(res.data.data.arriveRecordVOList[temp],'leaveTime',new Date().getTime())
+                }
+                if(new Date(res.data.data.arriveRecordVOList[temp].leaveTime).getTime()>new Date(res.data.data.arriveRecordVOList[temp].arriveTime).getTime()){
+                  _vc.arrTimeList.push(new Date(res.data.data.arriveRecordVOList[temp].arriveTime).getTime());
+                  _vc.leaveTimeList.push(new Date(res.data.data.arriveRecordVOList[temp].leaveTime).getTime());
+                };
+              };
+              let dayNum=_vc.editArr(_vc.leaveTimeList)-_vc.editArr(_vc.arrTimeList);
+              _vc.$set(res.data.data,'workDayNumber',Math.floor(dayNum/86400000));
+              _vc.arrTimeList=[];
+              _vc.leaveTimeList=[];
+            }else{
+              _vc.$set(res.data.data,'workDayNumber','- ');
+            }
           })
           this.proList=res.data.data.content;
           this.pageNum=res.data.data.totalPages*10;

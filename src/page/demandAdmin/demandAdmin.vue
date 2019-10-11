@@ -16,7 +16,7 @@
       <el-col :span="2"><div class="demand_title">操作</div></el-col>
     </el-row>
     <div class="">
-      <el-row class="operTwo" v-for="(demand,index) in demandList" :key="'Demand'+index">
+      <el-row class="operTwo publicHover" v-for="(demand,index) in demandList" :key="'Demand'+index">
         <el-col :span="2"><div class="demand_con">{{demand.num+1}}</div></el-col>
         <el-col :span="3"><div class="demand_con">{{demand.contacts}}</div></el-col>
         <el-col :span="3"><div class="demand_con">{{demand.phone}}</div></el-col>

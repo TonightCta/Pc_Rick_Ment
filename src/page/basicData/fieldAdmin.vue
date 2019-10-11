@@ -18,7 +18,7 @@
       </el-row>
       <div class="" style="minHeight:500px;">
         <div class="" v-for="(field,index) in fieldList">
-          <el-row class="operTwo">
+          <el-row class="operTwo publicHover">
             <el-col :span="3"><div class="field_con">{{field.num+1}}</div></el-col>
             <el-col :span="4"><div class="field_con">{{field.name}}</div></el-col>
             <el-col :span="5"><div class="field_con">
@@ -41,7 +41,7 @@
               <i class="el-icon-delete"></i>
             </div></el-col>
           </el-row>
-          <el-row v-for="(fieldCh,key) in field.children" :key="'FieldCh'+key">
+          <el-row v-for="(fieldCh,key) in field.children" class="publicHover" :key="'FieldCh'+key">
             <el-col :span="3"><div class="field_con">{{fieldCh.num}}</div></el-col>
             <el-col :span="4"><div class="field_con">&nbsp;&nbsp;</div></el-col>
             <el-col :span="5"><div class="field_con">{{fieldCh.name}}</div></el-col>

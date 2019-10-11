@@ -35,9 +35,11 @@
       </el-row>
       <p style="textAlign:center;lineHeight:80px;color:#666;" v-if="noWork">暂无更多记录</p>
       <div class="" style="minHeight:500px;" v-loading="workLoading">
-        <el-row class="operTwo" v-for="(cusMes,index) in workList" :key="'CusMes'+index">
+        <el-row class="operTwo publicHover" v-for="(cusMes,index) in workList" :key="'CusMes'+index">
           <el-col :span="2"><div class="cusMesCon">{{cusMes.num+1}}</div></el-col>
-          <el-col :span="9"><div class="cusMesCon">{{cusMes.projectName}}</div></el-col>
+          <el-tooltip class="item" effect="dark" :content="cusMes.projectName" placement="bottom">
+            <el-col :span="9"><div class="cusMesCon" style="cursor:pointer;">{{cusMes.projectName.substring(0,33)}}...</div></el-col>
+          </el-tooltip>
           <el-col :span="3"><div class="cusMesCon">{{cusMes.projectCourseNodeName}}</div></el-col>
           <el-col :span="3"><div class="cusMesCon">{{cusMes.engineerName}}</div></el-col>
           <el-col :span="2"><div class="cusMesCon">{{cusMes.startTimeSec}}</div></el-col>
@@ -221,8 +223,7 @@
           </div>
         </div>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="workBox = false">取 消</el-button>
-          <el-button type="primary" @click="workBox = false">提 交</el-button>
+          <el-button @click="workBox = false" size="medium" type="primary">关&nbsp;闭</el-button>
         </span>
       </el-dialog>
     </div>

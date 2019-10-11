@@ -14,7 +14,7 @@
         <el-col :span="4"><div class="point_title">状态</div></el-col>
         <el-col :span="4"><div class="point_title">操作</div></el-col>
       </el-row>
-      <el-row class="operTwo" v-for="(point,index) in pointList" :key="'Point'+index">
+      <el-row class="operTwo publicHover" v-for="(point,index) in pointList" :key="'Point'+index">
         <el-col :span="2"><div class="point_mes">{{point.num+1}}</div></el-col>
         <el-col :span="10"><div class="point_mes">{{point.name}}</div></el-col>
         <el-col :span="4"><div class="point_mes">{{point.num+1}}</div></el-col>

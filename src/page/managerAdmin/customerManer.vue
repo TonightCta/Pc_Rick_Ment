@@ -43,7 +43,7 @@
       </el-row>
       <p style="textAlign:center;lineHeight:80px;color:#666;" v-if="noCus">暂无更多客户</p>
       <div class="" v-loading="cusLoading" style="minHeight:450px;">
-        <el-row class="operTwo" v-for="(cusMes,index) in cusList" :key="'CusMes'+index">
+        <el-row class="operTwo publicHover" v-for="(cusMes,index) in cusList" :key="'CusMes'+index">
           <el-col :span="2"><div class="cusMesCon">{{cusMes.num+1}}</div></el-col>
           <el-tooltip class="item" effect="dark" :content="cusMes.name" placement="bottom">
             <el-col :span="5"><div class="cusMesCon" style="cursor:pointer;">{{cusMes.name.substring(0,14)}}...</div></el-col>

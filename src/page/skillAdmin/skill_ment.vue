@@ -52,7 +52,7 @@
           <el-col :span="4"><div class="list_title">状态</div></el-col>
           <el-col :span="4"><div class="list_title">操作</div></el-col>
         </el-row>
-        <el-row class="skillCon" v-for="(skill,index) in skillList" :key="'SK'+index">
+        <el-row class="skillCon publicHover" v-for="(skill,index) in skillList" :key="'SK'+index">
           <el-col :span="4"><div class="list_con">{{skill.num+1}}</div></el-col>
           <el-col :span="4"><div class="list_con">{{skill.name}}</div></el-col>
           <el-col :span="4"><div class="list_con">

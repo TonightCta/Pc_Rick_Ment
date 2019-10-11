@@ -19,7 +19,7 @@
         <el-col :span="2"><div class="oaTitle">状态</div></el-col>
         <el-col :span="2"><div class="oaTitle">操作</div></el-col>
       </el-row>
-      <el-row class="el_con" v-for="(oA,index) in OAList" :key="'OA'+index">
+      <el-row class="el_con publicHover" v-for="(oA,index) in OAList" :key="'OA'+index">
         <el-col :span="2"><div class="oaMes">{{oA.num+1}}</div></el-col>
         <el-col :span="6"><div class="oaMes">{{oA.proName}}</div></el-col>
         <el-col :span="3"><div class="oaMes">￥{{oA.mount}}</div></el-col>

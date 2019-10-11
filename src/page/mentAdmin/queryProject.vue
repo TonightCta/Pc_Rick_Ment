@@ -94,7 +94,7 @@
         </el-row>
       </div>
       <div class="project_con" v-loading="loadPro">
-        <el-row class="el_con" v-for="(pro,index) in proList" :key="index">
+        <el-row class="el_con publicHover" v-for="(pro,index) in proList" :key="index" @click.native="hasDetials(index)">
           <el-col :span="1"><div class="projectCon">{{pro.num+1}}</div></el-col>
           <el-tooltip class="item" effect="dark" :content="pro.name+'['+pro.contractNumber+']'" placement="bottom">
             <el-col :span="5" v-if="pro.name!=null&&pro.name!='null'"><div class="projectCon" style="cursor:pointer;">{{pro.name.substring(0,10)}}...</div></el-col>
@@ -110,7 +110,8 @@
           <el-col :span="2" v-if="pro.technologyName!=null&&pro.technologyName!='null'"><div class="projectCon">{{pro.technologyName}}</div></el-col>
           <el-col :span="2" v-else><div class="projectCon">-</div></el-col>
           <el-col :span="2"><div class="projectCon">{{pro.creatorName}}</div></el-col>
-          <el-col :span="2"><div class="projectCon">{{pro.dayNumber}}天/{{pro.workDayNumber}}天</div></el-col>
+          <el-col :span="2" v-if="pro.workDayNumber!='- '"><div class="projectCon">{{pro.dayNumber}}天/{{pro.workDayNumber+1}}天</div></el-col>
+          <el-col :span="2" v-else><div class="projectCon">{{pro.dayNumber}}天/{{pro.workDayNumber}}天</div></el-col>
           <el-col :span="2" v-if="pro.startTime!=null&&pro.startTime!='null'"><div class="projectCon">{{pro.entranceTimeSec}}</div></el-col>
           <el-col :span="2" v-else><div class="projectCon">-</div></el-col>
           <el-col :span="2" v-else><div class="projectCon">-</div></el-col>
@@ -153,7 +154,8 @@
             <li class="flex">
               <p>项目人数:&nbsp;&nbsp;&nbsp;<span>{{projectMes.peopleNumber}}人</span></p>
               <p style="width:200px;">预估工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.dayNumber}}天</span></p>&nbsp;&nbsp;&nbsp;
-              <p style="width:200px;">实际工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.workDayNumber}}天</span></p>
+              <p style="width:200px;" v-if="projectMes.workDayNumber!='- '">实际工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.workDayNumber+1}}天</span></p>
+              <p style="width:200px;" v-else>实际工期:&nbsp;&nbsp;&nbsp;<span>{{projectMes.workDayNumber}}天</span></p>
             </li>
             <li class="flex">
               <p>交付标准:&nbsp;&nbsp;&nbsp;<span>{{projectMes.standard}}</span></p>
@@ -233,7 +235,7 @@
                     <el-col :span="6"><div class="gress_title">项目说明</div></el-col>
                     <el-col :span="4"><div class="gress_title">项目日报</div></el-col>
                   </el-row>
-                  <el-row v-for="(gress,index) in point.usingProjectCourseNodeVOList" :key="'gress'+index">
+                  <el-row class="publicHover" v-for="(gress,index) in point.usingProjectCourseNodeVOList" :key="'gress'+index">
                     <el-col :span="4"><div class="gress_con">{{gress.courseNodeName}}</div></el-col>
                     <el-col :span="5"><div class="gress_con">
                       <span v-if="gress.startTime!=null&&gress.startTime!='null'">{{gress.startTimeSec}}</span>
@@ -367,7 +369,7 @@
                   <el-col :span="2"><div class="warnTitle" style="text-align:center;background:rgba(235,122,29,1);">提交人员</div></el-col>
                   <el-col :span="2"><div class="warnTitle" style="text-align:center;background:rgba(235,122,29,1);">创建时间</div></el-col>
                 </el-row>
-                <el-row class="el_con" v-for="(warnMes,indexWarn) in point.warnRecordVOList" :key="indexWarn">
+                <el-row class="el_con publicHover" v-for="(warnMes,indexWarn) in point.warnRecordVOList" :key="indexWarn">
                   <el-col :span="20"><div class="warnCon" style="text-align:left;box-sizing:border-box;padding-left:30px;">{{warnMes.content}}</div></el-col>
                   <el-col :span="2"><div class="warnCon" style="text-align:center;">{{warnMes.engineerName}}</div></el-col>
                   <el-col :span="2"><div class="warnCon" style="text-align:center;">{{warnMes.warnTimeCreat}}</div></el-col>
@@ -600,7 +602,7 @@ export default {
               _vc.arrTimeList=[];
               _vc.leaveTimeList=[];
             }else{
-              _vc.$set(e,'workDayNumber','-');
+              _vc.$set(e,'workDayNumber','- ');
             }
           });
           _vc.loadPro=false;
@@ -811,6 +813,7 @@ export default {
       this.getProjectList()
     },
     serchPro(){//筛选项目
+      let _vc=this;
       let formdata=new FormData()
       if(this.searchMes.proName!=null&&this.searchMes.proName!=''){
         formdata.append('name',this.searchMes.proName)
@@ -895,6 +898,23 @@ export default {
             }
             let aTime=aYear+'-'+aMon+'-'+aDay;
             this.$set(e,'acceptTimeSec',aTime);
+            if(e.arriveRecordVOList!=null){
+              for(let temp in e.arriveRecordVOList){
+                if(e.arriveRecordVOList[temp].leaveTime==null){
+                  _vc.$set(e.arriveRecordVOList[temp],'leaveTime',new Date().getTime())
+                }
+                if(new Date(e.arriveRecordVOList[temp].leaveTime).getTime()>new Date(e.arriveRecordVOList[temp].arriveTime).getTime()){
+                  _vc.arrTimeList.push(new Date(e.arriveRecordVOList[temp].arriveTime).getTime());
+                  _vc.leaveTimeList.push(new Date(e.arriveRecordVOList[temp].leaveTime).getTime());
+                };
+              };
+              let dayNum=_vc.editArr(_vc.leaveTimeList)-_vc.editArr(_vc.arrTimeList);
+              _vc.$set(e,'workDayNumber',Math.floor(dayNum/86400000));
+              _vc.arrTimeList=[];
+              _vc.leaveTimeList=[];
+            }else{
+              _vc.$set(e,'workDayNumber','- ');
+            }
           });
           this.loadPro=false;
           this.proList=res.data.data.content;
@@ -1050,6 +1070,29 @@ export default {
       let formdata=new FormData();
       formdata.append('page',_vc.page);
       formdata.append('size',_vc.dynSize);
+      if(this.searchMes.proName!=null&&this.searchMes.proName!=''){
+        formdata.append('name',this.searchMes.proName)
+      };
+      if(this.searchMes.cusName!=null&&this.searchMes.cusName!=''){
+        formdata.append('customerName',this.searchMes.cusName)
+      };
+      if(this.searchMes.manName!=null&&this.searchMes.manName!=''){
+        formdata.append('managerName',this.searchMes.manName)
+      };
+      if(this.searchMes.lineID!=null&&this.searchMes.lineID!=''){
+        formdata.append('technologyId',this.searchMes.lineID)
+      };
+      if(this.searchMes.proStatus!=null&&this.searchMes.proStatus!=''){
+        formdata.append('state',this.searchMes.proStatusNum)
+      };
+      if(this.searchMes.conNumber!=null&&this.searchMes.conNumber!=''){
+        formdata.append('contractNumber',this.searchMes.conNumber)
+      };
+      if(this.searchMes.dateUpText!=null&&this.searchMes.startTime!=null&&this.searchMes.dateUpText!=''&&this.searchMes.startTime!=''){
+        formdata.append('dateType',this.searchMes.dateUpText);
+        formdata.append('beginTime',this.searchMes.startTime);
+        formdata.append('endTime',this.searchMes.endTime);
+      };
       const loading=_vc.$loading({
           lock: true,
           text: '下载中...',
@@ -1143,7 +1186,7 @@ export default {
               _vc.arrTimeList=[];
               _vc.leaveTimeList=[];
             }else{
-              _vc.$set(e,'workDayNumber','-');
+              _vc.$set(e,'workDayNumber','- ');
             }
           });
           loading.close()

@@ -1,4 +1,4 @@
-<!-- 临时管理员页面 -->
+<!-- 管理员页面 -->
 <template lang="html">
   <div class="admin" ref="admin">
     <Header ref="header"></Header>
@@ -76,244 +76,9 @@ export default {
        iconList:[
          'shujufenxi','pingtaizijiankong','huaban-','kehufuwu','chengshijinglitianch','laoban','shangwu','ziyuanxuqiu','wenzhang','renwuguanli','tongji','guanli1'
        ],
-       route:[
-         {
-           name:'平台内部管理',
-           in:'1-1',
-           sort:2,
-           usingChannelVOList:[
-             {
-               name:'内部工程师管理',
-               url:'/admin/internalEng'
-             },
-             {
-               name:'新注册工程师管理',
-               url:'/admin/newEng'
-             },
-             {
-               name:'待认证工程师管理',
-               url:'/admin/certifiedEng'
-             },
-             {
-               name:'外部工程师管理',
-               url:'/admin/externalEng'
-             },
-           ]
-         },
-         {
-           name:'管理层',
-           in:'1-2',
-           sort:6,
-           usingChannelVOList:[
-             {
-               name:'项目浏览查询',
-               url:'/admin/queryProject'
-             },
-             {
-               name:'项目进度查询',
-               url:'/admin/gressProject'
-             }
-           ]
-         },
-         {
-           name:'技能管理',
-           in:'1-3',
-           sort:12,
-           usingChannelVOList:[
-             {
-               name:'技能管理',
-               url:'/admin/skillMent'
-             }
-           ]
-         },
-         {
-           name:'企业账户管理',
-           in:'1-4',
-           usingChannelVOList:[
-             {
-               name:'新注册企业管理',
-               url:'/admin/newCom'
-             },
-             {
-               name:'待认证企业管理',
-               url:'/admin/certifiedCom'
-             },
-             {
-               name:'已认证企业管理',
-               url:'/admin/internalCom'
-             },
-           ]
-         },
-         {
-           name:'任务管理',
-           in:'1-5',
-           sort:10,
-           usingChannelVOList:[
-             {
-               name:'任务管理',
-               url:'/admin/order'
-             }
-           ]
-         },
-         {
-           name:'项目经理相关',
-           in:'1-6',
-           sort:5,
-           usingChannelVOList:[
-             {
-               name:'项目管理',
-               url:'/admin/creatPro'
-             },
-             {
-               name:'客户管理(管理员)',
-               url:'/admin/custTion'
-             },
-             {
-               name:'客户管理(项目经理)',
-               url:'/admin/custTionManer'
-             }
-           ]
-         },
-         {
-           name:'工程师相关',
-           in:'1-7',
-           sort:3,
-           usingChannelVOList:[
-             {
-               name:'工作内容管理',
-               url:'/admin/workContent'
-             },
-             {
-               name:'潜在风险记录列表(管理员)',
-               url:'/admin/riskRcord',
-             },
-             {
-               name:'潜在风险记录列表(工程师)',
-               url:'/admin/riskRcordManer',
-             },
-             {
-               name:'项目相关文档管理',
-               url:'/admin/projectFile'
-             }
-           ]
-         },
-         {
-           name:'基础数据管理',
-           in:'1-8',
-           sort:1,
-           usingChannelVOList:[
-             {
-               name:'频道管理',
-               url:'/admin/channel'
-             },
-             {
-               name:'角色管理',
-               url:'/admin/role'
-             },
-             {
-               name:'操作人员管理',
-               url:'/admin/operman'
-             },
-             {
-               name:'地点管理',
-               url:'/admin/place'
-             },
-             {
-               name:'进程节点管理',
-               url:'/admin/point'
-             },
-             {
-               name:'技术领域及领域管理',
-               url:'/admin/field'
-             }
-           ]
-         },
-         {
-           name:'需求管理',
-           in:'1-9',
-           sort:8,
-           usingChannelVOList:[
-             {
-               name:'需求列表',
-               url:'/admin/demand'
-             }
-           ]
-         },
-         {
-           name:'报销申请',
-           in:'1-10',
-           usingChannelVOList:[
-             {
-               name:'差旅申请',
-               url:'/admin/businessOA'
-             },
-           ]
-         },
-         {
-           name:'财务相关',
-           in:'1-11',
-           usingChannelVOList:[
-             {
-               name:'报销申请审核',
-               url:'/admin/oaList'
-             },
-             {
-               name:'报销记录统计查询',
-               url:'/admin/query'
-             }
-           ]
-         },
-         {
-           name:'审核规则',
-           in:'1-12',
-           usingChannelVOList:[
-             {
-               name:'审核规则',
-               url:'/admin/ruleList'
-             }
-           ]
-         },
-         {
-           name:'员工相关',
-           in:'1-13',
-           usingChannelVOList:[
-             {
-               name:'部门管理',
-               url:'/admin/depAdmin'
-             },
-             {
-               name:'员工管理',
-               url:'/admin/staffAdmin',
-             }
-           ]
-         },
-         {
-           name:'出差相关',
-           in:'1-14',
-           usingChannelVOList:[
-             {
-               name:'出差目的地管理',
-               url:'/admin/placeOA'
-             }
-           ]
-         },
-         {
-           name:'文章管理',
-           in:'1-15',
-           sort:9,
-           usingChannelVOList:[
-             {
-               name:'新闻管理',
-               url:'/admin/newsAdmin'
-             },
-             {
-               name:'案例管理',
-               url:'/admin/caseAdmin'
-             }
-           ]
-         }
-       ],
+       route:[],
        closeUrl:null,//暂存页面地址
+       beforeIndex:null,//上一次选择的面包屑
      }
    },
    components:{
@@ -332,7 +97,7 @@ export default {
          mes.roleVO.usingTopChannelVOList.forEach((e)=>{
            this.$set(e,'in','1-'+this.length++)
          })
-         // this.route=mes.roleVO.usingTopChannelVOList;
+         this.route=mes.roleVO.usingTopChannelVOList;
        }else{
          this.route=[{name:'暂无权限'}]
        }
@@ -353,6 +118,7 @@ export default {
        // console.log(key, keyPath);
      },
      choseCru(index){//面包屑选择
+       this.beforeIndex=index;
        for(let i in this.$refs.crum){
          this.$refs.crum[i].style.borderBottom='1px solid #eb7a1d'
          this.$refs.crum[i].style.color='black'
@@ -364,10 +130,6 @@ export default {
        })
      },
      pushCru(key,index){//添加面包屑
-       for(let i in this.$refs.crum){
-         this.$refs.crum[i].style.borderBottom='1px solid #eb7a1d'
-         this.$refs.crum[i].style.color='black'
-       };
        let curMes={
          name:null,
          url:null
@@ -376,18 +138,29 @@ export default {
        curMes.url=this.route[key].usingChannelVOList[index].url;
        this.closeUrl=this.route[key].usingChannelVOList[index].url;
        let a=[];
+       let b=[];
        this.abc.forEach((e)=>{
          a.push(e.name)
+         b.push(e.url)
        });
-       if(a.indexOf(curMes.name)<0){
+       for(let i in this.$refs.crum){
+         this.$refs.crum[i].style.borderBottom='1px solid #eb7a1d'
+         this.$refs.crum[i].style.color='black'
+       };
+       if(a.indexOf(curMes.name)<0&&!window.localStorage.getItem('noUrl')){
          this.abc.push(curMes);
          setTimeout(()=>{
            this.$refs.crum[this.abc.length-1].style.borderBottom='0';
            this.$refs.crum[this.abc.length-1].style.color='#eb7a1d'
          })
        }else{
-         this.$refs.crum[a.indexOf(curMes.name)].style.borderBottom='0'
-         this.$refs.crum[a.indexOf(curMes.name)].style.color='#eb7a1d'
+         if(this.$refs.crum[a.indexOf(curMes.name)]!=undefined){
+           this.$refs.crum[a.indexOf(curMes.name)].style.borderBottom='0'
+           this.$refs.crum[a.indexOf(curMes.name)].style.color='#eb7a1d'
+         }else{
+           this.$refs.crum[b.indexOf(window.location.hash.substr(1))].style.borderBottom='0'
+           this.$refs.crum[b.indexOf(window.location.hash.substr(1))].style.color='#eb7a1d'
+         }
        }
      },
      delCru(index){//删除面包屑

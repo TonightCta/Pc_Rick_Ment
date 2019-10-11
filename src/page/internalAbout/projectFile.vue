@@ -13,7 +13,8 @@
         <el-col :span="3"><div class="fileMes_title">验货单管理</div></el-col>
       </el-row>
       <div class="" style="minHeight:500px;" v-loading="loadFile">
-        <el-row class="operTwo" v-for="(proMes,indexFile) in proList" :key="'proMes'+indexFile">
+        <p style="textAlign:center;lineHeight:80px;color:#666;" v-if="noFile">暂无更多数据</p>
+        <el-row class="operTwo publicHover" v-for="(proMes,indexFile) in proList" :key="'proMes'+indexFile">
           <el-col :span="12"><div class="file_con">{{proMes.projectPointVO.projectName}}</div></el-col>
           <el-col :span="6" v-if="proMes.projectPointVO.placeName!=null&&proMes.projectPointVO.placeName!=''"><div class="file_con">{{proMes.projectPointVO.placeName}}</div></el-col>
           <el-col :span="6" v-else><div class="file_con">-</div></el-col>
@@ -160,6 +161,7 @@ export default {
       loadFile:false,//数据加载
       backFileList:[],//回显文件列表
       insNum:0,//验货单排序
+      noFile:false,//无数据
     }
   },
   watch:{
@@ -168,6 +170,13 @@ export default {
         // this.getProList()
       }
     },
+    proList(val,oldVal){
+      if(val==null||val.length<1){
+        this.noFile=true;
+      }else{
+        this.noFile=false;
+      }
+    }
   },
   created(){
     this.getProList()
@@ -214,6 +223,7 @@ export default {
       this.$axios.get(this.url+'/projectFileTypeList').then((res)=>{
         if(res.data.code==0){
           this.pointFileList=res.data.data;
+          console.log(this.pointFileList)
           this.pointFileList.forEach((e)=>{
             this.$set(e,'filename',null)
             this.$set(e,'file',null)

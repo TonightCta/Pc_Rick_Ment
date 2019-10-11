@@ -68,3 +68,6 @@ a{
 	color:#eb7a1d;
 	text-decoration: underline;
 }
+.publicHover:hover{
+	background: #ccc!important;
+}

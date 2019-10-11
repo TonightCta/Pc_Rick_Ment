@@ -22,7 +22,7 @@
       </div>
       <p v-show="noData" style="height:70px;font-size:18px;line-height:70px;text-align:center;width:90%;color:#666;position:absolute;left:20px;">暂无更多数据</p>
       <div class="internalEng_con" v-loading="engLoad">
-        <el-row class="el_con" v-for="(eng,index) in engList" :key="'el'+index">
+        <el-row class="el_con publicHover" v-for="(eng,index) in engList" :key="'el'+index">
           <el-col :span="2"><div class="listCon">{{eng.num+1}}</div></el-col>
           <el-tooltip class="item" effect="dark" :content="eng.name" placement="bottom">
             <el-col :span="4"><div class="listCon" style="cursor:pointer;">{{eng.name.substring(0,10)}}...</div></el-col>

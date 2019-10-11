@@ -22,7 +22,7 @@
         <el-col :span="2"><div class="news_titleSec">浏览</div></el-col>
         <el-col :span="2"><div class="news_titleSec">操作</div></el-col>
       </el-row>
-      <el-row class="el_con" v-for="(news,index) in newsList" :key="'News'+index">
+      <el-row class="el_con publicHover" v-for="(news,index) in newsList" :key="'News'+index">
         <el-col :span="1"><div class="news_con">{{news.num+1}}</div></el-col>
         <el-col :span="2"><div class="news_con">行业资讯</div></el-col>
         <el-col :span="4"><div class="news_con">{{news.title.substring(0,13)}}...</div></el-col>

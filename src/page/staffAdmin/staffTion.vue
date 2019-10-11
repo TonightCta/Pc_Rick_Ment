@@ -23,7 +23,7 @@
           <el-col :span="2"><div class="staffTitle">操作</div></el-col>
         </el-row>
         <div class="" style="minHeight:500px;">
-          <el-row class="el_con" v-for="(staff,index) in staffList" :key="'Staff'+index">
+          <el-row class="el_con publicHover" v-for="(staff,index) in staffList" :key="'Staff'+index">
             <el-col :span="2"><div class="staffCon">{{staff.num+1}}</div></el-col>
             <el-col :span="7"><div class="staffCon">{{staff.text}}</div></el-col>
             <el-col :span="4"><div class="staffCon">{{staff.text}}</div></el-col>

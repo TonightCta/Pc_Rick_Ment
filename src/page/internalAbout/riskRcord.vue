@@ -33,7 +33,7 @@
       </el-row>
       <p style="textAlign:center;lineHeight:80px;color:#666;" v-if="noRisk">暂无更多记录</p>
       <div class="" style="minHeight:500px;" v-loading="riskLoading">
-        <el-row v-for="(risk,index) in riskList" :key="'Risk'+index">
+        <el-row class="publicHover" v-for="(risk,index) in riskList" :key="'Risk'+index">
           <el-col :span="2"><div class="risk_mes">{{risk.num+1}}</div></el-col>
           <el-tooltip class="item" effect="dark" :content="risk.projectPointVO.projectName" placement="bottom">
             <el-col :span="4"><div class="risk_mes">{{risk.projectPointVO.projectName.substring(0,10)}}...</div></el-col>

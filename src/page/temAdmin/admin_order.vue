@@ -23,7 +23,7 @@
     </div>
     <p style="text-align:center;color:#666;margin-top:30px;width:90%;" v-show="hasOrder">暂无更多数据</p>
     <div class="order_con"  v-loading="loadOrder">
-      <el-row v-for="(orderCon,index) in msgList" :key="index" class="el_con">
+      <el-row v-for="(orderCon,index) in msgList" :key="index" class="el_con publicHover">
         <el-col :span="2"><div class="title_con">{{orderCon.num+1}}</div></el-col>
         <el-tooltip class="item" effect="dark" :content="orderCon.name" placement="bottom">
           <el-col :span="3" style="cursor:pointer;"><div class="title_con">{{orderCon.name.substring(0,6)+'...'}}</div></el-col>

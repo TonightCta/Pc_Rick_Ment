@@ -19,7 +19,7 @@
         <el-col :span="3"><div class="role_title">状态</div></el-col>
         <el-col :span="3"><div class="role_title">操作</div></el-col>
       </el-row>
-      <el-row class="operTwo" v-for="(role,index) in roleList" :key="'Role'+index">
+      <el-row class="operTwo publicHover" v-for="(role,index) in roleList" :key="'Role'+index">
         <el-col :span="2"><div class="role_mes">{{role.num+1}}</div></el-col>
         <el-col :span="4"><div class="role_mes">{{role.name}}</div></el-col>
         <el-col :span="6"><div class="role_mes">{{role.remark}}</div></el-col>

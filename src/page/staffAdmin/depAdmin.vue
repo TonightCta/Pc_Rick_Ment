@@ -18,7 +18,7 @@
         <el-col :span="2"><div class="depTitle">待定</div></el-col>
         <el-col :span="2"><div class="depTitle">操作</div></el-col>
       </el-row>
-      <el-row class="el_con">
+      <el-row class="el_con publicHover">
         <el-col :span="2"><div class="depCon">序号</div></el-col>
         <el-col :span="4"><div class="depCon">待定</div></el-col>
         <el-col :span="4"><div class="depCon">待定</div></el-col>
@@ -63,7 +63,7 @@ export default {
 
     },
     localtion(){
-      
+
     }
   }
 }

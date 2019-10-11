@@ -18,7 +18,7 @@
         <el-col :span="2"><div class="operman_title">状态</div></el-col>
         <el-col :span="2"><div class="operman_title">操作</div></el-col>
       </el-row>
-      <el-row class="operTwo" v-for="(operman,index) in opermanList" :key="'Operman'+index">
+      <el-row class="operTwo publicHover" v-for="(operman,index) in opermanList" :key="'Operman'+index">
         <el-col :span="2"><div class="operman_mes">{{operman.num+1}}</div></el-col>
         <el-col :span="3"><div class="operman_mes">{{operman.loginName}}</div></el-col>
         <el-col :span="3"><div class="operman_mes">{{operman.nickName}}</div></el-col>

@@ -15,7 +15,7 @@
         <el-col :span="12"><div class="rule_title">规则流程</div></el-col>
         <el-col :span="3"><div class="rule_title">操作</div></el-col>
       </el-row>
-      <el-row class="el_con" v-for="(rule,index) in ruleList" :key="'Rule'+index">
+      <el-row class="el_con publicHover" v-for="(rule,index) in ruleList" :key="'Rule'+index">
         <el-col :span="2"><div class="rule_con">{{rule.num+1}}</div></el-col>
         <el-col :span="7"><div class="rule_con">{{rule.name}}</div></el-col>
         <el-col :span="12"><div class="rule_con">{{rule.people}}</div></el-col>
