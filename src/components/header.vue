@@ -4,7 +4,7 @@
 
     </div>
     <!-- <img src="../../static/img/tab_logo_home_nor.png" alt=""> -->
-    <p style="position:absolute;left:30%;color:red;top:0;">当前环境:<span style="text-decoration:underline;">{{url}}</span></p>
+    <!-- <p style="position:absolute;left:30%;color:red;top:0;">当前环境:<span style="text-decoration:underline;">{{url}}</span></p> -->
     <p class="signMes" ref="signMes">
       欢迎您,
       <span style="color:#eb7a1d;cursor:pointer;">{{adminName}}</span>,

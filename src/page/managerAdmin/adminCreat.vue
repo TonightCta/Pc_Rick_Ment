@@ -1385,7 +1385,6 @@ export default {
       let opID=window.localStorage.getItem('Uid');
       formdata.append('operatorId',opID);
       formdata.append('page',this.page);
-      formdata.append('operateType','creator');
       if(this.searchMes.proName!=null&&this.searchMes.proName!=''){
         formdata.append('name',this.searchMes.proName)
       };
@@ -1541,7 +1540,6 @@ export default {
       let opID=window.localStorage.getItem('Uid');
       formdata.append('page',_vn.page);
       formdata.append('operatorId',opID);
-      formdata.append('operateType','creator')
       _vn.$axios.post(_vn.url+'/findProjectListByCondition',formdata).then((res)=>{
         if(res.data.code==0){
           _vn.length=_vn.page*10

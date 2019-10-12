@@ -201,6 +201,16 @@ const router = new Router({
           path:'/admin/beta',//测试页面
           name:'Bata',
           component:resolve=>require(['@/page/basicData/betaFile'],resolve)
+        },
+        {
+          path:'/admin/adminProject',//项目浏览(高权限)
+          name:'AdminProject',
+          component:resolve=>require(['@/page/mentAdmin/adminProject'],resolve)
+        },
+        {
+          path:'/admin/adminCreat',//项目管理(高权限)
+          name:'AdminCreat',
+          component:resolve=>require(['@/page/managerAdmin/adminCreat'],resolve)
         }
       ],
       redirect:'/admin/wel'
@@ -213,7 +223,7 @@ router.beforeEach((to,from,next)=>{
   const notList=['index','Wel','Order','InternalEng','NewEng','ExternalEng','CertifiedEng','QueryProject','GressProject','skillMent','internalCom','newCom',
                  'certifiedCom','CreatPro','CustTion','custTionManer','WorkContent','RiskRecord','riskRcordManer','ProjectFile','Channel','Role',
                  'OperMan','Place','Point','Field','DeMand','BusinessOA','StaffAdmin','DepAdmin','PlaceOA','OAList','QueryOA','RuleList','NewsAdmin',
-                 'CaseAdmin'
+                 'CaseAdmin','AdminProject','AdminCreat'
                ];
   if(notList.indexOf(to.name)<0){
     Message.warning('访问的页面不存在哦');
@@ -229,7 +239,7 @@ router.beforeEach((to,from,next)=>{
   const adminList=['Wel','Order','InternalEng','NewEng','ExternalEng','CertifiedEng','QueryProject','GressProject','skillMent','internalCom','newCom',
                  'certifiedCom','CreatPro','CustTion','custTionManer','WorkContent','RiskRecord','riskRcordManer','ProjectFile','Channel','Role',
                  'OperMan','Place','Point','Field','DeMand','BusinessOA','StaffAdmin','DepAdmin','PlaceOA','OAList','QueryOA','RuleList','NewsAdmin',
-                 'CaseAdmin'
+                 'CaseAdmin','AdminProject','AdminCreat'
                ];
   if(adminList.indexOf(to.name)>-1){
     if(!window.sessionStorage.getItem('adminMes')){

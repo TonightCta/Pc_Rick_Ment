@@ -190,9 +190,9 @@ export default {
     this.getEngList()
   },
   beforeRouteLeave(to,from,next){
-    window.sessionStorage.clear('eName');
-    window.sessionStorage.clear('beginTime');
-    window.sessionStorage.clear('endTime');
+    window.sessionStorage.removeItem('eName');
+    window.sessionStorage.removeItem('beginTime');
+    window.sessionStorage.removeItem('endTime');
     next();
   },
   watch:{
