@@ -1363,6 +1363,7 @@ export default {
       top:0;
       border-bottom:1px solid #eee;
       background: white;
+      z-index: 999;
       i{
         font-size: 35px;
         color: rgba(235,122,29,1);

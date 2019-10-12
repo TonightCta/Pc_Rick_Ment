@@ -133,13 +133,51 @@
             <i class="el-icon-document" @click="hasDetials(index)"></i>
           </div></el-col>
           <el-col :span="2"><div class="pro_oper">
-            <i class="el-icon-edit-outline" style="margin-right:15px;" @click="editProject(index)"></i>
+            <el-tooltip class="item" effect="dark" content="项目信息编辑" placement="bottom">
+              <i class="el-icon-edit-outline" style="margin-right:5px;" @click="editProject(index)"></i>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="负责人变更" placement="bottom">
+              <i class="el-icon-user" @click="changeFounder(index)"></i>
+            </el-tooltip>
             <el-tooltip class="item" effect="dark" content="删除项目" placement="bottom">
               <i class="el-icon-delete" style="color:black;" @click="delPro(index)"></i>
             </el-tooltip>
           </div></el-col>
         </el-row>
       </div>
+    </div>
+    <!-- 变更负责人 -->
+    <div class="">
+      <el-dialog
+        title="变更负责人"
+        :visible.sync="blFounder"
+        width="45%">
+        <p style="width:100%;textAlign:center;">
+          <span style="fontSize:16px;">搜索工程师:</span>&nbsp;
+          <el-select
+            v-model="changeFounText"
+            filterable
+            remote
+            reserve-keyword
+            size="medium"
+            style="width:300px;"
+            placeholder="请输入工程师姓名"
+            :remote-method="remoteEng"
+            @change="chooseEng"
+            :loading="cusLoading">
+            <el-option
+              v-for="eng in searchEngList"
+              :key="eng.value"
+              :label="eng.label"
+              :value="eng.value">
+            </el-option>
+          </el-select>
+        </p>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="blFounder = false" size="medium">取&nbsp;消</el-button>
+          <el-button type="primary" @click="openTurnFund()" size="medium">确&nbsp;定</el-button>
+        </span>
+      </el-dialog>
     </div>
     <!-- 分页器 -->
     <div class="project_page">
@@ -1258,6 +1296,9 @@ export default {
         acceptTime:null,//验收时间
       },
       noPro:false,//无数据情况
+      blFounder:false,//变更负责人
+      changeFounText:null,//搜索变更负责人
+      founderID:null,//变更负责人ID
     }
   },
   created(){
@@ -2929,6 +2970,7 @@ export default {
     chooseEng(value){//选择派遣工程师
       this.searchEngList.forEach((e)=>{
         if(value==e.label){
+          this.founderID=e.id;
           this.gateList.forEach((x)=>{
             if(value==x.searchEngText){
               this.$set(x,'engID',e.id);
@@ -3317,6 +3359,39 @@ export default {
         }else{
           this.$message.error('不能再删除了哦')
         }
+      }
+    },
+    changeFounder(index){
+      this.proID=this.proList[index].id;
+      this.blFounder=true;
+    },
+    openTurnFund(){//拦截确认更换负责人
+      let _vm=this;
+      if(_vm.founderID!=null){
+        _vm.$confirm('此操作将更换当前项目的负责人, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'success'
+          }).then(() => {
+            let formdata=new FormData();
+            formdata.append('projectId',_vm.proID);
+            formdata.append('engineerId',_vm.founderID);
+            _vm.$axios.post(_vm.url+'/changeProjectManagerWithEngineerId',formdata).then((res)=>{
+              if(res.data.code==0){
+                _vm.blFounder=false;
+                _vm.changeFounText=null;
+                _vm.founderID=null;
+                _vm.getProList();
+                _vm.$message.success('变更成功')
+              }else{
+                _vm.$message.error(res.data.msg)
+              }
+            }).catch((err)=>{
+              _vm.$message.err('未知错误,请联系管理员')
+            })
+          })
+      }else{
+        _vm.$message.error('请先选择工程师')
       }
     },
     // chooseWork(index,workIndex){//选择进出场时间
@@ -3928,6 +4003,7 @@ input[type=checkbox]:checked:after {
       top:0;
       border-bottom:1px solid #eee;
       background: white;
+      z-index: 999;
       i{
         font-size: 35px;
         color: rgba(235,122,29,1);
