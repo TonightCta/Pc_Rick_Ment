@@ -746,7 +746,7 @@ export default {
               _vm.addEng=false;
               _vm.getEngList();
               _vm.$message.success('添加成功');
-              window.localStorage.clear('editID');
+              window.localStorage.removeItem('editID');
             }else{
               _vm.$message.error(res.data.msg);
             }

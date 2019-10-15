@@ -497,8 +497,8 @@ export default {
       filename:'项目目录',
       autoWidth: true,
       bookType: 'xlsx',
-      tHeader:['项目名称', '产品线', '负责人','预估时间','实际时间','入场时间','完工时间','验收时间','项目状态'],
-      tValue:['name', 'technologyName', 'creatorName','dayNumber','workDayNumber','entranceTimeSec', 'finishTimeSec','acceptTimeSec','stateStr'],
+      tHeader:['项目名称','项目合同号', '产品线', '负责人','预估时间','实际时间','入场时间','完工时间','验收时间','项目状态'],
+      tValue:['name','contractNumber','technologyName', 'creatorName','dayNumber','workDayNumber','entranceTimeSec', 'finishTimeSec','acceptTimeSec','stateStr'],
       arrTimeList:[],//进场时间集合
       leaveTimeList:[],//离场时间集合
     }
