@@ -766,6 +766,7 @@ export default {
         formdata.append('workYear',vm.changeEngMes.workYear);
         formdata.append('isOfficial',vm.changeEngMes.isOfficial);
         formdata.append('isManager',vm.changeEngMes.isManager);
+        formdata.append('isCompany',false)
         vm.cityID.forEach((e)=>{
           formdata.append('placeIds',e)
         });
@@ -841,6 +842,7 @@ export default {
         };
         formdata.append('isOfficial',_vm.isInsideBoolean);
         formdata.append('isManager',_vm.isManBoolean);
+        formdata.append('isCompany',false)
         _vm.cityID.forEach((e)=>{
           formdata.append('placeIds',e)
         });

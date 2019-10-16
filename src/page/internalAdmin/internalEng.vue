@@ -711,6 +711,7 @@ export default {
         formdata.append('username',_vm.addEngMes.logname);
         formdata.append('email',_vm.addEngMes.email);
         formdata.append('workYear',_vm.addEngMes.workyear);
+        formdata.append('isCompany',false)
         if(_vm.skillText!=null&&_vm.skillText!=''){
           formdata.append('remark',_vm.skillText)
         };
@@ -855,6 +856,7 @@ export default {
         formdata.append('workYear',vm.editEngMes.workYear);
         formdata.append('isOfficial',vm.editEngMes.isOfficial);
         formdata.append('isManager',vm.editEngMes.isManager);
+        formdata.append('isCompany',false)
         vm.cityID.forEach((e)=>{
           formdata.append('placeIds',e)
         });
