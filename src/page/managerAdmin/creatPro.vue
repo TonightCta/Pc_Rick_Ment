@@ -498,11 +498,11 @@
       <div class="" v-if="threeConBox">
         <div class="pro_cess">
           <p class="cess_title">项目进程</p>
-          <div class="cess_box">
+          <div class="cess_box" v-if="threeConBox">
             <ul>
               <li>
                 <span>项目状态</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <el-select v-model="proStateMes.stateText" placeholder="请选择" @change="chooseProState" style="width:220px;" size="medium">
+                <el-select v-model="proStateMes.stateText" ref="adsd" placeholder="请选择" @change="chooseProState" style="width:220px;" size="medium">
                   <el-option
                     v-for="item in proStateList"
                     :key="item.code"
@@ -564,6 +564,7 @@
                   type="date"
                   value-format="yyyy-MM-dd"
                   size="medium"
+                  @change="writeEndTime"
                   placeholder="选择日期">
                 </el-date-picker>
               </li>
@@ -574,6 +575,7 @@
                   type="date"
                   value-format="yyyy-MM-dd"
                   size="medium"
+                  @change="writeAcceptTime"
                   placeholder="选择日期">
                 </el-date-picker>
               </li>
@@ -1314,6 +1316,20 @@ export default {
     }
   },
   watch:{
+    threeConBox(val,oldVal){
+      if(!val){
+        this.proStateMes.remark=null;
+        this.proStateMes.stateText=null;
+        this.proStateMes.state=null;
+        this.proStateMes.warnTime=null;
+        this.proStateMes.planEndTime=null;
+        this.proStateMes.planAcceptTime=null;
+        this.proStateMes.proGress=null;
+        this.proStateMes.startTime=null;
+        this.proStateMes.endTime=null;
+        this.proStateMes.acceptTime=null;
+      };
+    },
     proList(val,oldVal){
       if(val==null||val.length<1){
         this.noPro=true;
@@ -1348,24 +1364,7 @@ export default {
         this.isDown=false;
       }
     },
-    workEndTime(val,oldVal){
-      if(val!=null&&val!=''){
-        this.proStateMes.stateText='完工';
-        this.proStateMes.state=3;
-      }else{
-        this.proStateMes.stateText=null;
-        this.proStateMes.state=null;
-      }
-    },
-    workAcceptTime(val,oldVal){
-      if(val!=null&&val!=''){
-        this.proStateMes.stateText='验收';
-        this.proStateMes.state=4;
-      }else{
-        this.proStateMes.stateText=null;
-        this.proStateMes.state=null;
-      }
-    }
+
   },
   methods:{
     getLineList(){//获取产品线选项
@@ -2077,6 +2076,16 @@ export default {
       _vm.proID=_vm.proList[index].id;
       _vm.$axios.get(_vm.url+'/projectInfo?projectId='+_vm.proID).then((res)=>{
         if(res.data.code==0){
+          _vm.proStateMes.stateText=res.data.data.stateStr;
+          _vm.proStateMes.state=res.data.data.state;
+          _vm.proStateMes.proGress=res.data.data.schedule;
+          _vm.proStateMes.remark=res.data.data.remark;
+          _vm.proStateMes.warnTime=_vm.conversionTime(res.data.data.warnTime);
+          _vm.proStateMes.planEndTime=_vm.conversionTime(res.data.data.planFinishTime);
+          _vm.proStateMes.planAcceptTime=_vm.conversionTime(res.data.data.planAcceptTime);
+          _vm.proStateMes.startTime=_vm.conversionTime(res.data.data.startTime);
+          _vm.proStateMes.endTime=_vm.conversionTime(res.data.data.finishTime);
+          _vm.proStateMes.acceptTime=_vm.conversionTime(res.data.data.acceptTime);
           _vm.pointList=res.data.data.projectPointVOList;
           _vm.pointList.forEach((e)=>{
             _vm.$set(e,'goWorkList',[]);
@@ -2095,16 +2104,7 @@ export default {
               });
             }
           });
-          this.proStateMes.stateText=res.data.data.stateStr;
-          this.proStateMes.state=res.data.data.state;
-          this.proStateMes.proGress=res.data.data.schedule;
-          this.proStateMes.remark=res.data.data.remark;
-          this.proStateMes.warnTime=this.conversionTime(res.data.data.warnTime);
-          this.proStateMes.planEndTime=this.conversionTime(res.data.data.planFinishTime);
-          this.proStateMes.planAcceptTime=this.conversionTime(res.data.data.planAcceptTime);
-          this.proStateMes.startTime=this.conversionTime(res.data.data.startTime);
-          this.proStateMes.endTime=this.conversionTime(res.data.data.finishTime);
-          this.proStateMes.acceptTime=this.conversionTime(res.data.data.acceptTime);
+          res.data=null;
           const loading = _vm.$loading({
             lock: true,
             text: '数据获取中...',
@@ -2117,12 +2117,13 @@ export default {
               setTimeout(()=>{
                 _vm.threeConBox=true;
                 _vm.threeBox=true;
-              },200)
+              },200);
               setTimeout(()=>{
                 _vm.$refs.threePerBox.style.width='100%';
                 _vm.$refs.threePerBox.style.minHeight='100%';
+                // console.log(this.proStateMes)
                 loading.close();
-              },200)
+              },300)
             }else{
               _vm.$message.error(res.data.msg)
             }
@@ -2135,6 +2136,20 @@ export default {
       }).catch((err)=>{
         _vm.$message.error('未知错误,请联系管理员')
       });
+    },
+    writeEndTime(){//完工状态联动
+      if(this.workEndTime!=null&&this.workEndTime!=''){
+        this.proStateMes.stateText='完工';
+        this.proStateMes.state=3;
+        this.$refs.adsd.focus();
+      }
+    },
+    writeAcceptTime(){//验收状态联动
+      if(this.workAcceptTime!=null&&this.workAcceptTime!=''){
+        this.proStateMes.stateText='验收';
+        this.proStateMes.state=4;
+        this.$refs.adsd.focus();
+      }
     },
     closeThreetBox(){//关闭第三步进程管理
       this.$refs.threePerBox.style.width='300px';
