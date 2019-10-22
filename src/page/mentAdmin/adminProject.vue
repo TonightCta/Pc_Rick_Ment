@@ -232,18 +232,19 @@
                   </template>
                   <el-row>
                     <el-col :span="4"><div class="gress_title">进程节点</div></el-col>
-                    <el-col :span="5"><div class="gress_title">实际开始时间</div></el-col>
-                    <el-col :span="5"><div class="gress_title">实际完成时间</div></el-col>
+                    <el-col :span="3"><div class="gress_title">实际开始时间</div></el-col>
+                    <el-col :span="3"><div class="gress_title">实际完成时间</div></el-col>
                     <el-col :span="6"><div class="gress_title">项目说明</div></el-col>
                     <el-col :span="4"><div class="gress_title">项目日报</div></el-col>
+                    <el-col :span="4"><div class="gress_title">日报数量</div></el-col>
                   </el-row>
                   <el-row class="publicHover" v-for="(gress,index) in point.usingProjectCourseNodeVOList" :key="'gress'+index">
                     <el-col :span="4"><div class="gress_con">{{gress.courseNodeName}}</div></el-col>
-                    <el-col :span="5"><div class="gress_con">
+                    <el-col :span="3"><div class="gress_con">
                       <span v-if="gress.startTime!=null&&gress.startTime!='null'">{{gress.startTimeSec}}</span>
                       <span v-else>-</span>
                     </div></el-col>
-                    <el-col :span="5"><div class="gress_con">
+                    <el-col :span="3"><div class="gress_con">
                       <span v-if="gress.endTime!=null&&gress.endTime!='null'">{{gress.endTimeSec}}</span>
                       <span v-else>-</span>
                     </div></el-col>
@@ -258,6 +259,12 @@
                       ></span>
                       <span v-else>-</span>
                     </div></el-col>
+                    <el-col :span="4">
+                      <div class="gress_con">
+                        <span v-if="gress.workRecordVOList!=null&&gress.workRecordVOList!=''">{{gress.workRecordVOList.length}}</span>
+                        <span v-else>-</span>
+                      </div>
+                    </el-col>
                   </el-row>
               </el-collapse-item>
               <el-collapse-item :name="point.openKey">

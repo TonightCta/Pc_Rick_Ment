@@ -60,6 +60,7 @@
             </a>
             <p v-for="(fileBack,indexBack) in backFileList" v-if="fileBack.fileType==fileUp.code" style="width:100%;textAlign:left;box-sizing:border-box;paddingLeft:130px;">
               <a :href="url+'/'+fileBack.fileName" target="_blank">{{fileBack.fileName}}</a>
+              <i class="el-icon-delete" style="fontSize:16px;margin-left:10px;cursor:pointer;" @click="delServiceFile(index,indexBack)"></i>
             </p>
           </li>
         </ul>
@@ -80,7 +81,7 @@
           <el-input type="primary" size='small' style="width:500px;" disab v-model="pointInsList.fileName"></el-input>
           <el-button type="primary" size="small" icon="el-icon-search">浏览文件</el-button>
           <el-button type="primary" size="small" icon="el-icon-d-arrow-left" @click="upInsFile()">导入Excel</el-button>
-          <a href="http://www.baidu.com" target="_blank">
+          <a :href="url+'/inspectionTemplate.xlsx'" target="_blank">
             <el-button type="primary" size="small" icon="el-icon-download">下载模板</el-button>
           </a>
           <el-button type="primary" size="small" icon="el-icon-d-arrow-right">导出Excel</el-button>
@@ -223,7 +224,6 @@ export default {
       this.$axios.get(this.url+'/projectFileTypeList').then((res)=>{
         if(res.data.code==0){
           this.pointFileList=res.data.data;
-          console.log(this.pointFileList)
           this.pointFileList.forEach((e)=>{
             this.$set(e,'filename',null)
             this.$set(e,'file',null)
@@ -452,6 +452,20 @@ export default {
           this.$message.error('未知错误,请联系管理员')
         })
       }
+    },
+    delServiceFile(index,indexBack){//删除已上传文档
+      let formdata=new FormData();
+      formdata.append('projectFileId',this.backFileList[indexBack].id);
+      this.$axios.post(this.url+'/deleteProjectFile',formdata).then((res)=>{
+        if(res.data.code==0){
+          this.$message.success('删除文件成功')
+          this.backFileList.splice(indexBack,1);
+        }else{
+          this.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        this.$message.error('未知错误,请联系管理员')
+      })
     },
   }
 }
