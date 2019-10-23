@@ -373,12 +373,12 @@
       </el-dialog>
     </div>
     <!-- 第一步实施节点及计划 -->
-    <div class="firstPerBox" ref="firstPerBox" v-if="firstBox">
+    <div class="firstPerBox" ref="firstPerBox" v-show="firstBox">
       <p class="mes_close"><i class="el-icon-close" @click="closeFirstBox()"></i></p>
       <p class="mes_titleOne">
         <span>局点编辑</span>
       </p>
-      <div class="" v-if="firstConBox">
+      <div class="" v-show="firstConBox">
         <div class="" style="width:100%;overflow:auto;">
           <ul class="mes_titleTwo">
             <li>序号</li>
@@ -1770,7 +1770,12 @@ export default {
       let _vm=this;
       _vm.loadPoint=true;
       _vm.callIndex=index;
-      _vm.fullscreenLoading=true;
+      const loading = this.$loading({
+         lock: true,
+         text: '数据获取中...',
+         spinner: 'el-icon-loading',
+         background: 'rgba(0, 0, 0, 0.7)'
+       });
       _vm.proID=_vm.proList[index].id;
       _vm.$axios.get(_vm.url+'/projectInfo?projectId='+_vm.proID).then((res)=>{
         if(res.data.code==0){
@@ -1820,72 +1825,72 @@ export default {
                   setTimeout(()=>{
                     _vm.$refs.PointCheck0[0].checked=false;
                     _vm.$refs.MaskTitle0[0].style.display='none';
-                  },500);
+                  },550);
                 }else{
                   setTimeout(()=>{
                     _vm.$refs.PointCheck0[0].checked=true;
                     _vm.$refs.MaskTitle0[0].style.display='block';
-                  },500)
+                  },550)
                 };
                 _vm.temTwo.push(t.chooseMes[1].pointID);
                 if(_vm.temTwo.indexOf(false)>-1){
                   setTimeout(()=>{
                     _vm.$refs.PointCheck1[0].checked=false;
                     _vm.$refs.MaskTitle1[0].style.display='none';
-                  },500);
+                  },550);
                 }else{
                   setTimeout(()=>{
                     _vm.$refs.PointCheck1[0].checked=true;
                     _vm.$refs.MaskTitle1[0].style.display='block';
-                  },500)
+                  },550)
                 };
                 _vm.temThree.push(t.chooseMes[2].pointID);
                 if(_vm.temThree.indexOf(false)>-1){
                   setTimeout(()=>{
                     _vm.$refs.PointCheck2[0].checked=false;
                     _vm.$refs.MaskTitle2[0].style.display='none';
-                  },500);
+                  },550);
                 }else{
                   setTimeout(()=>{
                     _vm.$refs.PointCheck2[0].checked=true;
                     _vm.$refs.MaskTitle2[0].style.display='block';
-                  },500)
+                  },550)
                 };
                 _vm.temFour.push(t.chooseMes[3].pointID);
                 if(_vm.temFour.indexOf(false)>-1){
                   setTimeout(()=>{
                     _vm.$refs.PointCheck3[0].checked=false;
                     _vm.$refs.MaskTitle3[0].style.display='none';
-                  },500);
+                  },550);
                 }else{
                   setTimeout(()=>{
                     _vm.$refs.PointCheck3[0].checked=true;
                     _vm.$refs.MaskTitle3[0].style.display='block';
-                  },500)
+                  },550)
                 };
                 _vm.temFive.push(t.chooseMes[4].pointID);
                 if(_vm.temFive.indexOf(false)>-1){
                   setTimeout(()=>{
                     _vm.$refs.PointCheck4[0].checked=false;
                     _vm.$refs.MaskTitle4[0].style.display='none';
-                  },500);
+                  },550);
                 }else{
                   setTimeout(()=>{
                     _vm.$refs.PointCheck4[0].checked=true;
                     _vm.$refs.MaskTitle4[0].style.display='block';
-                  },500)
+                  },550)
                 };
                 _vm.temSix.push(t.chooseMes[5].pointID);
                 if(_vm.temSix.indexOf(false)>-1){
                   setTimeout(()=>{
                     _vm.$refs.PointCheck5[0].checked=false;
                     _vm.$refs.MaskTitle5[0].style.display='none';
-                  },500);
+                  },550);
                 }else{
                   setTimeout(()=>{
                     _vm.$refs.PointCheck5[0].checked=true;
                     _vm.$refs.MaskTitle5[0].style.display='block';
-                  },500)
+                  },550)
                 };
                 _vm.temSeven.push(t.chooseMes[6].pointID);
                 if(_vm.temSeven.indexOf(false)>-1){
@@ -1897,7 +1902,7 @@ export default {
                   setTimeout(()=>{
                     _vm.$refs.PointCheck6[0].checked=true;
                     _vm.$refs.MaskTitle6[0].style.display='block';
-                  },500)
+                  },550)
                 };
               });
             _vm.$axios.get(_vm.url+'/getUsingCourseNodeList').then((res)=>{
@@ -1906,70 +1911,66 @@ export default {
                 _vm.$axios.get(_vm.url+'/mobile/getUsingPlaceList').then((res)=>{
                   if(res.data.code==0){
                     _vm.placeList=res.data.data.placeList;
-                    _vm.firstBox=true;
-                    _vm.fullscreenLoading=false;
-                    _vm.loadPoint=false;
                     setTimeout(()=>{
+                      _vm.firstBox=true;
+                      _vm.loadPoint=false;
                       _vm.firstConBox=true;
-                    },100)
-                    setTimeout(()=>{
+                      loading.close()
                       _vm.$refs.firstPerBox.style.width='100%';
                       _vm.$refs.firstPerBox.style.minHeight='100%';
-                    })
+                    },600)
                   }else{
                     _vm.loadPoint=false;
-                    _vm.fullscreenLoading=false;
+                    loading.close()
                     _vm.$message.error(res.data.msg);
                   }
                 }).catch((err)=>{
                   _vm.loadPoint=false;
-                  _vm.fullscreenLoading=false;
+                  loading.close()
                   _vm.$message.error('未知错误,请联系管理员')
                 })
               }else{
                 _vm.loadPoint=false;
-                _vm.fullscreenLoading=false;
+                loading.close()
                 _vm.$message.error(res.data.msg)
               }
             }).catch((err)=>{
               _vm.loadPoint=false;
-              _vm.fullscreenLoading=false;
+              loading.close()
               _vm.$message.error('未知错误,请联系管理员')
             })
           }else{
             _vm.$axios.get(_vm.url+'/mobile/getUsingPlaceList').then((res)=>{
               if(res.data.code==0){
                 _vm.placeList=res.data.data.placeList;
-                _vm.firstBox=true;
-                _vm.fullscreenLoading=false;
-                _vm.loadPoint=false;
                 setTimeout(()=>{
+                  _vm.firstBox=true;
+                  _vm.loadPoint=false;
                   _vm.firstConBox=true;
-                },100)
-                setTimeout(()=>{
+                  loading.close()
                   _vm.$refs.firstPerBox.style.width='100%';
                   _vm.$refs.firstPerBox.style.minHeight='100%';
-                })
+                },600)
               }else{
                 _vm.loadPoint=false;
-                _vm.fullscreenLoading=false;
+                loading.close()
                 _vm.$message.error(res.data.msg);
               }
             }).catch((err)=>{
               _vm.loadPoint=false;
-              _vm.fullscreenLoading=false;
+              loading.close()
               _vm.$message.error('未知错误,请联系管理员')
             })
             // alert(1)
           }
         }else{
           _vm.loadPoint=false;
-          _vm.fullscreenLoading=false;
+          loading.close()
           _vm.$message.error(res.data.msdg)
         }
       }).catch((err)=>{
         _vm.loadPoint=false;
-        _vm.fullscreenLoading=false;
+        loading.close()
         _vm.$message.error('未知错误,请联系管理员')
       })
 
