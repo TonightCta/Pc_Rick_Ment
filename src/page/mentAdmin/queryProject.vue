@@ -106,6 +106,7 @@
             <span v-show="pro.state==1" style="background:rgb(204, 255, 153);">开工</span>
             <span v-show="pro.state==4" style="background:rgb(102, 204, 255);">验收</span>
             <span v-show="pro.state==3" style="background:rgb(204, 255, 255);">完工</span>
+            <span v-show="pro.state==5" style="background:rgb(131,170, 255);">驻场运维</span>
           </div></el-col>
           <el-col :span="2" v-if="pro.technologyName!=null&&pro.technologyName!='null'"><div class="projectCon">{{pro.technologyName}}</div></el-col>
           <el-col :span="2" v-else><div class="projectCon">-</div></el-col>
@@ -452,7 +453,7 @@ export default {
         dateText:null,//时间文本
         dateUpText:null,//上传时间类型字段
         lineList:[],//产品线选择列表
-        typeList:['未开工','开工','停工','完工','验收'],//项目状态选择列表
+        typeList:['未开工','开工','停工','完工','验收','驻场运维'],//项目状态选择列表
         dateList:['创建时间','预警时间','入场时间','计划完工时间','完工时间','计划验收时间','验收时间'],//时间类型选择列表
         dateChoose:null,//时间选择
         startTime:null,//筛选开始时间
@@ -972,6 +973,8 @@ export default {
         this.searchMes.proStatusNum=2;
       }else if(this.searchMes.proStatus==='完工'){
         this.searchMes.proStatusNum=3;
+      }else if(this.searchMes.proStatus==='驻场运维'){
+        this.searchMes.proStatusNum=5;
       }else{
         this.searchMes.proStatusNum=4;
       }

@@ -110,6 +110,7 @@
             <span v-show="pro.state==1" style="background:rgb(204, 255, 153);">开工</span>
             <span v-show="pro.state==4" style="background:rgb(102, 204, 255);">验收</span>
             <span v-show="pro.state==3" style="background:rgb(204, 255, 255);">完工</span>
+            <span v-show="pro.state==5" style="background:rgb(131,170, 255);">驻场运维</span>
           </div></el-col>
           <el-col :span="2"><div class="pro_oper">{{pro.schedule}}%</div></el-col>
           <el-col :span="1"><div class="pro_oper">{{pro.creatorName}}</div></el-col>
@@ -470,7 +471,7 @@
               <el-option
                 v-for="eng in searchEngList"
                 :key="eng.value"
-                :label="eng.label"
+                :label="eng.label+'  ['+eng.isOfficialText+']'"
                 :value="eng.value">
               </el-option>
             </el-select>
@@ -1106,7 +1107,7 @@ export default {
         dateText:null,//时间文本
         dateUpText:null,//上传时间类型字段
         lineList:[],//产品线选择列表
-        typeList:['未开工','开工','停工','完工','验收'],//项目状态选择列表
+        typeList:['未开工','开工','停工','完工','验收','驻场运维'],//项目状态选择列表
         dateList:['创建时间','预警时间','入场时间','计划完工时间','完工时间','计划验收时间','验收时间'],//时间类型选择列表
         dateChoose:[],//时间选择
         startTime:null,//筛选开始时间
@@ -1490,6 +1491,8 @@ export default {
         this.searchMes.proStatusNum=2;
       }else if(this.searchMes.proStatus==='完工'){
         this.searchMes.proStatusNum=3;
+      }else if(this.searchMes.proStatus==='驻场运维'){
+        this.searchMes.proStatusNum=5;
       }else{
         this.searchMes.proStatusNum=4;
       }
@@ -2299,12 +2302,19 @@ export default {
           let formdata=new FormData();
           formdata.append('state',2);
           formdata.append('name',query);
-          formdata.append('size',20);
+          formdata.append('size',999);
           formdata.append('page',0);
           this.$axios.post(this.url+'/findEngineerListByCondition',formdata).then((res)=>{
             if(res.data.code==0){
               this.searchEngList=res.data.data.content.map(item=>{
-                return {value:item.name,label:item.name,id:item.id}
+                return {value:item.name,label:item.name,id:item.id,isOfficial:item.isOfficial}
+              });
+              this.searchEngList.forEach((e)=>{
+                if(e.isOfficial){
+                  this.$set(e,'isOfficialText','内部')
+                }else{
+                  this.$set(e,'isOfficialText','外部')
+                }
               });
             }else{
               this.$message.error(res.data.msg)
