@@ -73,9 +73,18 @@
     </div>
     <p class="addEng">
       <el-button type="primary" icon="el-icon-plus" size="medium" @click="openPushBox()">添加项目</el-button>
-      <span class="dataLength">共有数据:&nbsp;<span style="color:#eb7a1d;font-weight:bold;">{{dataLength}}</span>&nbsp;条</span>
+      <span class="dataLength">
+        排序类型:&nbsp;&nbsp;<el-select v-model="getType" placeholder="请选择" @change="changeGetType" size="medium" style="width:110px;">
+          <el-option
+            v-for="item in getTypeList"
+            :key="item.value"
+            :label="item.label"
+            :value="item.label">
+          </el-option>
+        </el-select>
+        共有数据:&nbsp;<span style="color:#eb7a1d;font-weight:bold;">{{dataLength}}</span>&nbsp;条</span>
       <el-tooltip class="item" effect="dark" content="刷新数据" placement="bottom">
-        <i class="el-icon-refresh" @click="getProList()"></i>
+        <i class="el-icon-refresh" @click="refreshData()"></i>
       </el-tooltip>
     </p>
     <div class="pro_list" style="margin-top:2px;">
@@ -98,7 +107,9 @@
       <p style="width:100%;textAlign:center;lineHeight:60px;color:#666;" v-if="noPro">暂无更多数据</p>
       <div class="" style="minHeight:500px;" v-loading="proLoad">
         <el-row class="proMes publicHover" v-for="(pro,index) in proList" :key="'Pro'+index">
-          <el-col :span="1"><div class="pro_oper">{{pro.num+1}}</div></el-col>
+          <el-tooltip class="item" effect="dark" :content="'创建时间:'+pro.createTimeSec+'    '+'更新时间:'+pro.updateTimeSec" placement="bottom">
+            <el-col :span="1"><div class="pro_oper" style="cursor:pointer;">{{pro.num+1}}</div></el-col>
+          </el-tooltip>
           <el-tooltip class="item" effect="dark" :content="pro.name+'['+pro.contractNumber+']'" placement="bottom">
             <el-col :span="3" v-if="pro.name!=null&&pro.name!='null'"><div class="pro_oper" style="cursor:pointer;">{{pro.name.substring(0,8)}}...</div></el-col>
             <el-col :span="3" v-else><div class="pro_oper" style="cursor:pointer;">-</div></el-col>
@@ -857,8 +868,12 @@
               <span v-else>-</span>
             </p>
           </li>
-          <li>
+          <li class="flex">
             <p>创建时间:&nbsp;&nbsp;&nbsp;<span>{{projectMes.createTimeSec}}</span></p>
+            <p>更新时间:&nbsp;&nbsp;&nbsp;
+              <span v-if="projectMes.updateTime!=null&&projectMes.updateTime!='null'">{{projectMes.updateTimeSec}}</span>
+              <span v-else>-</span>
+            </p>
           </li>
           <li>项目说明:&nbsp;&nbsp;&nbsp;
             <pre>
@@ -1082,6 +1097,18 @@
 export default {
   data(){
     return{
+      getTypeList:[
+        {
+          value:'createTime,updateTime',
+          label:'创建时间'
+        },
+        {
+          value:'updateTime,createTime',
+          label:'更新时间'
+        }
+      ],//获取列表类型列表
+      getType:'创建时间',//获取列表类型
+      getTypeCode:'createTime,updateTime',//获取列表类型参数
       proList:[],
       value1:'',
       multipleSelection: [],
@@ -1393,6 +1420,7 @@ export default {
       formdata.append('operatorId',opID);
       formdata.append('page',this.page);
       formdata.append('operateType','creator');
+      formdata.append('sortStr',this.getTypeCode);
       if(this.searchMes.proName!=null&&this.searchMes.proName!=''){
         formdata.append('name',this.searchMes.proName)
       };
@@ -1525,6 +1553,7 @@ export default {
     },
     cancelPro(){//取消筛选
       this.page=0;
+      this.pageNum=10;
       this.getProList();
       this.searchMes.proName=null;
       this.searchMes.cusName=null;
@@ -1543,6 +1572,11 @@ export default {
     pushPro(){//添加项目
       this.$message.success('添加项目')
     },
+    refreshData(){//刷新数据
+      this.page=0;
+      this.pageNum=10;
+      this.getProList()
+    },
     getProList(){//获取所有项目列表
       let _vn=this;
       _vn.proLoad=true;
@@ -1550,7 +1584,8 @@ export default {
       let opID=window.localStorage.getItem('Uid');
       formdata.append('page',_vn.page);
       formdata.append('operatorId',opID);
-      formdata.append('operateType','creator')
+      formdata.append('operateType','creator');
+      formdata.append('sortStr',_vn.getTypeCode);
       _vn.$axios.post(_vn.url+'/findProjectListByCondition',formdata).then((res)=>{
         if(res.data.code==0){
           _vn.length=_vn.page*10
@@ -1569,6 +1604,19 @@ export default {
             }
             let cTime=cYear+'-'+cMon+'-'+cDay;
             _vn.$set(e,'createTimeSec',cTime);
+            //更新时间
+            let upDate=new Date(e.updateTime);
+            let uYear=upDate.getFullYear();
+            let uMon=upDate.getMonth()+1;
+            if(uMon<10){
+              uMon='0'+uMon
+            };
+            let uDay=upDate.getDate();
+            if(uDay<10){
+              uDay='0'+uDay
+            }
+            let uTime=uYear+'-'+uMon+'-'+uDay;
+            _vn.$set(e,'updateTimeSec',uTime);
           });
           _vn.proList=res.data.data.content;
           _vn.pageNum=res.data.data.totalPages*10;
@@ -1581,8 +1629,18 @@ export default {
       }).catch((err)=>{
         _vn.$message.error('未知错误,请联系管理员');
         _vn.proLoad=false;
-        // console.log(err)
+        console.log(err)
       })
+    },
+    changeGetType(value){//更改获取项目类型
+      let getSeach=this.searchMes;
+      if(value==='创建时间'){
+        this.getTypeCode='createTime,updateTime';
+        this.serchPro()
+      }else{
+        this.getTypeCode='updateTime,createTime'
+        this.serchPro()
+      }
     },
     editArr(ar){
       let arr=ar;
@@ -2407,6 +2465,19 @@ export default {
           }
           let cTime=cYear+'-'+cMon+'-'+cDay;
           _vc.$set(res.data.data,'createTimeSec',cTime);
+          //更新时间
+          let upDate=new Date(res.data.data.updateTime);
+          let uYear=upDate.getFullYear();
+          let uMon=upDate.getMonth()+1;
+          if(uMon<10){
+            uMon='0'+uMon
+          };
+          let uDay=upDate.getDate();
+          if(uDay<10){
+            uDay='0'+uDay
+          }
+          let uTime=uYear+'-'+uMon+'-'+uDay;
+          _vc.$set(res.data.data,'updateTimeSec',uTime);
           //入场时间
           let startDate=new Date(res.data.data.startTime);
           let sYear=startDate.getFullYear();

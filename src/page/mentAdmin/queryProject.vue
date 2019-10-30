@@ -71,7 +71,16 @@
     <div class="project_con" style="position:relative;">
       <p class="addEng">
         <!-- <el-button type="primary" icon="el-icon-plus" size="medium" @click="addEng=true" @keyup.enter.native="abc($event)">添加工程师</el-button> -->
-        <span class="dataLength">共有数据:&nbsp;<span style="color:#eb7a1d;font-weight:bold;">{{dataLength}}</span>&nbsp;条</span>
+        <span class="dataLength">
+          排序类型:&nbsp;&nbsp;<el-select v-model="getType" placeholder="请选择" @change="changeGetType" size="medium" style="width:110px;">
+            <el-option
+              v-for="item in getTypeList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.label">
+            </el-option>
+          </el-select>
+          共有数据:&nbsp;<span style="color:#eb7a1d;font-weight:bold;">{{dataLength}}</span>&nbsp;条</span>
       </p>
       <p class="admin_reload">
         <el-tooltip class="item" effect="dark" content="刷新数据" placement="bottom">
@@ -95,7 +104,9 @@
       </div>
       <div class="project_con" v-loading="loadPro">
         <el-row class="el_con publicHover" v-for="(pro,index) in proList" :key="index" @click.native="hasDetials(index)">
-          <el-col :span="1"><div class="projectCon">{{pro.num+1}}</div></el-col>
+          <el-tooltip class="item" effect="dark" :content="'创建时间:'+pro.createTimeSec+'    '+'更新时间:'+pro.updateTimeSec" placement="bottom">
+            <el-col :span="1"><div class="projectCon" style="cursor:pointer;">{{pro.num+1}}</div></el-col>
+          </el-tooltip>
           <el-tooltip class="item" effect="dark" :content="pro.name+'['+pro.contractNumber+']'" placement="bottom">
             <el-col :span="5" v-if="pro.name!=null&&pro.name!='null'"><div class="projectCon" style="cursor:pointer;">{{pro.name.substring(0,10)}}...</div></el-col>
             <el-col :span="5" v-else><div class="projectCon" style="cursor:pointer;">-</div></el-col>
@@ -196,8 +207,12 @@
                 <span v-else>-</span>
               </p>
             </li>
-            <li>
+            <li class="flex">
               <p>创建时间:&nbsp;&nbsp;&nbsp;<span>{{projectMes.createTimeSec}}</span></p>
+              <p>更新时间:&nbsp;&nbsp;&nbsp;
+                <span v-if="projectMes.updateTime!=null&&projectMes.updateTime!='null'">{{projectMes.updateTimeSec}}</span>
+                <span v-else>-</span>
+              </p>
             </li>
             <li>项目说明:&nbsp;&nbsp;&nbsp;
               <pre>
@@ -435,6 +450,18 @@
 export default {
   data(){
     return{
+      getTypeList:[
+        {
+          value:'createTime,updateTime',
+          label:'创建时间'
+        },
+        {
+          value:'updateTime,createTime',
+          label:'更新时间'
+        }
+      ],//获取列表类型列表
+      getType:'创建时间',//获取列表类型
+      getTypeCode:'createTime,updateTime',//获取列表类型参数
       dataLength:88,//总数据
       currentPage3:1,//日期类型
       pageNum:10,//页码
@@ -505,8 +532,8 @@ export default {
       filename:'项目目录',
       autoWidth: true,
       bookType: 'xlsx',
-      tHeader:['项目名称','项目合同号', '产品线', '负责人','预估时间','实际时间','入场时间','完工时间','验收时间','项目状态'],
-      tValue:['name','contractNumber','technologyName', 'creatorName','dayNumber','workDayNumber','entranceTimeSec', 'finishTimeSec','acceptTimeSec','stateStr'],
+      tHeader:['项目名称','项目合同号', '产品线', '负责人','创建时间','更新时间','预估时间','实际时间','入场时间','完工时间','验收时间','项目状态'],
+      tValue:['name','contractNumber','technologyName', 'creatorName','createTimeSec','updateTimeSec','dayNumber','workDayNumber','entranceTimeSec', 'finishTimeSec','acceptTimeSec','stateStr'],
       arrTimeList:[],//进场时间集合
       leaveTimeList:[],//离场时间集合
     }
@@ -531,11 +558,22 @@ export default {
           this.getProjectList()
         }
     },
+    changeGetType(value){//更改获取项目类型
+      let getSeach=this.searchMes;
+      if(value==='创建时间'){
+        this.getTypeCode='createTime,updateTime';
+        this.serchPro()
+      }else{
+        this.getTypeCode='updateTime,createTime'
+        this.serchPro()
+      }
+    },
     getProjectList(){//获取全部项目
       let _vc=this;
       _vc.loadPro=true;
       let formdata=new FormData();
       formdata.append('page',_vc.page);
+      formdata.append('sortStr',_vc.getTypeCode);
       _vc.$axios.post(_vc.url+'/findProjectListByCondition',formdata).then((res)=>{
         if(res.data.code==0){
           _vc.dataLength=res.data.data.totalElements;
@@ -556,6 +594,19 @@ export default {
             }
             let cTime=cYear+'-'+cMon+'-'+cDay;
             _vc.$set(e,'createTimeSec',cTime);
+            //更新时间
+            let upDate=new Date(e.updateTime);
+            let uYear=upDate.getFullYear();
+            let uMon=upDate.getMonth()+1;
+            if(uMon<10){
+              uMon='0'+uMon
+            };
+            let uDay=upDate.getDate();
+            if(uDay<10){
+              uDay='0'+uDay
+            }
+            let uTime=uYear+'-'+uMon+'-'+uDay;
+            _vc.$set(e,'updateTimeSec',uTime);
             //入场时间-------------------------------------->
             let entranceDate=new Date(e.startTime);
             let eYear=entranceDate.getFullYear();
@@ -648,6 +699,19 @@ export default {
           }
           let cTime=cYear+'-'+cMon+'-'+cDay;
           _vc.$set(res.data.data,'createTimeSec',cTime);
+          //更新时间
+          let upDate=new Date(res.data.data.updateTime);
+          let uYear=upDate.getFullYear();
+          let uMon=upDate.getMonth()+1;
+          if(uMon<10){
+            uMon='0'+uMon
+          };
+          let uDay=upDate.getDate();
+          if(uDay<10){
+            uDay='0'+uDay
+          }
+          let uTime=uYear+'-'+uMon+'-'+uDay;
+          _vc.$set(res.data.data,'updateTimeSec',uTime);
           //入场时间
           let startDate=new Date(res.data.data.startTime);
           let sYear=startDate.getFullYear();
@@ -818,11 +882,13 @@ export default {
     },
     refresh(){//刷新数据
       this.page=0;
+      this.pageNum=10;
       this.getProjectList()
     },
     serchPro(){//筛选项目
       let _vc=this;
       let formdata=new FormData()
+      formdata.append('sortStr',_vc.getTypeCode);
       if(this.searchMes.proName!=null&&this.searchMes.proName!=''){
         formdata.append('name',this.searchMes.proName)
       };
@@ -937,6 +1003,7 @@ export default {
     },
     cancelPro(){//取消筛选
       this.page=0;
+      this.pageNum=10;
       this.getProjectList();
       this.searchMes.proName=null;
       this.searchMes.cusName=null;
@@ -1130,6 +1197,19 @@ export default {
             }else{
               _vc.$set(e,'createTimeSec','-');
             }
+            //更新时间
+            let upDate=new Date(e.updateTime);
+            let uYear=upDate.getFullYear();
+            let uMon=upDate.getMonth()+1;
+            if(uMon<10){
+              uMon='0'+uMon
+            };
+            let uDay=upDate.getDate();
+            if(uDay<10){
+              uDay='0'+uDay
+            }
+            let uTime=uYear+'-'+uMon+'-'+uDay;
+            _vc.$set(e,'updateTimeSec',uTime);
             //入场时间-------------------------------------->
             if(e.startTime!=''&&e.startTime!=null){
               let entranceDate=new Date(e.startTime);
