@@ -933,6 +933,19 @@ export default {
             }
             let cTime=cYear+'-'+cMon+'-'+cDay;
             this.$set(e,'createTimeSec',cTime);
+            //更新时间
+            let upDate=new Date(e.updateTime);
+            let uYear=upDate.getFullYear();
+            let uMon=upDate.getMonth()+1;
+            if(uMon<10){
+              uMon='0'+uMon
+            };
+            let uDay=upDate.getDate();
+            if(uDay<10){
+              uDay='0'+uDay
+            }
+            let uTime=uYear+'-'+uMon+'-'+uDay;
+            this.$set(e,'updateTimeSec',uTime);
             //入场时间-------------------------------------->
             let entranceDate=new Date(e.startTime);
             let eYear=entranceDate.getFullYear();

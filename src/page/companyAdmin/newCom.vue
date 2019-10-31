@@ -267,7 +267,6 @@ export default {
       _vm.engLoad=true;
       let formdata=new FormData();
       formdata.append('isOfficial',false);
-      formdata.append('asc','desc');
       formdata.append('page',_vm.page);
       formdata.append('size',10);
       formdata.append('states',0);

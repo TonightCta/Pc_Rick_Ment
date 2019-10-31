@@ -1460,6 +1460,19 @@ export default {
             }
             let cTime=cYear+'-'+cMon+'-'+cDay;
             this.$set(e,'createTimeSec',cTime);
+            //更新时间
+            let upDate=new Date(e.updateTime);
+            let uYear=upDate.getFullYear();
+            let uMon=upDate.getMonth()+1;
+            if(uMon<10){
+              uMon='0'+uMon
+            };
+            let uDay=upDate.getDate();
+            if(uDay<10){
+              uDay='0'+uDay
+            }
+            let uTime=uYear+'-'+uMon+'-'+uDay;
+            this.$set(e,'updateTimeSec',uTime);
             if(res.data.data.arriveRecordVOList!=null){
               for(let temp in res.data.data.arriveRecordVOList){
                 if(res.data.data.arriveRecordVOList[temp].leaveTime==null){
@@ -3299,20 +3312,20 @@ export default {
           }else{
             this.$message.error(res.data.msg);
           };
-          this.$axios.post(this.url+'/updateProjectCourseNodeList',formdata).then((res)=>{
-            if(res.data.code==0){
-              if(!isAll){
-                this.$message.success('更新局点信息成功');
-              }
-            }else{
-              this.$message.error(res.data.msg)
-            }
-          }).catch((err)=>{
-            this.$message.error('未知错误,请联系管理员')
-          })
-        });
-      }
 
+        });
+      };
+      this.$axios.post(this.url+'/updateProjectCourseNodeList',formdata).then((res)=>{
+        if(res.data.code==0){
+          if(!isAll){
+            this.$message.success('更新局点信息成功');
+          }
+        }else{
+          this.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        this.$message.error('未知错误,请联系管理员')
+      })
     },
     upPointFile(e,indexFile,fileUpIn){//项目文档上传
       let a=this.pointFileList[indexFile];
