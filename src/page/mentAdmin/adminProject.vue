@@ -131,7 +131,16 @@
           <el-col :span="2" v-else><div class="projectCon">-</div></el-col>
           <el-col :span="2" v-if="pro.acceptTime!=null&&pro.acceptTime!='null'"><div class="projectCon">{{pro.acceptTimeSec}}</div></el-col>
           <el-col :span="2" v-else><div class="projectCon">-</div></el-col>
-          <el-col :span="2" v-if="pro.schedule!=null&&pro.schedule!='null'"><div class="projectCon">{{pro.schedule}}%</div></el-col>
+          <el-col :span="2" v-if="pro.schedule!=null&&pro.schedule!='null'"><div class="projectCon">
+            <el-popover
+              placement="top-end"
+              width="350"
+              trigger="hover">
+              <span slot="reference" style="cursor:pointer;">{{pro.schedule}}%</span>
+              <p v-show="pro.projectCourseRecordVOList!=null" v-for="record in pro.projectCourseRecordVOList" style="line-height:30px;font-size:15px;textAlign:left;box-sizing:border-box;padding-left:15px;">记录时间:&nbsp;{{record.createTime}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;项目进度:&nbsp;{{record.schedule}}%</p>
+              <p v-show="pro.projectCourseRecordVOList==null" style="textAlign:center;fontSize:15px;line-height:20px;">暂无更新记录</p>
+            </el-popover>
+          </div></el-col>
           <el-col :span="2"  v-else><div class="projectCon">-</div></el-col>
           <el-col :span="2"><div class="projectCon">
             <i class="el-icon-user" style="color:#eb7a1d;font-size:20px;cursor:pointer;" @click="editProject(index)"></i>
@@ -177,7 +186,7 @@
             </li>
             <li class="flex">
               <p>项目状态:&nbsp;&nbsp;&nbsp;<span>{{projectMes.stateStr}}</span></p>
-              <p>项目进度:&nbsp;&nbsp;&nbsp;<span>{{projectMes.schedule}}%</span></p>
+              <p>项目进度:&nbsp;&nbsp;&nbsp;<span>{{projectMes.schedule}}%</span></p><el-button type="primary" plain icon="el-icon-document" size="mini" style="height:30px;margin-top:13px;margin-left:10px;" @click="recordBox=true">历史记录</el-button>
             </li>
             <li class="flex">
               <p>预警时间:&nbsp;&nbsp;&nbsp;
@@ -477,6 +486,62 @@
           </span>
         </el-dialog>
       </div>
+      <!-- 项目更新记录盒子 -->
+      <div class="">
+        <el-dialog
+          title="项目更新记录"
+          :visible.sync="recordBox"
+          width="75%">
+          <el-row>
+            <el-col :span="4"><div style="textAlign:center;font-size:16px;color:black;line-height:30px;">记录时间</div></el-col>
+            <el-col :span="2"><div style="textAlign:center;font-size:16px;color:black;line-height:30px;">项目进度</div></el-col>
+            <el-col :span="2"><div style="textAlign:center;font-size:16px;color:black;line-height:30px;">项目状态</div></el-col>
+            <el-col :span="2"><div style="textAlign:center;font-size:16px;color:black;line-height:30px;">预警时间</div></el-col>
+            <el-col :span="2"><div style="textAlign:center;font-size:16px;color:black;line-height:30px;">入场时间</div></el-col>
+            <el-col :span="4"><div style="textAlign:center;font-size:16px;color:black;line-height:30px;">计划完工时间</div></el-col>
+            <el-col :span="2"><div style="textAlign:center;font-size:16px;color:black;line-height:30px;">完工时间</div></el-col>
+            <el-col :span="4"><div style="textAlign:center;font-size:16px;color:black;line-height:30px;">计划验收时间</div></el-col>
+            <el-col :span="2"><div style="textAlign:center;font-size:16px;color:black;line-height:30px;">验收时间</div></el-col>
+          </el-row>
+          <p v-if="projectMes.projectCourseRecordVOList==null" style="textAlign:center;lineHeight:50px;color:#666;fontSize:16px;">暂无更新记录</p>
+          <el-row class="publicHover" v-for="(recordList,index) in projectMes.projectCourseRecordVOList" :key="index">
+            <el-col :span="4"><div style="textAlign:center;font-size:15px;color:black;line-height:40px;">
+              {{recordList.createTime}}
+            </div></el-col>
+            <el-col :span="2"><div style="textAlign:center;font-size:15px;color:black;line-height:40px;">
+              <span>{{recordList.schedule}}%</span>
+            </div></el-col>
+            <el-col :span="2"><div style="textAlign:center;font-size:15px;color:black;line-height:40px;">{{recordList.stateStr}}</div></el-col>
+            <el-col :span="2"><div style="textAlign:center;font-size:15px;color:black;line-height:40px;">
+              <span v-if="recordList.warnTime!=null">{{recordList.warnTime}}</span>
+              <span v-else>-</span>
+            </div></el-col>
+            <el-col :span="2"><div style="textAlign:center;font-size:15px;color:black;line-height:40px;">
+              <span v-if="recordList.startTime!=null">{{recordList.startTime}}</span>
+              <span v-else>-</span>
+            </div></el-col>
+            <el-col :span="4"><div style="textAlign:center;font-size:15px;color:black;line-height:40px;">
+              <span v-if="recordList.planFinishTime!=null">{{recordList.planFinishTime}}</span>
+              <span v-else>-</span>
+            </div></el-col>
+            <el-col :span="2"><div style="textAlign:center;font-size:15px;color:black;line-height:40px;">
+              <span v-if="recordList.finishTime">{{recordList.finishTime}}</span>
+              <span v-else>-</span>
+            </div></el-col>
+            <el-col :span="4"><div style="textAlign:center;font-size:15px;color:black;line-height:40px;">
+              <span v-if="recordList.planAcceptTime!=null">{{recordList.planAcceptTime}}</span>
+              <span v-else>-</span>
+            </div></el-col>
+            <el-col :span="2"><div style="textAlign:center;font-size:15px;color:black;line-height:40px;">
+              <span v-if="recordList.acceptTime!=null">{{recordList.acceptTime}}</span>
+              <span v-else>-</span>
+            </div></el-col>
+          </el-row>
+          <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="recordBox = false" sie="medium">关&nbsp;闭</el-button>
+          </span>
+        </el-dialog>
+      </div>
     </div>
   </div>
 </template>
@@ -497,6 +562,7 @@ export default {
       ],//获取列表类型列表
       getType:'创建时间',//获取列表类型
       getTypeCode:'createTime,updateTime',//获取列表类型参数
+      recordBox:false,//项目更新记录盒子
       dataLength:88,//总数据
       currentPage3:1,//日期类型
       pageNum:10,//页码

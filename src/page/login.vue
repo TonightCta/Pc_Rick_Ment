@@ -101,6 +101,7 @@ export default {
          }
        }).catch((err)=>{
          _vm.$message.error('未知错误,请联系管理员');
+         console.log(err)
        })
       }
     },
@@ -117,13 +118,21 @@ export default {
   height: 100vh;
   background: #313131;
   padding-top: 10%;
+  @media screen and (max-width: 1920px){
+    padding-top: 6%;
+  }
   .con_bg{
     width: 75%;
     margin:0 auto;
     position: relative;
     img{
       width: 100%;
-      height: 400px;
+      @media screen and (min-width: 2560px){
+        height: 400px;
+      }
+      @media screen and (min-width: 1920px){
+        height: 500px;
+      }
     }
     .login_con{
       width: 25%;
@@ -135,6 +144,9 @@ export default {
       box-sizing: border-box;
       padding-top: 20px;
       color:white;
+      @media screen and (max-width: 1920px){
+        top:56%;
+      }
       .login_sub{
         width: 100%;
         text-align: center;
