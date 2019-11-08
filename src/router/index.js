@@ -2,7 +2,10 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import {Message} from 'element-ui'
 Vue.use(Router)
-
+const routerPush = Router.prototype.push
+Router.prototype.push = function push(location) {
+  return routerPush.call(this, location).catch(error=> error)
+}
 const router = new Router({
   routes: [
     {

@@ -723,7 +723,7 @@
           <li v-for="(fileUpDom,fileUpIn) in pointFile.fileList" :key="'FileUp'+fileUpIn">
             <span>{{fileUpDom.name}}:</span>
             <el-input type="primary" style="width:600px;" v-model="fileUpDom.fileName"></el-input>
-            <input type="file" name=""  Accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" value="" @change="upPointFile($event,indexFile,fileUpIn)">
+            <input type="file" name=""  Accept=".csv,.docx,.doc,.pdf, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" value="" @change="upPointFile($event,indexFile,fileUpIn)">
             <el-button type="primary" icon="el-icon-search" size="small">浏览文件</el-button>
             <el-button type="primary" icon="el-icon-upload" size="small" @click="upFile(indexFile,fileUpIn)">上传</el-button>
             <a :href="url+fileUpDom.path" target="_blank">

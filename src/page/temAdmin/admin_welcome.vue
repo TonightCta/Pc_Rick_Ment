@@ -1,7 +1,6 @@
 <template lang="html">
   <div class="admin_wel" id="admin_wel">
     <div class="can">
-      <!-- <Canvas/> -->
       <img src="../../../static/img/rick_logo.png" alt="">
     </div>
     <p class="wel_title">瑞得音信息</p>

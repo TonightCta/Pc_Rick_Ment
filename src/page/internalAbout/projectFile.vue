@@ -52,7 +52,7 @@
           <li v-for="(fileUp,index) in pointFileList" :key="'FileUp'+index">
             <span>{{fileUp.name}}:</span>
             <el-input type="primary" style="width:600px;" v-model="fileUp.filename"></el-input>
-            <input type="file" name="" value="" @change="upFile($event,index)"  Accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+            <input type="file" name="" value="" @change="upFile($event,index)"  Accept=".csv, .docx,.doc,.pdf,application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
             <el-button type="primary" icon="el-icon-search" size="small">浏览文件</el-button>
             <el-button type="primary" icon="el-icon-upload" size="small" @click="upSerFile(index)">上传</el-button>
             <a  :href="url+fileUp.path" target="_blank">
@@ -86,7 +86,7 @@
           </a>
           <el-button type="primary" size="small" icon="el-icon-d-arrow-right">导出Excel</el-button>
           <span class="place_mask"></span>
-          <input type="file" name="" value="" @change="choseInsFile" Accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="upBtnPlace">
+          <input type="file" name="" value="" @change="choseInsFile" Accept=".csv, .docx,.doc,.pdf,application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="upBtnPlace">
         </p>
         <ul>
           <li v-for="(tableMes,index) in pointInsList.inspectionVOList">
