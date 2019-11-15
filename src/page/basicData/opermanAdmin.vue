@@ -35,7 +35,7 @@
             <i class="el-icon-remove-outline" ></i>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="启用操作人员" placement="bottom" v-else>
-            <i class="el-icon-circle-check-outline" style="color:#eb7a1d;"></i>
+            <i class="el-icon-circle-check" style="color:#eb7a1d;"></i>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="编辑操作人员" placement="bottom">
             <i class="el-icon-edit" style="color:#eb7a1d;marginLeft:5px;marginRight:5px;" @click="editOper(index)"></i>

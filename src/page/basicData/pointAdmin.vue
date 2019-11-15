@@ -27,7 +27,7 @@
             <i class="el-icon-remove-outline" ></i>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="启用节点" placement="bottom" v-else>
-            <i class="el-icon-circle-check-outline" style="color:#eb7a1d;"></i>
+            <i class="el-icon-circle-check" style="color:#eb7a1d;"></i>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="编辑节点" placement="bottom">
             <i class="el-icon-edit" style="color:#eb7a1d;marginLeft:5px;marginRight:5px;" @click="editPointPar(index)"></i>

@@ -35,7 +35,7 @@
                 <i class="el-icon-remove-outline"></i>
               </el-tooltip>
               <el-tooltip class="item" effect="dark" content="启用能力" placement="bottom" v-else>
-                <i class="el-icon-circle-check-outline" style="color:#eb7a1d;"></i>
+                <i class="el-icon-circle-check" style="color:#eb7a1d;"></i>
               </el-tooltip>
               <i class="el-icon-edit" @click="editFieldPar(index)"></i>
               <i class="el-icon-delete"></i>
@@ -56,7 +56,7 @@
                 <i class="el-icon-remove-outline"></i>
               </el-tooltip>
               <el-tooltip class="item" effect="dark" content="启用能力" placement="bottom" v-else>
-                <i class="el-icon-circle-check-outline" style="color:#eb7a1d;"></i>
+                <i class="el-icon-circle-check" style="color:#eb7a1d;"></i>
               </el-tooltip>
               <i class="el-icon-edit" @click="editAbilityPar(index,key)"></i>
               <i class="el-icon-delete"></i>
