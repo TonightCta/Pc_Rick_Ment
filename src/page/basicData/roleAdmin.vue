@@ -111,7 +111,9 @@ export default {
         }
       ],
       pageNum:10,//总页数
+      page:1,//页码
       currentPage3:1,//分页器类型
+      length:0,//列表排序
       addRole:false,//添加角色
       addRoleMes:{
         name:null,//角色名称
@@ -158,6 +160,9 @@ export default {
       },
     }
   },
+  created(){
+    this.getRoleList()
+  },
   methods:{
     handleSizeChange(val) {
 
@@ -166,7 +171,26 @@ export default {
 
     },
     abc(value){
-      // console.log(value.label)
+      console.log(value)
+    },
+    getRoleList(){
+      let _vm=this;
+      let formdata=new FormData();
+      formdata.append('page',_vm.page)
+      _vm.$axios.post(_vm.url+'/findOperatorListByCondition',formdata).then((res)=>{
+        console.log(res);
+        if(res.data.code==0){
+          _vm.dataLength=res.data.data.totalElements;
+          _vm.pageNum=res.data.data.totalPages*10;
+          _vm.length=_vm.page*10;
+          res.data.data.content.forEach((e)=>{
+            _vm.$set('num',_vm.length++)
+          })
+          _vm.roleList=res.data.data.content;
+        }
+      }).catch((err)=>{
+        console.log(err)
+      })
     }
   }
 }

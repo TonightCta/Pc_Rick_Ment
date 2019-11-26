@@ -214,6 +214,26 @@ const router = new Router({
           path:'/admin/adminCreat',//项目管理(高权限)
           name:'AdminCreat',
           component:resolve=>require(['@/page/managerAdmin/adminCreat'],resolve)
+        },
+        {
+          path:'/admin/mine',//个人中心
+          name:'Mine',
+          component:resolve=>require(['@/page/mine/mine_mes'],resolve)
+        },
+        {
+          path:'/admin/personCard',//实名认证
+          name:'PersonCard',
+          component:resolve=>require(['@/page/mine/person_card'],resolve)
+        },
+        {
+          path:'/admin/personSkill',//技能认证
+          name:'PersonSkill',
+          component:resolve=>require(['@/page/mine/person_skill'],resolve)
+        },
+        {
+          path:'/admin/personCation',//资质申请
+          name:'PersonCation',
+          component:resolve=>require(['@/page/mine/person_cation'],resolve)
         }
       ],
       redirect:'/admin/wel'
@@ -226,7 +246,7 @@ router.beforeEach((to,from,next)=>{
   const notList=['index','Wel','Order','InternalEng','NewEng','ExternalEng','CertifiedEng','QueryProject','GressProject','skillMent','internalCom','newCom',
                  'certifiedCom','CreatPro','CustTion','custTionManer','WorkContent','RiskRecord','riskRcordManer','ProjectFile','Channel','Role',
                  'OperMan','Place','Point','Field','DeMand','BusinessOA','StaffAdmin','DepAdmin','PlaceOA','OAList','QueryOA','RuleList','NewsAdmin',
-                 'CaseAdmin','AdminProject','AdminCreat'
+                 'CaseAdmin','AdminProject','AdminCreat','Mine','PersonCard','PersonSkill','PersonCation'
                ];
   if(notList.indexOf(to.name)<0){
     Message.warning('访问的页面不存在哦');

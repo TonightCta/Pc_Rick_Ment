@@ -27,11 +27,44 @@
           </el-col>
         </el-row>
         <p class="login_sub">
-          <el-button type="primary" style="fontSize:16px;" size="mini" :disabled="disabled" @click="loginSub()">&nbsp;&nbsp;登录&nbsp;&nbsp;</el-button>
+          <el-button type="primary" style="fontSize:16px;margin-left:40px;" size="mini" :disabled="disabled" @click="loginSub()">&nbsp;&nbsp;登录&nbsp;&nbsp;</el-button>
+          <el-button type="primary" style="fontSize:16px;" size="mini" @click="registerBox=true">&nbsp;&nbsp;注册&nbsp;&nbsp;</el-button>
         </p>
       </div>
     </div>
-
+    <div class="register_box">
+      <el-dialog
+        title="注册"
+        :visible.sync="registerBox"
+        width="40%">
+        <p class="register_title">*提示:&nbsp;此注册为【外部工程师】注册，如果公司内部员工请联系主管领导注册账号。</p>
+        <div class="register_con">
+          <ul class="con_title">
+            <li>账户类型:</li>
+            <li>姓名/企业名称:</li>
+            <li>手机号:</li>
+            <li>密码:</li>
+            <li>确认密码:</li>
+            <li>邀请码（选填）:</li>
+          </ul>
+          <ul class="con_mes">
+            <li>
+              <el-radio v-model="isCompany" label="1">个人</el-radio>
+              <el-radio v-model="isCompany" label="2">企业</el-radio>
+            </li>
+            <li><el-input type="primary" v-model="registerMes.name" style="width:400px;" size="medium" placeholder="请输入姓名或企业名称"></el-input></li>
+            <li><el-input type="primary" v-model="registerMes.phone" style="width:400px;" size="medium" placeholder="请输入手机号"></el-input></li>
+            <li><el-input type="password" v-model="registerMes.pass" style="width:400px;" size="medium" placeholder="请输入密码"></el-input></li>
+            <li><el-input type="password" v-model="registerMes.turnPass" style="width:400px;" size="medium" placeholder="请再次输入密码"></el-input></li>
+            <li><el-input type="primary" v-model="registerMes.code" style="width:400px;" size="medium" placeholder="请输入邀请码(选填)"></el-input></li>
+          </ul>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="registerBox = false" size="medium">取&nbsp;消</el-button>
+          <el-button type="primary" @click="subRes()" medium>注&nbsp;册</el-button>
+        </span>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -41,7 +74,16 @@ export default {
     return{
       userName:'',//登录名
       userPass:'',//密码
-      disabled:true
+      disabled:true,//是否禁用登录按钮
+      registerBox:false,//注册窗口
+      isCompany:'1',//是否为公司账户
+      registerMes:{
+        name:null,//名称
+        phone:null,//手机号
+        pass:null,//密码
+        turnPass:null,//确认密码
+        code:null,//邀请码
+      }
     }
   },
   watch:{
@@ -108,6 +150,53 @@ export default {
     delPass(){//键盘删除事件
       this.userPass=''
     },
+    subRes(){//注册
+      let _vm=this;
+      let formdata=new FormData();
+      if(_vm.registerMes.name==null||_vm.registerMes.name==''){
+        _vm.$message.error('请输入姓名或企业名称')
+      }else if(_vm.registerMes.phone==null||_vm.registerMes.phone==''){
+        _vm.$message.error('请输入手机号')
+      }else if(_vm.registerMes.pass==null||_vm.registerMes.pass==''){
+        _vm.$message.error('请输入密码')
+      }else if(_vm.registerMes.turnPass==null||_vm.registerMes.turnPass==''){
+        _vm.$message.error('请再次输入秘密')
+      }else if(_vm.registerMes.pass!==_vm.registerMes.turnPass){
+        _vm.$message.error('两次输入密码不一致')
+      }else{
+        if(this.isCompany==1){
+          formdata.append('isCompany',false)
+        }else{
+          formdata.append('isCompany',true)
+        }
+        formdata.append('name',_vm.registerMes.name);
+        formdata.append('phone',_vm.registerMes.phone);
+        formdata.append('username',_vm.registerMes.phone);
+        formdata.append('password',_vm.registerMes.turnPass);
+        if(_vm.registerMes.code!=null&&_vm.registerMes.code!=''){
+          formdata.append('recommendCode',_vm.registerMes.code)
+        };
+        _vm.$axios.post(_vm.url+'/saveExternalEngineer',formdata).then((res)=>{
+          if(res.data.code==0){
+            _vm.$message({
+             message: '注册成功',
+             type: 'success'
+           });
+           window.sessionStorage.setItem('adminMes',JSON.stringify(res.data.data));
+           _vm.$router.push('/admin')
+           window.localStorage.setItem('Uid',res.data.data.id);
+           if(res.data.data.engineerVO!=null){
+             window.localStorage.setItem('engID',res.data.data.engineerVO.id);
+           }
+         }else{
+           _vm.$message.error(res.data.msg)
+         }
+        }).catch((err)=>{
+          _vm.$message.error('未知错误,请联系管理员');
+          console.log(err)
+        })
+      };
+    },
   }
 }
 </script>
@@ -173,6 +262,31 @@ export default {
             margin-bottom: 10px;
           }
         }
+      }
+    }
+  }
+  .register_box{
+    .register_title{
+      width: 100%;
+      font-size: 16px;
+      text-align: center;
+      color:red;
+    }
+    .register_con{
+      margin-top: 15px;
+      width: 90%;
+      display: flex;
+      .con_title{
+        width: 30%;
+        li{
+          line-height: 60px;
+          text-align: right;
+        }
+      }
+      .con_mes{
+        line-height: 60px;
+        box-sizing: border-box;
+        padding-left: 15px;
       }
     }
   }

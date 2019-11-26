@@ -123,7 +123,8 @@ export default {
                   _vm.$refs.allicon.style.display='none';
                 }
               });
-            }
+            };
+            // console.log(_vm.e[0])
             _vm.b.push(_vm.e[0].usingChildList[0].id)
             setTimeout(()=>{
               _vm.cityID.forEach((s)=>{

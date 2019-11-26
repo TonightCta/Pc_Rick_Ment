@@ -83,7 +83,7 @@
               <li>登录名:</li>
               <li>接单区域:</li>
               <li>技术领域及能力:</li>
-              <li style="margin-top:550px;">企业认证文件:</li>
+              <li style="margin-top:650px;">企业认证文件:</li>
               <li style="margin-top:80px;">能力评估文件:</li>
             </ul>
 
@@ -169,7 +169,7 @@
               <li>登录名:</li>
               <li>接单区域:</li>
               <li>技术领域及能力:</li>
-              <li style="margin-top:550px;">企业认证文件:</li>
+              <li style="margin-top:650px;">企业认证文件:</li>
               <li style="margin-top:88px;">能力评估文件:</li>
             </ul>
 

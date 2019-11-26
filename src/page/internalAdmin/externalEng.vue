@@ -157,7 +157,7 @@
               <li>是否为内部员工:</li>
               <li>接单区域:</li>
               <li>技术领域及能力:</li>
-              <li style="margin-top:550px;">身份认证文件:</li>
+              <li style="margin-top:650px;">身份认证文件:</li>
               <li style="margin-top:88px;">资质证明文件:</li>
             </ul>
 
@@ -251,7 +251,7 @@
               <li>是否为内部员工:</li>
               <li>接单区域:</li>
               <li>技术领域及能力:</li>
-              <li style="margin-top:550px;">身份认证文件:</li>
+              <li style="margin-top:650px;">身份认证文件:</li>
               <li style="margin-top:80px;">资质证明文件:</li>
             </ul>
             <ul class="add_con">
