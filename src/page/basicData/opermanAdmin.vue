@@ -31,7 +31,7 @@
       </el-tooltip>
     </div>
     <p class="operman_titleOper">
-      <el-button type="primary" icon="el-icon-plus" size="medium" @click="addOperMan=true;">添加操作人员</el-button>
+      <el-button type="primary" icon="el-icon-plus" size="medium" @click="pushOperMan()">添加操作人员</el-button>
       <span class="dataLength">共有数据:&nbsp;<span style="color:#eb7a1d;font-weight:bold;">{{dataLength}}</span>&nbsp;条</span>
       <i class="el-icon-refresh" @click="getOperList()"></i>
     </p>
@@ -69,10 +69,10 @@
           </div></el-col>
           <el-col :span="2"><div class="operman_mes">
             <el-tooltip class="item" effect="dark" content="停用操作人员" placement="bottom" v-if="operman.state==2">
-              <i class="el-icon-remove-outline" ></i>
+              <i class="el-icon-remove-outline" @click="stopMan(index)"></i>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="启用操作人员" placement="bottom" v-else>
-              <i class="el-icon-circle-check" style="color:#eb7a1d;"></i>
+              <i class="el-icon-circle-check" style="color:#eb7a1d;" @click="stopMan(index)"></i>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="编辑操作人员" placement="bottom">
               <i class="el-icon-edit" style="color:#eb7a1d;marginLeft:5px;marginRight:5px;" @click="editOper(index)"></i>
@@ -101,7 +101,7 @@
         title="添加操作人员"
         :visible.sync="addOperMan"
         width="40%">
-        <div class="" style="display:flex;width:90%;margin:0 auto;height:350px;overflow:auto;">
+        <div class="" style="display:flex;width:90%;margin:0 auto;height:400px;overflow:auto;">
           <ul class="operManTitle">
             <li><span style="color:red;">*</span>登录名:</li>
             <li><span style="color:red;">*</span>昵称:</li>
@@ -114,25 +114,25 @@
           <ul class="operManCon">
             <li><el-input type="primary" style="width:350px;" placeholder="请输入登录名" v-model="addOperMes.loginName"></el-input></li>
             <li><el-input type="primary" style="width:350px;" placeholder="请输入昵称" v-model="addOperMes.nickName"></el-input></li>
-            <li><el-input type="primary" style="width:350px;" placeholder="请输入密码" v-model="addOperMes.passWord"></el-input></li>
-            <li><el-input type="primary" style="width:350px;" placeholder="请再次输入密码" v-model="addOperMes.turnPass"></el-input></li>
-            <li><el-input type="primary" style="width:350px;" placeholder="请输入手机号" v-model="addOperMes.phone"></el-input></li>
+            <li><el-input type="password" style="width:350px;" placeholder="请输入密码" v-model="addOperMes.passWord"></el-input></li>
+            <li><el-input type="password" style="width:350px;" placeholder="请再次输入密码" v-model="addOperMes.turnPass"></el-input></li>
+            <li><el-input type="number" style="width:350px;" placeholder="请输入手机号" v-model="addOperMes.phone"></el-input></li>
             <li><el-input type="primary" style="width:350px;" placeholder="请输入邮箱地址" v-model="addOperMes.email"></el-input></li>
             <li>
-              <el-select v-model="value" placeholder="请选择角色">
+              <el-select v-model="addOperMes.operTypeText" placeholder="请选择角色">
                 <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  v-for="item in operType"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
               </el-select>
             </li>
           </ul>
         </div>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="addOperMan = false" size="medium">取 消</el-button>
-          <el-button type="primary" @click="addOperMan = false" size="medium">确 定</el-button>
+          <el-button @click="addOperMan = false" size="medium">取&nbsp;消</el-button>
+          <el-button type="primary" @click="subOper()" size="medium">提&nbsp;交</el-button>
         </span>
       </el-dialog>
     </div>
@@ -156,20 +156,20 @@
             <li><el-input type="primary" style="width:350px;" placeholder="请输入手机号" v-model="editOperMes.phone"></el-input></li>
             <li><el-input type="primary" style="width:350px;" placeholder="请输入邮箱地址" v-model="editOperMes.email"></el-input></li>
             <li>
-              <el-select v-model="value" placeholder="请选择角色">
+              <el-select v-model="editOperMes.operTypeText" placeholder="请选择角色">
                 <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  v-for="item in operType"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
               </el-select>
             </li>
           </ul>
         </div>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="editOperMan = false" size="medium">取 消</el-button>
-          <el-button type="primary" @click="editOperMan = false" size="medium">确 定</el-button>
+          <el-button @click="editOperMan = false" size="medium">取&nbsp;消</el-button>
+          <el-button type="primary" @click="subEditMan()" size="medium">提&nbsp;交</el-button>
         </span>
       </el-dialog>
     </div>
@@ -180,28 +180,7 @@
 export default {
   data(){
     return{
-
-
-      options: [{
-               value: '选项1',
-               label: '黄金糕'
-             }, {
-               value: '选项2',
-               label: '双皮奶'
-             }, {
-               value: '选项3',
-               label: '蚵仔煎'
-             }, {
-               value: '选项4',
-               label: '龙须面'
-             }, {
-               value: '选项5',
-               label: '北京烤鸭'
-             }],
-             value: '',
-
-
-      // -------------------
+      operType:[],//操作人员类型集合
       searchMes:{//搜索信息集合
         name:null,//登录名
         phone:null,//手机号
@@ -212,7 +191,7 @@ export default {
       searchList:true,//闭合搜索
       operClose:'./static/img/close_search.png',
       dataLength:88,//数据条数
-      opermanList:[],
+      opermanList:[],//账号列表
       pageNum:10,//总页数
       page:0,//页码
       length:0,//数据排序
@@ -226,6 +205,7 @@ export default {
         phone:null,//手机号
         email:null,//邮箱
         roleID:null,//角色ID
+        operTypeText:null,//操作人员类型文本
       },
       editOperMan:false,//编辑操作人员
       editOperMes:{
@@ -233,7 +213,8 @@ export default {
         nickName:null,//昵称
         phone:null,//手机号
         email:null,//邮箱
-        roleID:null,//角色ID
+        operTypeText:null,//角色类型
+        operID:null,//操作人员ID
       },
       operLoad:false,//加载动画
     }
@@ -250,11 +231,24 @@ export default {
       this.getOperList()
     },
     editOper(index){//编辑工程师
-      this.editOperMes.loginName=this.opermanList[index].loginName;
-      this.editOperMes.nickName=this.opermanList[index].nickName;
-      this.editOperMes.phone=this.opermanList[index].phone;
-      this.editOperMes.email=this.opermanList[index].email;
-      this.editOperMan=true;
+      let _vm=this;
+      _vm.$axios.get(_vm.url+'/getUsingRoleList').then((res)=>{
+        if(res.data.code==0){
+          _vm.operType=res.data.data;
+          _vm.editOperMes.loginName=_vm.opermanList[index].name;
+          _vm.editOperMes.nickName=_vm.opermanList[index].nickname;
+          _vm.editOperMes.phone=_vm.opermanList[index].mobile;
+          _vm.editOperMes.email=_vm.opermanList[index].email;
+          _vm.editOperMes.operTypeText=_vm.opermanList[index].roleId;
+          _vm.editOperMes.operID=_vm.opermanList[index].id;
+          _vm.editOperMan=true;
+        }else{
+          _vm.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        _vm.$message.error('未知错误,请联系管理员')
+      })
+
     },
     getOperList(){//获取账号列表
       let _vm=this;
@@ -342,23 +336,134 @@ export default {
         _vm.$message.error('未知错误,请联系管理员')
       })
     },
-    resetPass(index){
-        this.$confirm('此操作将重置该账号的密码, 是否继续?', '提示', {
+    /**
+     *时间:2019/11/29
+     *人员:崔田
+     */
+    stopMan(index){//停启用账号
+      let formdata=new FormData();
+      formdata.append('operatorId',this.opermanList[index].id);
+      this.$axios.post(this.url+'/updateOperatorState',formdata).then((res)=>{
+        if(res.data.code==0){
+          this.$message.success('更新账号状态成功')
+          this.getOperList()
+        }else{
+          this.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        this.$message.error('未知错误,请联系管理员')
+      })
+    },
+    resetPass(index){//重置密码
+      let _vm=this;
+        _vm.$confirm('此操作将重置该账号的密码, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '重置成功!'
-          });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消重置'
-          });
+          let formdata=new FormData();
+          formdata.append('id',_vm.opermanList[index].id);
+          _vm.$axios.post(_vm.url+'/resetPassword',formdata).then((res)=>{
+            if(res.data.code==0){
+              _vm.$message.success('重置密码成功')
+            }else{
+              _vm.$message.error(res.data.msg)
+            }
+          }).catch((err)=>{
+            _vm.$message.error('未知错误,请联系管理员')
+          })
         });
+    },
+    pushOperMan(){//添加操作人员
+      this.$axios.get(this.url+'/getUsingRoleList').then((res)=>{
+        if(res.data.code==0){
+          this.operType=res.data.data;
+          this.addOperMan=true;
+        }else{
+          this.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        this.$message.error('未知错误,请联系管理员')
+      })
+    },
+    subOper(){//提交操作人员
+      let _vm=this;
+      let formdata=new FormData();
+      if(_vm.addOperMes.loginName==null||_vm.addOperMes.loginName==''){
+        _vm.$message.error('请输入登录名')
+      }else if(_vm.addOperMes.nickName==null||_vm.addOperMes.nickName==''){
+        _vm.$message.error('请输入昵称')
+      }else if(_vm.addOperMes.passWord==null||_vm.addOperMes.passWord==''){
+        _vm.$message.error('请输入密码')
+      }else if(_vm.addOperMes.turnPass==null||_vm.addOperMes.turnPass==''){
+        _vm.$message.error('请再次输入密码')
+      }else if(_vm.addOperMes.passWord!==_vm.addOperMes.turnPass){
+        _vm.$message.error('两次输入密码不一致')
+      }else if(_vm.addOperMes.phone==null||_vm.addOperMes.phone==''){
+        _vm.$message.error('请输入手机号')
+      }else if(_vm.addOperMes.phone.length!=11){
+        _vm.$message.error('请输入正确的手机号')
+      }else if(_vm.addOperMes.email==null||_vm.addOperMes.email==''){
+        _vm.$message.error('请输入邮箱账号')
+      }else if(_vm.addOperMes.operTypeText==null||_vm.addOperMes.operTypeText==''){
+        _vm.$message.error('请选择角色类型')
+      }else{
+        formdata.append('name',_vm.addOperMes.loginName)
+        formdata.append('nickname',_vm.addOperMes.nickName)
+        formdata.append('password',_vm.addOperMes.turnPass)
+        formdata.append('email',_vm.addOperMes.email)
+        formdata.append('mobile',_vm.addOperMes.phone)
+        formdata.append('roleId',_vm.addOperMes.operTypeText)
+        formdata.append('creatorId',window.localStorage.getItem('Uid'));
+        _vm.$axios.post(_vm.url+'/saveOperator_n',formdata).then((res)=>{
+          if(res.data.code==0){
+            _vm.$message.success('创建角色成功');
+            _vm.getOperList();
+            _vm.addOperMan=false;
+          }else{
+            _vm.$message.error(res.data.msg)
+          }
+        }).catch((err)=>{
+          _vm.$message.error('未知错误,请联系管理员');
+        })
       }
+    },
+    subEditMan(){//编辑人员提交
+      let _vm=this;
+      let formdata=new FormData();
+      if(_vm.editOperMes.loginName==null||_vm.editOperMes.loginName==''){
+        _vm.$message.error('请输入登录名')
+      }else if(_vm.editOperMes.nickName==null||_vm.editOperMes.nickName==''){
+        _vm.$message.error('请输入昵称')
+      }else if(_vm.editOperMes.phone==null||_vm.editOperMes.phone==''){
+        _vm.$message.error('请输入手机号')
+      }else if(_vm.editOperMes.phone.length!=11){
+        _vm.$message.error('请输入正确的手机号')
+      }else if(_vm.editOperMes.email==null||_vm.editOperMes.email==''){
+        _vm.$message.error('请输入邮箱账号')
+      }else if(_vm.editOperMes.operTypeText==null||_vm.editOperMes.operTypeText==''){
+        _vm.$message.error('请选择角色类型')
+      }else{
+        formdata.append('name',_vm.editOperMes.loginName)
+        formdata.append('nickname',_vm.editOperMes.nickName)
+        formdata.append('id',_vm.editOperMes.operID)
+        formdata.append('email',_vm.editOperMes.email)
+        formdata.append('mobile',_vm.editOperMes.phone)
+        formdata.append('roleId',_vm.editOperMes.operTypeText)
+        formdata.append('creatorId',window.localStorage.getItem('Uid'));
+        _vm.$axios.post(_vm.url+'/saveOperator_n',formdata).then((res)=>{
+          if(res.data.code==0){
+            _vm.$message.success('编辑角色角色成功');
+            _vm.getOperList();
+            _vm.editOperMan=false;
+          }else{
+            _vm.$message.error(res.data.msg)
+          }
+        }).catch((err)=>{
+          _vm.$message.error('未知错误,请联系管理员');
+        })
+      }
+    },
   }
 }
 </script>

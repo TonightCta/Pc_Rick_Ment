@@ -36,7 +36,7 @@
       <el-dialog
         title="注册"
         :visible.sync="registerBox"
-        width="40%">
+        width="45%">
         <p class="register_title">*提示:&nbsp;此注册为【外部工程师】注册，如果公司内部员工请联系主管领导注册账号。</p>
         <div class="register_con">
           <ul class="con_title">
