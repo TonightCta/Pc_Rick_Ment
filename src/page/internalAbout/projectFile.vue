@@ -196,7 +196,7 @@ export default {
       _vn.proLoad=true;
       let formdata=new FormData();
       formdata.append('page',_vn.page);
-      formdata.append('engineerId',window.localStorage.getItem('engID'));
+      formdata.append('engineerId',window.sessionStorage.getItem('engID'));
       _vn.$axios.post(_vn.url+'/findPersonnelRecordByCondition',formdata).then((res)=>{
         if(res.data.code==0){
           _vn.loadFile=false;

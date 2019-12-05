@@ -414,7 +414,7 @@ export default {
         formdata.append('email',_vm.addOperMes.email)
         formdata.append('mobile',_vm.addOperMes.phone)
         formdata.append('roleId',_vm.addOperMes.operTypeText)
-        formdata.append('creatorId',window.localStorage.getItem('Uid'));
+        formdata.append('creatorId',window.sessionStorage.getItem('Uid'));
         _vm.$axios.post(_vm.url+'/saveOperator_n',formdata).then((res)=>{
           if(res.data.code==0){
             _vm.$message.success('创建角色成功');
@@ -450,7 +450,7 @@ export default {
         formdata.append('email',_vm.editOperMes.email)
         formdata.append('mobile',_vm.editOperMes.phone)
         formdata.append('roleId',_vm.editOperMes.operTypeText)
-        formdata.append('creatorId',window.localStorage.getItem('Uid'));
+        formdata.append('creatorId',window.sessionStorage.getItem('Uid'));
         _vm.$axios.post(_vm.url+'/saveOperator_n',formdata).then((res)=>{
           if(res.data.code==0){
             _vm.$message.success('编辑角色角色成功');

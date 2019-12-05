@@ -320,7 +320,7 @@ export default {
         formdata.append('name',this.addSkillText);
         formdata.append('type',this.AddStatusID);
         formdata.append('category',this.AddTypeID);
-        let ID=window.localStorage.getItem('Uid');
+        let ID=window.sessionStorage.getItem('Uid');
         formdata.append('operatorId',ID)
         if(this.change){
           formdata.append('id',this.changeID)

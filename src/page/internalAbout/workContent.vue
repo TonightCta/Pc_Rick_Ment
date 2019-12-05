@@ -336,7 +336,7 @@ export default {
   methods:{
     getWorkList(){//获取工作内容列表
       let formdata=new FormData();
-      formdata.append('engineerId',window.localStorage.getItem('engID'));
+      formdata.append('engineerId',window.sessionStorage.getItem('engID'));
       formdata.append('page',this.page);
       formdata.append('size',10);
       this.workLoading=true;
@@ -401,7 +401,7 @@ export default {
           spinner: 'el-icon-loading',
           background: 'rgba(0, 0, 0, 0.7)'
         });
-      formdata.append('engineerId',window.localStorage.getItem('engID'));
+      formdata.append('engineerId',window.sessionStorage.getItem('engID'));
       this.$axios.post(this.url+'/mobile/findProjectPointAndProjectCourseNodeByEngineer',formdata).then((res)=>{
         if(res.data.code==0){
           let date=new Date();
@@ -462,7 +462,7 @@ export default {
       }else if(_vm.endTime==null||_vm.endTime==''){
         _vm.$message.error('请选择结束时间')
       }else{
-        formdata.append('engineerId',window.localStorage.getItem('engID'));
+        formdata.append('engineerId',window.sessionStorage.getItem('engID'));
         formdata.append('projectCourseNodeId',_vm.addworkMes.pointID);
         formdata.append('content',_vm.addworkMes.pushContent);
         formdata.append('startTime',Number(_vm.startTime.substring(0,2)));
@@ -494,7 +494,7 @@ export default {
     searchWork(){//搜索日志
       if(this.workDate!=null&&this.workDate.length>1){
         let formdata=new FormData();
-        formdata.append('engineerId',window.localStorage.getItem('engID'));
+        formdata.append('engineerId',window.sessionStorage.getItem('engID'));
         formdata.append('page',this.page);
         formdata.append('size',10);
         formdata.append('beginTime',this.workDate[0])

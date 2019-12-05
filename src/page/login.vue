@@ -134,9 +134,9 @@ export default {
            });
            window.sessionStorage.setItem('adminMes',JSON.stringify(res.data.data));
            _vm.$router.push('/admin')
-           window.localStorage.setItem('Uid',res.data.data.id);
+           window.sessionStorage.setItem('Uid',res.data.data.id);
            if(res.data.data.engineerVO!=null){
-             window.localStorage.setItem('engID',res.data.data.engineerVO.id);
+             window.sessionStorage.setItem('engID',res.data.data.engineerVO.id);
            }
          }else{
            _vm.$message.error(res.data.msg)

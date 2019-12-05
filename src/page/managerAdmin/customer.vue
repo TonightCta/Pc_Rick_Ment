@@ -466,7 +466,7 @@ export default {
         formdata.append('id',_vm.cusID);
         formdata.append('name',_vm.editCusMes.name);
         formdata.append('operatorName',_vm.editCusMes.operatorName);
-        formdata.append('operatorId',window.localStorage.getItem('Uid'));
+        formdata.append('operatorId',window.sessionStorage.getItem('Uid'));
         if(_vm.editCusMes.address!=null&&_vm.editCusMes.address!=''){
           formdata.append('address',_vm.editCusMes.address)
         };
@@ -506,7 +506,7 @@ export default {
       }else{
         formdata.append('name',_vm.addCusMes.companyName);
         formdata.append('operatorName',_vm.addCusMes.operName);
-        formdata.append('operatorId',window.localStorage.getItem('Uid'))
+        formdata.append('operatorId',window.sessionStorage.getItem('Uid'))
         if(_vm.addCusMes.address!=null&&_vm.addCusMes.address!=''){
           formdata.append('address',_vm.addCusMes.address)
         };

@@ -318,7 +318,7 @@ export default {
       formdata.append('stateList',-1);
       formdata.append('size',10);
       formdata.append('page',_vm.page);
-      formdata.append('creatorId',window.localStorage.getItem('Uid'));
+      formdata.append('creatorId',window.sessionStorage.getItem('Uid'));
       _vm.$axios.post(_vm.url+'/findCustomerListByCondition',formdata).then((res)=>{
         if(res.data.code==0){
           _vm.dataLength=res.data.data.totalElements;
@@ -352,7 +352,7 @@ export default {
       formdata.append('stateList',-1);
       formdata.append('size',10);
       formdata.append('page',_vm.page);
-      formdata.append('creatorId',window.localStorage.getItem('Uid'));
+      formdata.append('creatorId',window.sessionStorage.getItem('Uid'));
       _vm.$axios.post(_vm.url+'/findCustomerListByCondition',formdata).then((res)=>{
         if(res.data.code==0){
           _vm.dataLength=res.data.data.totalElements;
@@ -438,7 +438,7 @@ export default {
         formdata.append('id',_vm.cusID);
         formdata.append('name',_vm.editCusMes.name);
         formdata.append('operatorName',_vm.editCusMes.operatorName);
-        formdata.append('operatorId',window.localStorage.getItem('Uid'));
+        formdata.append('operatorId',window.sessionStorage.getItem('Uid'));
         if(_vm.editCusMes.address!=null&&_vm.editCusMes.address!=''){
           formdata.append('address',_vm.editCusMes.address)
         };
@@ -478,7 +478,7 @@ export default {
       }else{
         formdata.append('name',_vm.addCusMes.companyName);
         formdata.append('operatorName',_vm.addCusMes.operName);
-        formdata.append('operatorId',window.localStorage.getItem('Uid'))
+        formdata.append('operatorId',window.sessionStorage.getItem('Uid'))
         if(_vm.addCusMes.address!=null&&_vm.addCusMes.address!=''){
           formdata.append('address',_vm.addCusMes.address)
         };

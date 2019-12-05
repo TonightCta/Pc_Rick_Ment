@@ -43,7 +43,7 @@
                 </el-option>
               </el-select>
           :</span>
-          <span style="width:40%;display:inline-block;">
+          <span style="width:35%;display:inline-block;">
             <el-date-picker
                v-model="searchMes.dateChoose"
                type="daterange"
@@ -55,6 +55,10 @@
                @change="chooseTime"
                >
              </el-date-picker>
+          </span>
+          <span style="display:inline-block;width:25%;">是否外包:&nbsp;&nbsp;&nbsp;
+            <el-radio v-model="searchMes.outsource" :label="true">外包</el-radio>
+            <el-radio v-model="searchMes.outsource" :label="false">非外包</el-radio>
           </span>
           <span>
             <el-button type="primary" icon="el-icon-zoom-in" @click="serchPro()">筛选</el-button>
@@ -107,7 +111,7 @@
           <el-tooltip class="item" effect="dark" :content="'创建时间:'+pro.createTimeSec+'    '+'更新时间:'+pro.updateTimeSec" placement="bottom">
             <el-col :span="1"><div class="projectCon" style="cursor:pointer;">{{pro.num+1}}</div></el-col>
           </el-tooltip>
-          <el-tooltip class="item" effect="dark" :content="pro.name+'['+pro.contractNumber+']'" placement="bottom">
+          <el-tooltip class="item" effect="dark" :content="'['+pro.outsourceSrc+']'+pro.name+'['+pro.contractNumber+']'" placement="bottom">
             <el-col :span="5" v-if="pro.name!=null&&pro.name!='null'"><div class="projectCon" style="cursor:pointer;">{{pro.name.substring(0,10)}}...</div></el-col>
             <el-col :span="5" v-else><div class="projectCon" style="cursor:pointer;">-</div></el-col>
           </el-tooltip>
@@ -552,6 +556,7 @@ export default {
         startTime:null,//筛选开始时间
         endTime:null,//筛选结束时间
         conNumber:null,//合同号
+        outsource:null,//是否外包
       },
       length:0,//列表排序
       lengthNum:0,
@@ -598,8 +603,8 @@ export default {
       filename:'项目目录',
       autoWidth: true,
       bookType: 'xlsx',
-      tHeader:['项目名称','项目合同号', '产品线', '负责人','创建时间','更新时间','预估时间','实际时间','入场时间','完工时间','验收时间','项目状态'],
-      tValue:['name','contractNumber','technologyName', 'creatorName','createTimeSec','updateTimeSec','dayNumber','workDayNumber','entranceTimeSec', 'finishTimeSec','acceptTimeSec','stateStr'],
+      tHeader:['项目名称','是否外包','项目合同号', '产品线', '负责人','创建时间','更新时间','预估时间','实际时间','入场时间','完工时间','验收时间','项目状态'],
+      tValue:['name','outsourceSrc','contractNumber','technologyName', 'creatorName','createTimeSec','updateTimeSec','dayNumber','workDayNumber','entranceTimeSec', 'finishTimeSec','acceptTimeSec','stateStr'],
       arrTimeList:[],//进场时间集合
       leaveTimeList:[],//离场时间集合
     }
@@ -647,6 +652,15 @@ export default {
           _vc.length=_vc.page*10;
           res.data.data.content.forEach((e)=>{
             _vc.$set(e,'num',_vc.length++);
+            if(e.outsource!=undefined&&e.outsource!=null){
+              if(e.outsource){
+                _vc.$set(e,'outsourceSrc','外包');
+              }else{
+                _vc.$set(e,'outsourceSrc','非外包');
+              }
+            }else{
+              _vc.$set(e,'outsourceSrc','-');
+            }
             //创建时间-------------------------------------->
             let createDate=new Date(e.createTime);
             let cYear=createDate.getFullYear();
@@ -955,6 +969,7 @@ export default {
       let _vc=this;
       let formdata=new FormData()
       formdata.append('sortStr',_vc.getTypeCode);
+      formdata.append('outsource',_vc.searchMes.outsource);
       if(this.searchMes.proName!=null&&this.searchMes.proName!=''){
         formdata.append('name',this.searchMes.proName)
       };
@@ -986,6 +1001,15 @@ export default {
           this.pageNum=res.data.data.totalPages*10;
           res.data.data.content.forEach((e)=>{
             this.$set(e,'num',this.length++);
+            if(e.outsource!=undefined&&e.outsource!=null){
+              if(e.outsource){
+                this.$set(e,'outsourceSrc','外包');
+              }else{
+                this.$set(e,'outsourceSrc','非外包');
+              }
+            }else{
+              this.$set(e,'outsourceSrc','-');
+            }
             //创建时间-------------------------------------->
             let createDate=new Date(e.createTime);
             let cYear=createDate.getFullYear();
@@ -1097,6 +1121,7 @@ export default {
       this.searchMes.proStatus=null;
       this.searchMes.dateChoose=null;
       this.searchMes.conNumber=null;
+      this.searchMes.outsource=null;
     },
     getLineList(){//获取产品线选项
       this.$axios.get(this.url+'/usingTechnologyList').then((res)=>{
@@ -1259,6 +1284,15 @@ export default {
         if(res.data.code==0){
           res.data.data.content.forEach((e)=>{
             _vc.$set(e,'num',_vc.length++);
+            if(e.outsource!=undefined&&e.outsource!=null){
+              if(e.outsource){
+                _vc.$set(e,'outsourceSrc','外包');
+              }else{
+                _vc.$set(e,'outsourceSrc','非外包');
+              }
+            }else{
+              _vc.$set(e,'outsourceSrc','-');
+            }
             //创建时间-------------------------------------->
             if(e.createTime!=''&&e.createTime!=null){
               let createDate=new Date(e.createTime);

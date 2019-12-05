@@ -31,7 +31,10 @@
               </el-option>
             </el-select>
           </p>
-          <p>项目经理:&nbsp;<el-input type="primary" v-model="searchMes.manName" style="width:70%;" placeholder="请输入项目经理名称"></el-input/></p>
+          <p>是否外包:&nbsp;&nbsp;
+            <el-radio v-model="searchMes.outsource" :label="true">外包</el-radio>
+            <el-radio v-model="searchMes.outsource" :label="false">非外包</el-radio>
+          </p>
           <!-- <p style="position:absolute;background:red;height:61px;right:30px;opacity:0;"></p> -->
         </li>
         <li style="padding-left:25px;">
@@ -108,18 +111,18 @@
           <el-tooltip class="item" effect="dark" :content="'创建时间:'+pro.createTimeSec+'    '+'更新时间:'+pro.updateTimeSec" placement="bottom">
             <el-col :span="1"><div class="pro_oper" style="cursor:pointer;">{{pro.num+1}}</div></el-col>
           </el-tooltip>
-          <el-tooltip class="item" effect="dark" :content="pro.name+'['+pro.contractNumber+']'" placement="bottom">
+          <el-tooltip class="item" effect="dark" :content="'['+pro.outsourceSrc+']'+pro.name+'['+pro.contractNumber+']'" placement="bottom">
             <el-col :span="3" v-if="pro.name!=null&&pro.name!='null'"><div class="pro_oper" style="cursor:pointer;">{{pro.name.substring(0,8)}}...</div></el-col>
             <el-col :span="3" v-else><div class="pro_oper" style="cursor:pointer;">-</div></el-col>
           </el-tooltip>
           <el-col :span="1"><div class="pro_oper ">{{pro.technologyName}}</div></el-col>
           <el-col :span="2"><div class="pro_oper">
             <span v-show="pro.state==2" style="background:rgb(255, 255, 153);">停工</span>
-            <span v-show="pro.state==5" style="background:rgb(131,170, 255);">驻场运维</span>
             <span v-show="pro.state==0" style="background:rgb(255, 140, 105);">未开工</span>
             <span v-show="pro.state==1" style="background:rgb(204, 255, 153);">开工</span>
             <span v-show="pro.state==4" style="background:rgb(102, 204, 255);">验收</span>
             <span v-show="pro.state==3" style="background:rgb(204, 255, 255);">完工</span>
+            <span v-show="pro.state==5" style="background:rgb(131,170, 255);">驻场运维</span>
           </div></el-col>
           <el-col :span="2"><div class="pro_oper">
             <el-popover
@@ -403,7 +406,7 @@
             <li>序号</li>
             <li>地点</li>
             <li>施工详细地址</li>
-            <li>备注</li>
+            <li>是否外包</li>
             <li class="loadMes" v-for="(chosePoint,index) in planList" :key="'ChosePoint'+index">
               <input type="checkbox" name="" value="" id="" :ref="'PointCheck'+index" @click="allChoosePoint(index)">
               <span :ref="'MaskTitle'+index" @click="cancelAll(index)"></span>
@@ -436,7 +439,8 @@
                 <el-input type="primary" size="small" v-model="operTwo.address" placeholder="请输入施工详细地址"></el-input>
               </li>
               <li>
-                <el-input type="primary" size="small" v-model="operTwo.remark" placeholder="请输入备注信息"></el-input>
+                <el-radio v-model="operTwo.outsource" :label="false">非外包</el-radio>
+                <el-radio v-model="operTwo.outsource" :label="true">外包</el-radio>
               </li>
               <li class="loadMes" v-for="(chosePoint,index) in planList" :key="'ChosePoint'+index" ref="ChosePointBox">
                 <input type="checkbox" name="" value="" id="" :ref="'PointCheck'+index" @click="choosePoint(indexOper,index)">
@@ -517,11 +521,11 @@
       <div class="" v-if="threeConBox">
         <div class="pro_cess">
           <p class="cess_title">项目进程</p>
-          <div class="cess_box">
+          <div class="cess_box" v-if="threeConBox">
             <ul>
               <li>
                 <span>项目状态</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <el-select v-model="proStateMes.stateText" placeholder="请选择" @change="chooseProState" style="width:220px;" size="medium">
+                <el-select v-model="proStateMes.stateText" ref="adsd" placeholder="请选择" @change="chooseProState" style="width:220px;" size="medium">
                   <el-option
                     v-for="item in proStateList"
                     :key="item.code"
@@ -583,6 +587,7 @@
                   type="date"
                   value-format="yyyy-MM-dd"
                   size="medium"
+                  @change="writeEndTime"
                   placeholder="选择日期">
                 </el-date-picker>
               </li>
@@ -593,6 +598,7 @@
                   type="date"
                   value-format="yyyy-MM-dd"
                   size="medium"
+                  @change="writeAcceptTime"
                   placeholder="选择日期">
                 </el-date-picker>
               </li>
@@ -723,7 +729,7 @@
           <li v-for="(fileUpDom,fileUpIn) in pointFile.fileList" :key="'FileUp'+fileUpIn">
             <span>{{fileUpDom.name}}:</span>
             <el-input type="primary" style="width:600px;" v-model="fileUpDom.fileName"></el-input>
-            <input type="file" name=""  Accept=".csv,.docx,.doc,.pdf, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" value="" @change="upPointFile($event,indexFile,fileUpIn)">
+            <input type="file" name=""  Accept=".csv,.doc,.docx,.pdf,application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" value="" @change="upPointFile($event,indexFile,fileUpIn)">
             <el-button type="primary" icon="el-icon-search" size="small">浏览文件</el-button>
             <el-button type="primary" icon="el-icon-upload" size="small" @click="upFile(indexFile,fileUpIn)">上传</el-button>
             <a :href="url+fileUpDom.path" target="_blank">
@@ -821,8 +827,15 @@
             <p>项目名称:&nbsp;&nbsp;&nbsp;<span>{{projectMes.name}}</span></p>
             <p>项目类型:&nbsp;&nbsp;&nbsp;<span v-if="projectMes.projectType">{{projectMes.projectType.name}}</span><span v-else>-</span></p>
           </li>
-          <li>
+          <li class="flex">
             <p>项目合同单号:&nbsp;&nbsp;&nbsp;<span>{{projectMes.contractNumber}}</span></p>
+            <p>是否外包:&nbsp;&nbsp;&nbsp;
+              <span v-if="projectMes.outsource!=null">
+                <span v-if="projectMes.outsource">外包</span>
+                <span v-else>非外包</span>
+              </span>
+              <span v-else>-</span>
+            </p>
           </li>
           <li>项目内容:&nbsp;&nbsp;&nbsp;<pre>{{projectMes.content}}</pre></li>
           <li class="flex">
@@ -894,6 +907,13 @@
         <ul class="con_mes">
           <li>地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点:&nbsp;&nbsp;&nbsp;<span>{{point.placeName}}</span></li>
           <li>详细地址:&nbsp;&nbsp;&nbsp;<span>{{point.address}}</span></li>
+          <li>是否外包:&nbsp;&nbsp;&nbsp;
+            <span v-if="point.outsource!=null">
+              <span v-if="point.outsource">外包</span>
+              <span v-else>非外包</span>
+            </span>
+            <span v-else>-</span>
+          </li>
           <li>备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注:&nbsp;&nbsp;&nbsp;<span>{{point.remark}}</span></li>
           <li>人员组成:&nbsp;&nbsp;&nbsp;<span>{{point.engineerNameListStr}}</span></li>
           <li>
@@ -1170,7 +1190,7 @@ export default {
       ],//获取列表类型列表
       getType:'创建时间',//获取列表类型
       getTypeCode:'createTime,updateTime',//获取列表类型参数
-      recordBox:false,//项目记录盒子
+      recordBox:false,//项目更新记录盒子
       proList:[],
       value1:'',
       multipleSelection: [],
@@ -1202,6 +1222,7 @@ export default {
         startTime:null,//筛选开始时间
         endTime:null,//筛选结束时间
         conNumber:null,//合同号
+        outsource:null,//是否为外包
       },
       closeText:'收起筛选',
       searchList:true,//闭合搜索
@@ -1330,7 +1351,7 @@ export default {
           num:0,
           placeID:110100,//地址ID
           address:null,//详细地址
-          remark:null,//备注
+          isExt:null,//是否为外包
           chooseMes:[
             {pointID:false,id:'04c10200-88c1-4c5a-a831-43a4b78f9789'},//进场开工
             {pointID:false,id:'ea0e6c9b-a014-484b-8a36-442a53b07438'},//硬件安装
@@ -1413,6 +1434,20 @@ export default {
     }
   },
   watch:{
+    threeConBox(val,oldVal){
+      if(!val){
+        this.proStateMes.remark=null;
+        this.proStateMes.stateText=null;
+        this.proStateMes.state=null;
+        this.proStateMes.warnTime=null;
+        this.proStateMes.planEndTime=null;
+        this.proStateMes.planAcceptTime=null;
+        this.proStateMes.proGress=null;
+        this.proStateMes.startTime=null;
+        this.proStateMes.endTime=null;
+        this.proStateMes.acceptTime=null;
+      };
+    },
     proList(val,oldVal){
       if(val==null||val.length<1){
         this.noPro=true;
@@ -1447,24 +1482,7 @@ export default {
         this.isDown=false;
       }
     },
-    workEndTime(val,oldVal){
-      if(val!=null&&val!=''){
-        this.proStateMes.stateText='完工';
-        this.proStateMes.state=3;
-      }else{
-        this.proStateMes.stateText=null;
-        this.proStateMes.state=null;
-      }
-    },
-    workAcceptTime(val,oldVal){
-      if(val!=null&&val!=''){
-        this.proStateMes.stateText='验收';
-        this.proStateMes.state=4;
-      }else{
-        this.proStateMes.stateText=null;
-        this.proStateMes.state=null;
-      }
-    }
+
   },
   methods:{
     getLineList(){//获取产品线选项
@@ -1481,18 +1499,15 @@ export default {
     serchPro(){//搜索项目
       let _vc=this;
       let formdata=new FormData();
-      let opID=window.localStorage.getItem('Uid');
-      formdata.append('operatorId',opID);
+      let opID=window.sessionStorage.getItem('Uid');
       formdata.append('page',this.page);
       formdata.append('sortStr',this.getTypeCode);
+      formdata.append('outsource',this.searchMes.outsource);
       if(this.searchMes.proName!=null&&this.searchMes.proName!=''){
         formdata.append('name',this.searchMes.proName)
       };
       if(this.searchMes.cusName!=null&&this.searchMes.cusName!=''){
         formdata.append('customerName',this.searchMes.cusName)
-      };
-      if(this.searchMes.manName!=null&&this.searchMes.manName!=''){
-        formdata.append('managerName',this.searchMes.manName)
       };
       if(this.searchMes.lineID!=null&&this.searchMes.lineID!=''){
         formdata.append('technologyId',this.searchMes.lineID)
@@ -1513,6 +1528,15 @@ export default {
           this.length=this.page*10
           res.data.data.content.forEach((e)=>{
             this.$set(e,'num',this.length++);
+            if(e.outsource!=undefined&&e.outsource!=null){
+              if(e.outsource){
+                this.$set(e,'outsourceSrc','外包');
+              }else{
+                this.$set(e,'outsourceSrc','非外包');
+              }
+            }else{
+              this.$set(e,'outsourceSrc','-');
+            }
             //创建时间-------------------------------------->
             let createDate=new Date(e.createTime);
             let cYear=createDate.getFullYear();
@@ -1648,6 +1672,7 @@ export default {
       this.searchMes.proStatus=null;
       this.searchMes.dateChoose=[];
       this.searchMes.conNumber=null;
+      this.searchMes.outsource=null;
     },
     pushPro(){//添加项目
       this.$message.success('添加项目')
@@ -1661,15 +1686,23 @@ export default {
       let _vn=this;
       _vn.proLoad=true;
       let formdata=new FormData();
-      let opID=window.localStorage.getItem('Uid');
+      let opID=window.sessionStorage.getItem('Uid');
       formdata.append('page',_vn.page);
-      formdata.append('operatorId',opID);
       formdata.append('sortStr',_vn.getTypeCode);
       _vn.$axios.post(_vn.url+'/findProjectListByCondition',formdata).then((res)=>{
         if(res.data.code==0){
           _vn.length=_vn.page*10
           res.data.data.content.forEach((e)=>{
             _vn.$set(e,'num',_vn.length++);
+            if(e.outsource!=undefined&&e.outsource!=null){
+              if(e.outsource){
+                _vn.$set(e,'outsourceSrc','外包');
+              }else{
+                _vn.$set(e,'outsourceSrc','非外包');
+              }
+            }else{
+              _vn.$set(e,'outsourceSrc','-');
+            }
             //创建时间-------------------------------------->
             let createDate=new Date(e.createTime);
             let cYear=createDate.getFullYear();
@@ -1708,7 +1741,7 @@ export default {
       }).catch((err)=>{
         _vn.$message.error('未知错误,请联系管理员');
         _vn.proLoad=false;
-        // console.log(err)
+        console.log(err)
       })
     },
     changeGetType(value){//更改获取项目类型
@@ -1870,7 +1903,7 @@ export default {
       }else if(vc.addProMes.skillIDList.length<1){
         vc.$message.error('请选择技术要求')
       }else{
-        let opID=window.localStorage.getItem('Uid');
+        let opID=window.sessionStorage.getItem('Uid');
         let formdata=new FormData();
         formdata.append('customerId',vc.addProMes.cusID);
         formdata.append('projectTypeId',vc.addProMes.proTypeID);
@@ -1933,7 +1966,8 @@ export default {
                 viceName:res.data.data.projectPointVOList[i].placeVO.parentName,//省级名称
                 cityName:res.data.data.projectPointVOList[i].placeVO.name,//城市名称
                 cityList:[],
-                projectPointId:res.data.data.projectPointVOList[i].id
+                projectPointId:res.data.data.projectPointVOList[i].id,
+                outsource:res.data.data.projectPointVOList[i].outsource,//是否为外包
               });
               for(let x in res.data.data.projectPointVOList[i].projectCourseNodeVOList){
                 _vm.operTwoList.forEach((e)=>{
@@ -1948,8 +1982,12 @@ export default {
               };
             }
             _vm.length=0;
+            console.log(_vm.operTwoList)
             for(let u in _vm.operTwoList){
               _vm.$set(_vm.operTwoList[u],'num',_vm.length++);
+              if(!_vm.operTwoList[u].outsource==undefined){
+                _vm.$set(_vm.operTwoList[u],'outsource',null);
+              }
               _vm.operTwoList[u].chooseMes.splice(7,14);
               setTimeout(()=>{
                 for(let o in _vm.operTwoList[u].chooseMes){
@@ -2038,7 +2076,7 @@ export default {
                   setTimeout(()=>{
                     _vm.$refs.PointCheck6[0].checked=false;
                     _vm.$refs.MaskTitle6[0].style.display='none';
-                  },500);
+                  },550);
                 }else{
                   setTimeout(()=>{
                     _vm.$refs.PointCheck6[0].checked=true;
@@ -2053,10 +2091,10 @@ export default {
                   if(res.data.code==0){
                     _vm.placeList=res.data.data.placeList;
                     setTimeout(()=>{
+                      loading.close()
+                      _vm.firstConBox=true;
                       _vm.firstBox=true;
                       _vm.loadPoint=false;
-                      _vm.firstConBox=true;
-                      loading.close()
                       _vm.$refs.firstPerBox.style.width='100%';
                       _vm.$refs.firstPerBox.style.minHeight='100%';
                     },600)
@@ -2085,10 +2123,10 @@ export default {
               if(res.data.code==0){
                 _vm.placeList=res.data.data.placeList;
                 setTimeout(()=>{
+                  loading.close();
+                  _vm.firstConBox=true;
                   _vm.firstBox=true;
                   _vm.loadPoint=false;
-                  _vm.firstConBox=true;
-                  loading.close()
                   _vm.$refs.firstPerBox.style.width='100%';
                   _vm.$refs.firstPerBox.style.minHeight='100%';
                 },600)
@@ -2224,6 +2262,16 @@ export default {
       _vm.proID=_vm.proList[index].id;
       _vm.$axios.get(_vm.url+'/projectInfo?projectId='+_vm.proID).then((res)=>{
         if(res.data.code==0){
+          _vm.proStateMes.stateText=res.data.data.stateStr;
+          _vm.proStateMes.state=res.data.data.state;
+          _vm.proStateMes.proGress=res.data.data.schedule;
+          _vm.proStateMes.remark=res.data.data.remark;
+          _vm.proStateMes.warnTime=_vm.conversionTime(res.data.data.warnTime);
+          _vm.proStateMes.planEndTime=_vm.conversionTime(res.data.data.planFinishTime);
+          _vm.proStateMes.planAcceptTime=_vm.conversionTime(res.data.data.planAcceptTime);
+          _vm.proStateMes.startTime=_vm.conversionTime(res.data.data.startTime);
+          _vm.proStateMes.endTime=_vm.conversionTime(res.data.data.finishTime);
+          _vm.proStateMes.acceptTime=_vm.conversionTime(res.data.data.acceptTime);
           _vm.pointList=res.data.data.projectPointVOList;
           _vm.pointList.forEach((e)=>{
             _vm.$set(e,'goWorkList',[]);
@@ -2242,16 +2290,7 @@ export default {
               });
             }
           });
-          this.proStateMes.stateText=res.data.data.stateStr;
-          this.proStateMes.state=res.data.data.state;
-          this.proStateMes.proGress=res.data.data.schedule;
-          this.proStateMes.remark=res.data.data.remark;
-          this.proStateMes.warnTime=this.conversionTime(res.data.data.warnTime);
-          this.proStateMes.planEndTime=this.conversionTime(res.data.data.planFinishTime);
-          this.proStateMes.planAcceptTime=this.conversionTime(res.data.data.planAcceptTime);
-          this.proStateMes.startTime=this.conversionTime(res.data.data.startTime);
-          this.proStateMes.endTime=this.conversionTime(res.data.data.finishTime);
-          this.proStateMes.acceptTime=this.conversionTime(res.data.data.acceptTime);
+          res.data=null;
           const loading = _vm.$loading({
             lock: true,
             text: '数据获取中...',
@@ -2264,12 +2303,13 @@ export default {
               setTimeout(()=>{
                 _vm.threeConBox=true;
                 _vm.threeBox=true;
-              },200)
+              },200);
               setTimeout(()=>{
                 _vm.$refs.threePerBox.style.width='100%';
                 _vm.$refs.threePerBox.style.minHeight='100%';
+                // console.log(this.proStateMes)
                 loading.close();
-              },200)
+              },300)
             }else{
               _vm.$message.error(res.data.msg)
             }
@@ -2282,6 +2322,20 @@ export default {
       }).catch((err)=>{
         _vm.$message.error('未知错误,请联系管理员')
       });
+    },
+    writeEndTime(){//完工状态联动
+      if(this.workEndTime!=null&&this.workEndTime!=''){
+        this.proStateMes.stateText='完工';
+        this.proStateMes.state=3;
+        this.$refs.adsd.focus();
+      }
+    },
+    writeAcceptTime(){//验收状态联动
+      if(this.workAcceptTime!=null&&this.workAcceptTime!=''){
+        this.proStateMes.stateText='验收';
+        this.proStateMes.state=4;
+        this.$refs.adsd.focus();
+      }
     },
     closeThreetBox(){//关闭第三步进程管理
       this.$refs.threePerBox.style.width='300px';
@@ -2781,7 +2835,7 @@ export default {
         num:this.operTwoList.length,
         placeID:110100,//地址ID
         address:null,//详细地址
-        remark:null,//备注
+        isExt:null,//是否为外包
         chooseMes:[
           {pointID:false,id:'04c10200-88c1-4c5a-a831-43a4b78f9789'},//进场开工
           {pointID:false,id:'ea0e6c9b-a014-484b-8a36-442a53b07438'},//硬件安装
@@ -2887,7 +2941,7 @@ export default {
       }else if(vc.editProMes.skillIDList.length<1){
         vc.$message.error('请选择技术要求')
       }else{
-        let opID=window.localStorage.getItem('Uid');
+        let opID=window.sessionStorage.getItem('Uid');
         let formdata=new FormData();
         formdata.append('id',vc.editProMes.id)
         formdata.append('customerId',vc.addProMes.cusID);
@@ -3127,7 +3181,7 @@ export default {
       let vc=this;
       let formdata=new FormData();
       let overSubmit=false;
-      formdata.append('operatorId',window.localStorage.getItem('Uid'));
+      formdata.append('operatorId',window.sessionStorage.getItem('Uid'));
       formdata.append('projectId',vc.proID);
       for(let i in vc.operTwoList){
         if(vc.operTwoList[i].placeID==null||vc.operTwoList[i].address==null||vc.operTwoList[i].address==''){
@@ -3135,6 +3189,7 @@ export default {
           overSubmit=false;
         }else{
           formdata.append('projectPointDTOList['+i+'].placeId',vc.operTwoList[i].placeID);
+          formdata.append('projectPointDTOList['+i+'].outsource',vc.operTwoList[i].outsource);
           formdata.append('projectPointDTOList['+i+'].address',vc.operTwoList[i].address);
           if(vc.operTwoList[i].remark!=null&&vc.operTwoList[i].remark!=''){
             formdata.append('projectPointDTOList['+i+'].remark',vc.operTwoList[i].remark);
@@ -3185,7 +3240,7 @@ export default {
         let formdata=new FormData();
         formdata.append('projectPointId',this.gateList[index].id);
         formdata.append('engineerId',this.gateList[index].engID);
-        formdata.append('operatorId',window.localStorage.getItem('Uid'));
+        formdata.append('operatorId',window.sessionStorage.getItem('Uid'));
         this.$axios.post(this.url+'/savePersonnelRecord_n',formdata).then((res)=>{
           if(res.data.code==0){
             this.$message.success('添加工程师成功');
@@ -3378,7 +3433,6 @@ export default {
           }else{
             this.$message.error(res.data.msg);
           };
-
         });
       };
       this.$axios.post(this.url+'/updateProjectCourseNodeList',formdata).then((res)=>{
@@ -3392,6 +3446,7 @@ export default {
       }).catch((err)=>{
         this.$message.error('未知错误,请联系管理员')
       })
+
     },
     upPointFile(e,indexFile,fileUpIn){//项目文档上传
       let a=this.pointFileList[indexFile];
@@ -3804,7 +3859,7 @@ input[type=checkbox]:checked:after {
     top:0;
     transition: .5s all;
     padding-top: 70px;
-    padding-bottom:70px;
+    padding-bottom:100px;
     box-sizing: border-box;
     z-index: 10;
     .mes_titleOne{

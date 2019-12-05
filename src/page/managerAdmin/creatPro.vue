@@ -31,10 +31,11 @@
               </el-option>
             </el-select>
           </p>
-          <p style="opacity:0;">合同单号:
-            <el-input type="primary" v-model="searchMes.conNumber" style="width:70%;" placeholder="请输入合同单号"></el-input/>
+          <p>是否外包:&nbsp;&nbsp;&nbsp;
+            <el-radio v-model="searchMes.outsource" :label="true">外包</el-radio>
+            <el-radio v-model="searchMes.outsource" :label="false">非外包</el-radio>
           </p>
-          <p style="position:absolute;background:red;height:61px;right:30px;opacity:0;"></p>
+          <!-- <p style="position:absolute;background:red;height:61px;right:30px;opacity:0;"></p> -->
         </li>
         <li style="padding-left:25px;">
           <span style="width:160px;display:inline-block;">
@@ -110,7 +111,7 @@
           <el-tooltip class="item" effect="dark" :content="'创建时间:'+pro.createTimeSec+'    '+'更新时间:'+pro.updateTimeSec" placement="bottom">
             <el-col :span="1"><div class="pro_oper" style="cursor:pointer;">{{pro.num+1}}</div></el-col>
           </el-tooltip>
-          <el-tooltip class="item" effect="dark" :content="pro.name+'['+pro.contractNumber+']'" placement="bottom">
+          <el-tooltip class="item" effect="dark" :content="'['+pro.outsourceSrc+']'+pro.name+'['+pro.contractNumber+']'" placement="bottom">
             <el-col :span="3" v-if="pro.name!=null&&pro.name!='null'"><div class="pro_oper" style="cursor:pointer;">{{pro.name.substring(0,8)}}...</div></el-col>
             <el-col :span="3" v-else><div class="pro_oper" style="cursor:pointer;">-</div></el-col>
           </el-tooltip>
@@ -405,7 +406,7 @@
             <li>序号</li>
             <li>地点</li>
             <li>施工详细地址</li>
-            <li>备注</li>
+            <li>是否外包</li>
             <li class="loadMes" v-for="(chosePoint,index) in planList" :key="'ChosePoint'+index">
               <input type="checkbox" name="" value="" id="" :ref="'PointCheck'+index" @click="allChoosePoint(index)">
               <span :ref="'MaskTitle'+index" @click="cancelAll(index)"></span>
@@ -438,7 +439,8 @@
                 <el-input type="primary" size="small" v-model="operTwo.address" placeholder="请输入施工详细地址"></el-input>
               </li>
               <li>
-                <el-input type="primary" size="small" v-model="operTwo.remark" placeholder="请输入备注信息"></el-input>
+                <el-radio v-model="operTwo.outsource" :label="false">非外包</el-radio>
+                <el-radio v-model="operTwo.outsource" :label="true">外包</el-radio>
               </li>
               <li class="loadMes" v-for="(chosePoint,index) in planList" :key="'ChosePoint'+index" ref="ChosePointBox">
                 <input type="checkbox" name="" value="" id="" :ref="'PointCheck'+index" @click="choosePoint(indexOper,index)">
@@ -825,8 +827,15 @@
             <p>项目名称:&nbsp;&nbsp;&nbsp;<span>{{projectMes.name}}</span></p>
             <p>项目类型:&nbsp;&nbsp;&nbsp;<span v-if="projectMes.projectType">{{projectMes.projectType.name}}</span><span v-else>-</span></p>
           </li>
-          <li>
+          <li class="flex">
             <p>项目合同单号:&nbsp;&nbsp;&nbsp;<span>{{projectMes.contractNumber}}</span></p>
+            <p>是否外包:&nbsp;&nbsp;&nbsp;
+              <span v-if="projectMes.outsource!=null">
+                <span v-if="projectMes.outsource">外包</span>
+                <span v-else>非外包</span>
+              </span>
+              <span v-else>-</span>
+            </p>
           </li>
           <li>项目内容:&nbsp;&nbsp;&nbsp;<pre>{{projectMes.content}}</pre></li>
           <li class="flex">
@@ -898,6 +907,13 @@
         <ul class="con_mes">
           <li>地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点:&nbsp;&nbsp;&nbsp;<span>{{point.placeName}}</span></li>
           <li>详细地址:&nbsp;&nbsp;&nbsp;<span>{{point.address}}</span></li>
+          <li>是否外包:&nbsp;&nbsp;&nbsp;
+            <span v-if="point.outsource!=null">
+              <span v-if="point.outsource">外包</span>
+              <span v-else>非外包</span>
+            </span>
+            <span v-else>-</span>
+          </li>
           <li>备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注:&nbsp;&nbsp;&nbsp;<span>{{point.remark}}</span></li>
           <li>人员组成:&nbsp;&nbsp;&nbsp;<span>{{point.engineerNameListStr}}</span></li>
           <li>
@@ -1206,6 +1222,7 @@ export default {
         startTime:null,//筛选开始时间
         endTime:null,//筛选结束时间
         conNumber:null,//合同号
+        outsource:null,//是否外包
       },
       closeText:'收起筛选',
       searchList:true,//闭合搜索
@@ -1334,7 +1351,7 @@ export default {
           num:0,
           placeID:110100,//地址ID
           address:null,//详细地址
-          remark:null,//备注
+          isExt:null,//是否为外包
           chooseMes:[
             {pointID:false,id:'04c10200-88c1-4c5a-a831-43a4b78f9789'},//进场开工
             {pointID:false,id:'ea0e6c9b-a014-484b-8a36-442a53b07438'},//硬件安装
@@ -1482,11 +1499,12 @@ export default {
     serchPro(){//搜索项目
       let _vc=this;
       let formdata=new FormData();
-      let opID=window.localStorage.getItem('Uid');
+      let opID=window.sessionStorage.getItem('Uid');
       formdata.append('operatorId',opID);
       formdata.append('page',this.page);
       formdata.append('operateType','creator');
       formdata.append('sortStr',this.getTypeCode);
+      formdata.append('outsource',this.searchMes.outsource)
       if(this.searchMes.proName!=null&&this.searchMes.proName!=''){
         formdata.append('name',this.searchMes.proName)
       };
@@ -1512,6 +1530,15 @@ export default {
           this.length=this.page*10
           res.data.data.content.forEach((e)=>{
             this.$set(e,'num',this.length++);
+            if(e.outsource!=undefined&&e.outsource!=null){
+              if(e.outsource){
+                this.$set(e,'outsourceSrc','外包');
+              }else{
+                this.$set(e,'outsourceSrc','非外包');
+              }
+            }else{
+              this.$set(e,'outsourceSrc','-');
+            }
             //创建时间-------------------------------------->
             let createDate=new Date(e.createTime);
             let cYear=createDate.getFullYear();
@@ -1647,6 +1674,7 @@ export default {
       this.searchMes.proStatus=null;
       this.searchMes.dateChoose=[];
       this.searchMes.conNumber=null;
+      this.searchMes.outsource=null;
     },
     pushPro(){//添加项目
       this.$message.success('添加项目')
@@ -1660,7 +1688,7 @@ export default {
       let _vn=this;
       _vn.proLoad=true;
       let formdata=new FormData();
-      let opID=window.localStorage.getItem('Uid');
+      let opID=window.sessionStorage.getItem('Uid');
       formdata.append('page',_vn.page);
       formdata.append('operatorId',opID);
       formdata.append('operateType','creator');
@@ -1670,6 +1698,15 @@ export default {
           _vn.length=_vn.page*10
           res.data.data.content.forEach((e)=>{
             _vn.$set(e,'num',_vn.length++);
+            if(e.outsource!=undefined&&e.outsource!=null){
+              if(e.outsource){
+                _vn.$set(e,'outsourceSrc','外包');
+              }else{
+                _vn.$set(e,'outsourceSrc','非外包');
+              }
+            }else{
+              _vn.$set(e,'outsourceSrc','-');
+            }
             //创建时间-------------------------------------->
             let createDate=new Date(e.createTime);
             let cYear=createDate.getFullYear();
@@ -1870,7 +1907,7 @@ export default {
       }else if(vc.addProMes.skillIDList.length<1){
         vc.$message.error('请选择技术要求')
       }else{
-        let opID=window.localStorage.getItem('Uid');
+        let opID=window.sessionStorage.getItem('Uid');
         let formdata=new FormData();
         formdata.append('customerId',vc.addProMes.cusID);
         formdata.append('projectTypeId',vc.addProMes.proTypeID);
@@ -1933,7 +1970,8 @@ export default {
                 viceName:res.data.data.projectPointVOList[i].placeVO.parentName,//省级名称
                 cityName:res.data.data.projectPointVOList[i].placeVO.name,//城市名称
                 cityList:[],
-                projectPointId:res.data.data.projectPointVOList[i].id
+                projectPointId:res.data.data.projectPointVOList[i].id,
+                outsource:res.data.data.projectPointVOList[i].outsource,//是否为外包
               });
               for(let x in res.data.data.projectPointVOList[i].projectCourseNodeVOList){
                 _vm.operTwoList.forEach((e)=>{
@@ -1948,8 +1986,12 @@ export default {
               };
             }
             _vm.length=0;
+            console.log(_vm.operTwoList)
             for(let u in _vm.operTwoList){
               _vm.$set(_vm.operTwoList[u],'num',_vm.length++);
+              if(!_vm.operTwoList[u].outsource==undefined){
+                _vm.$set(_vm.operTwoList[u],'outsource',null);
+              }
               _vm.operTwoList[u].chooseMes.splice(7,14);
               setTimeout(()=>{
                 for(let o in _vm.operTwoList[u].chooseMes){
@@ -2797,7 +2839,7 @@ export default {
         num:this.operTwoList.length,
         placeID:110100,//地址ID
         address:null,//详细地址
-        remark:null,//备注
+        isExt:null,//是否为外包
         chooseMes:[
           {pointID:false,id:'04c10200-88c1-4c5a-a831-43a4b78f9789'},//进场开工
           {pointID:false,id:'ea0e6c9b-a014-484b-8a36-442a53b07438'},//硬件安装
@@ -2903,7 +2945,7 @@ export default {
       }else if(vc.editProMes.skillIDList.length<1){
         vc.$message.error('请选择技术要求')
       }else{
-        let opID=window.localStorage.getItem('Uid');
+        let opID=window.sessionStorage.getItem('Uid');
         let formdata=new FormData();
         formdata.append('id',vc.editProMes.id)
         formdata.append('customerId',vc.addProMes.cusID);
@@ -3143,7 +3185,7 @@ export default {
       let vc=this;
       let formdata=new FormData();
       let overSubmit=false;
-      formdata.append('operatorId',window.localStorage.getItem('Uid'));
+      formdata.append('operatorId',window.sessionStorage.getItem('Uid'));
       formdata.append('projectId',vc.proID);
       for(let i in vc.operTwoList){
         if(vc.operTwoList[i].placeID==null||vc.operTwoList[i].address==null||vc.operTwoList[i].address==''){
@@ -3151,6 +3193,7 @@ export default {
           overSubmit=false;
         }else{
           formdata.append('projectPointDTOList['+i+'].placeId',vc.operTwoList[i].placeID);
+          formdata.append('projectPointDTOList['+i+'].outsource',vc.operTwoList[i].outsource);
           formdata.append('projectPointDTOList['+i+'].address',vc.operTwoList[i].address);
           if(vc.operTwoList[i].remark!=null&&vc.operTwoList[i].remark!=''){
             formdata.append('projectPointDTOList['+i+'].remark',vc.operTwoList[i].remark);
@@ -3201,7 +3244,7 @@ export default {
         let formdata=new FormData();
         formdata.append('projectPointId',this.gateList[index].id);
         formdata.append('engineerId',this.gateList[index].engID);
-        formdata.append('operatorId',window.localStorage.getItem('Uid'));
+        formdata.append('operatorId',window.sessionStorage.getItem('Uid'));
         this.$axios.post(this.url+'/savePersonnelRecord_n',formdata).then((res)=>{
           if(res.data.code==0){
             this.$message.success('添加工程师成功');

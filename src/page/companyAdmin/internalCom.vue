@@ -698,7 +698,7 @@ export default {
         _vm.$message.error('请选择技术能力')
       }else{
         let formdata=new FormData();
-        formdata.append('operatorId',window.localStorage.getItem('Uid'));
+        formdata.append('operatorId',window.sessionStorage.getItem('Uid'));
         formdata.append('name',_vm.addEngMes.name);
         formdata.append('phone',_vm.addEngMes.phone);
         formdata.append('username',_vm.addEngMes.logname);
@@ -823,7 +823,7 @@ export default {
       }else{
         let formdata=new FormData();
         formdata.append('id',vm.editEngMes.id);
-        formdata.append('operatorId',window.localStorage.getItem('Uid'));
+        formdata.append('operatorId',window.sessionStorage.getItem('Uid'));
         formdata.append('name',vm.editEngMes.name);
         formdata.append('phone',vm.editEngMes.phone);
         formdata.append('username',vm.editEngMes.operatorName);
