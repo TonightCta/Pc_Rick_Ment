@@ -610,7 +610,6 @@
               type="textarea"
               placeholder="项目长时间未验收请在此处填写说明..."
               v-model="proStateMes.remark"
-              maxlength="200"
               show-word-limit
               style="width:72%;"
               rows="4"
@@ -983,6 +982,7 @@
                   <span v-show="file.fileType==8">【验收报告】</span>
                   <span v-show="file.fileType==9">【进场报告】</span>
                   <span v-show="file.fileType==10">【离场报告】</span>
+                  <span v-show="file.fileType==11">【完工文档】</span>
                   <a :href="url+'/'+file.fileName" target="_blank">{{file.fileName}}</a>
                 </p>
             </el-collapse-item>
@@ -1504,7 +1504,9 @@ export default {
       formdata.append('page',this.page);
       formdata.append('operateType','creator');
       formdata.append('sortStr',this.getTypeCode);
-      formdata.append('outsource',this.searchMes.outsource)
+      if(this.searchMes.outsource!=null){
+        formdata.append('outsource',this.searchMes.outsource);
+      }
       if(this.searchMes.proName!=null&&this.searchMes.proName!=''){
         formdata.append('name',this.searchMes.proName)
       };
@@ -1682,6 +1684,7 @@ export default {
     refreshData(){//刷新数据
       this.page=0;
       this.pageNum=10;
+      this.searchMes.outsource=null;
       this.getProList()
     },
     getProList(){//获取所有项目列表
@@ -2327,20 +2330,20 @@ export default {
         _vm.$message.error('未知错误,请联系管理员')
       });
     },
-    writeEndTime(){//完工状态联动
-      if(this.workEndTime!=null&&this.workEndTime!=''){
-        this.proStateMes.stateText='完工';
-        this.proStateMes.state=3;
-        this.$refs.adsd.focus();
-      }
-    },
-    writeAcceptTime(){//验收状态联动
-      if(this.workAcceptTime!=null&&this.workAcceptTime!=''){
-        this.proStateMes.stateText='验收';
-        this.proStateMes.state=4;
-        this.$refs.adsd.focus();
-      }
-    },
+    // writeEndTime(){//完工状态联动
+    //   if(this.workEndTime!=null&&this.workEndTime!=''){
+    //     this.proStateMes.stateText='完工';
+    //     this.proStateMes.state=3;
+    //     this.$refs.adsd.focus();
+    //   }
+    // },
+    // writeAcceptTime(){//验收状态联动
+    //   if(this.workAcceptTime!=null&&this.workAcceptTime!=''){
+    //     this.proStateMes.stateText='验收';
+    //     this.proStateMes.state=4;
+    //     this.$refs.adsd.focus();
+    //   }
+    // },
     closeThreetBox(){//关闭第三步进程管理
       this.$refs.threePerBox.style.width='300px';
       this.$refs.threePerBox.style.minHeight='200px';
@@ -3460,6 +3463,12 @@ export default {
     upFile(indexFile,fileUpIn){//提交文档
       let formdata=new FormData();
       if(this.pointFileList[indexFile].fileList[fileUpIn].file!=null&&this.pointFileList[indexFile].fileList[fileUpIn].file!=''){
+        const loading=this.$loading({
+            lock: true,
+            text: '上传中...',
+            spinner: 'el-icon-loading',
+            background: 'rgba(0, 0, 0, 0.7)'
+          });
         formdata.append('fileType',this.pointFileList[indexFile].fileList[fileUpIn].code);
         formdata.append('file',this.pointFileList[indexFile].fileList[fileUpIn].file);
         formdata.append('projectPointId',this.pointFileList[indexFile].id);
@@ -3473,11 +3482,14 @@ export default {
               fileType:res.data.data.fileType,
               fileName:res.data.data.fileName
             })
-            this.$message.success('上传成功')
+            this.$message.success('上传成功');
+            loading.close()
           }else{
             this.$message.error(res.data.msg)
+            loading.close()
           }
         }).catch((err)=>{
+          loading.close()
           this.$message.error('未知错误,请联系管理员')
         })
       }else{

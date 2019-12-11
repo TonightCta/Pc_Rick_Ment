@@ -437,6 +437,12 @@ export default {
         this.$message.error('没有选择文件哦')
       }else{
         let formdata=new FormData();
+        const loading=this.$loading({
+            lock: true,
+            text: '上传中...',
+            spinner: 'el-icon-loading',
+            background: 'rgba(0, 0, 0, 0.7)'
+          });
         formdata.append('projectId',this.pointFileMes.proID);
         formdata.append('projectPointId',this.pointFileMes.pointID);
         formdata.append('fileType',this.pointFileList[index].code);
@@ -445,10 +451,13 @@ export default {
           if(res.data.code==0){
             this.$message.success('上传文档成功')
             this.backFileList.push(res.data.data)
+            loading.close()
           }else{
+            loading.close()
             this.$message.error(res.data.msg)
           }
         }).catch((err)=>{
+          loading.close()
           this.$message.error('未知错误,请联系管理员')
         })
       }

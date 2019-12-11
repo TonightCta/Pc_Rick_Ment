@@ -217,7 +217,7 @@ export default {
     img{
       width: 100%;
       @media screen and (min-width: 2560px){
-        height: 400px;
+        height: 450px;
       }
       @media screen and (min-width: 1920px){
         height: 500px;

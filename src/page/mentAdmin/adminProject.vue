@@ -312,6 +312,7 @@
                     <span v-show="file.fileType==8">【验收报告】</span>
                     <span v-show="file.fileType==9">【进场报告】</span>
                     <span v-show="file.fileType==10">【离场报告】</span>
+                    <span v-show="file.fileType==11">【完工文档】</span>
                     <a :href="url+'/'+file.fileName" target="_blank">{{file.fileName}}</a>
                   </p>
               </el-collapse-item>
@@ -1003,13 +1004,16 @@ export default {
     refresh(){//刷新数据
       this.page=0;
       this.pageNum=10;
+      this.searchMes.outsource=null;
       this.getProjectList()
     },
     serchPro(){//筛选项目
       let _vc=this;
       let formdata=new FormData()
       formdata.append('sortStr',_vc.getTypeCode);
-      formdata.append('outsource',_vc.searchMes.outsource);
+      if(_vc.searchMes.outsource!=null){
+        formdata.append('outsource',this.searchMes.outsource);
+      }
       if(this.searchMes.proName!=null&&this.searchMes.proName!=''){
         formdata.append('name',this.searchMes.proName)
       };
