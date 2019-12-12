@@ -3194,6 +3194,9 @@ export default {
         if(vc.operTwoList[i].placeID==null||vc.operTwoList[i].address==null||vc.operTwoList[i].address==''){
           vc.$message.error('请补全局点信息');
           overSubmit=false;
+        }else if(vc.operTwoList[i].outsource==null){
+          vc.$message.error('请选择项目是否为外包');
+          overSubmit=false;
         }else{
           formdata.append('projectPointDTOList['+i+'].placeId',vc.operTwoList[i].placeID);
           formdata.append('projectPointDTOList['+i+'].outsource',vc.operTwoList[i].outsource);

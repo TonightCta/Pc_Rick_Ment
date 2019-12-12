@@ -1985,7 +1985,6 @@ export default {
               };
             }
             _vm.length=0;
-            console.log(_vm.operTwoList)
             for(let u in _vm.operTwoList){
               _vm.$set(_vm.operTwoList[u],'num',_vm.length++);
               if(!_vm.operTwoList[u].outsource==undefined){
@@ -3192,7 +3191,9 @@ export default {
           overSubmit=false;
         }else{
           formdata.append('projectPointDTOList['+i+'].placeId',vc.operTwoList[i].placeID);
-          formdata.append('projectPointDTOList['+i+'].outsource',vc.operTwoList[i].outsource);
+          if(vc.operTwoList[i].outsource!=null){
+            formdata.append('projectPointDTOList['+i+'].outsource',vc.operTwoList[i].outsource);
+          }
           formdata.append('projectPointDTOList['+i+'].address',vc.operTwoList[i].address);
           if(vc.operTwoList[i].remark!=null&&vc.operTwoList[i].remark!=''){
             formdata.append('projectPointDTOList['+i+'].remark',vc.operTwoList[i].remark);

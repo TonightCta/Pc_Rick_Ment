@@ -37,7 +37,7 @@
       <div class="" style="minHeight:500px;" v-loading="workLoading">
         <el-row class="operTwo publicHover" v-for="(cusMes,index) in workList" :key="'CusMes'+index">
           <el-col :span="2"><div class="cusMesCon">{{cusMes.num+1}}</div></el-col>
-          <el-tooltip class="item" effect="dark" :content="cusMes.projectName" placement="bottom">
+          <el-tooltip class="item" effect="dark" :content="cusMes.projectName+'/'+cusMes.projectPointPlace" placement="bottom">
             <el-col :span="9"><div class="cusMesCon" style="cursor:pointer;">{{cusMes.projectName.substring(0,33)}}...</div></el-col>
           </el-tooltip>
           <el-col :span="3"><div class="cusMesCon">{{cusMes.projectCourseNodeName}}</div></el-col>
@@ -92,8 +92,8 @@
                 <el-option
                   v-for="(item,index) in addworkMes.pushProList"
                   :key="index"
-                  :label="item.projectName+'/'+item.placeName"
-                  :value="item.projectName+'/'+item.placeName">
+                  :label="item.projectName+'/'+item.placeName+'/'+item.address"
+                  :value="item.projectName+'/'+item.placeName+'/'+item.address">
                 </el-option>
               </el-select>
             </li>
@@ -174,7 +174,7 @@
             <span>项目名称:</span>
           </p>
           <p class="work_right">
-            {{workMes.projectName}}
+            {{workMes.projectName}}/{{workMes.projectPointPlace}}
           </p>
         </div>
         <div class="work_detials">
@@ -277,6 +277,7 @@ export default {
         content:null,
         startTimeSec:null,
         fileUploads:[],
+        projectPointPlace:null,
       },
       page:0,//页码
       dataLength:0,//数据总条数
@@ -391,6 +392,7 @@ export default {
     },
     workDetails(index){//项目详情
       this.workMes=this.workList[index];
+      console.log(this.workList[index])
       this.workBox=true;
     },
     pushWork(){//添加项目
