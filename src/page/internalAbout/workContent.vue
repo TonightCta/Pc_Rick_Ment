@@ -429,7 +429,7 @@ export default {
     },
     choosePro(val){//选择项目
       this.addworkMes.pushProList.forEach((e)=>{
-        if(e.projectName+'/'+e.placeName==val){
+        if(e.projectName+'/'+e.placeName+'/'+e.address==val){
           this.addworkMes.pushProID=e.id;
           this.addworkMes.pointList=e.usingProjectCourseNodeVOList;
         }
