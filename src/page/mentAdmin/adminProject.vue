@@ -234,6 +234,11 @@
                 <span v-if="projectMes.remark!=null">{{projectMes.remark}}</span><span v-else>-</span>
               </pre>
             </li>
+            <li>
+              <p class="cess_remark" style="marginTop:20px;">
+                <el-button type="primary" v-for="(reType,Reindex) in remarkTypeList" size="medium" @click="onRemarkTypr(Reindex,2)">{{reType.name}}</el-button>
+              </p>
+            </li>
           </ul>
         </div>
         <div class="" v-show="showMes" v-for="(point,key) in projectMes.projectPointVOList" :key="'point'+key" style="minHeight:450px;maxHeight:none;margin-top:20px;">
@@ -547,6 +552,26 @@
           </span>
         </el-dialog>
       </div>
+      <!-- 项目说明类型历史记录 -->
+      <div class="project_remark">
+        <el-dialog
+          :title="remarkBoxTitle"
+          :visible.sync="remarkTypeBack"
+          width="45%">
+          <div class="" style="maxHeight:350px;overflow:auto;paddingBottom:20px;">
+            <p style="width:100%;textAlign:center;color:#666;fontSize:15px;lineHeight:50px;" v-if="isHasRLog">暂无记录</p>
+            <ul class="remarkBack">
+              <li v-for="(remarkBack,indexRB) in remarkLogList">
+                <p>更新时间:&nbsp;&nbsp;&nbsp;{{remarkBack.time}}</p>
+                <p class="flexRemark">
+                  <span>说明详情:</span>
+                  <span>{{remarkBack.content}}</span>
+                </p>
+              </li>
+            </ul>
+          </div>
+        </el-dialog>
+      </div>
     </div>
   </div>
 </template>
@@ -648,13 +673,50 @@ export default {
       changeFounText:null,//变更负责人名称
       cusLoading:false,//筛选Loading
       searchEngList:[],//远程查找工程师列表
+      remarkTypeBack:false,//项目说明回显盒子
+      remarkLogList:[],//项目说明列表
+      remarkBoxTitle:null,//项目说明盒子title
+      remarkBoxCode:null,//项目说明盒子类型码
+      remarkTypeList:[],//项目说明类别列表
+      isHasRLog:false,
+    }
+  },
+  computed:{
+    remarkLog(){
+      return this.remarkLogList.length;
     }
   },
   created(){
     this.getProjectList();
-    this.getLineList()
+    this.getLineList();
+    this.getRemarkType()
+  },
+  watch:{
+    remarkTypeBack(val,oldVal){
+      if(!val){
+        this.remarkLogList=[];
+      }
+    },
+    remarkLog(val,old){
+      if(val<1){
+        this.isHasRLog=true;
+      }else{
+        this.isHasRLog=false;
+      }
+    }
   },
   methods:{
+    getRemarkType(){
+      this.$axios.get(this.url+'/enum/projectRemarkList').then((res)=>{
+        if(res.data.code==0){
+          this.remarkTypeList=res.data.data;
+        }else{
+          this.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        this.$message.error('未知错误,请联系管理员')
+      })
+    },
     handleChange(val) {//折叠面板
        // console.log(val);
      },
@@ -1554,6 +1616,22 @@ export default {
         _vm.$message.error('请先选择工程师')
       }
     },
+    onRemarkTypr(index,num){//回显项目说明列表
+      let _vm=this;
+      _vm.remarkBoxTitle=_vm.remarkTypeList[index].name;
+      _vm.remarkBoxCode=_vm.remarkTypeList[index].code;
+        _vm.remarkBoxTitle=_vm.remarkTypeList[index].name;
+        if(_vm.projectMes.projectRemarkVOList!=null){
+          _vm.projectMes.projectRemarkVOList.forEach((e)=>{
+            if(e.type==_vm.remarkBoxCode){
+              _vm.remarkLogList.push(e)
+            }
+          });
+          _vm.remarkTypeBack=true;
+        }else{
+          _vm.remarkLogList=[]
+        };
+    },
   }
 }
 </script>
@@ -1896,6 +1974,42 @@ export default {
       }
       li:last-child{
         margin-bottom: 70px;
+      }
+    }
+  }
+  .remarkBack{
+    width: 100%;
+    li{
+      box-sizing: border-box;
+      padding-left: 20px;
+      min-height: 120px;
+      width: 80%;
+      background: white;
+      margin:0 auto;
+      margin-top: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 5px #333;
+      p{
+        line-height:40px;
+      }
+      .flexRemark{
+        width: 100%;
+        display: flex;
+        span{
+          display: inline-block;
+        }
+        span:first-child{
+          width: 12%;
+        }
+        span:last-child{
+          width: 88%;
+        }
+      }
+      .del_remark{
+        width: 100%;
+        text-align: right;
+        box-sizing: border-box;
+        padding-right: 20px;
       }
     }
   }

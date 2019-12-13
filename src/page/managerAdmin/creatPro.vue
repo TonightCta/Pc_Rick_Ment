@@ -587,7 +587,6 @@
                   type="date"
                   value-format="yyyy-MM-dd"
                   size="medium"
-                  @change="writeEndTime"
                   placeholder="选择日期">
                 </el-date-picker>
               </li>
@@ -598,7 +597,6 @@
                   type="date"
                   value-format="yyyy-MM-dd"
                   size="medium"
-                  @change="writeAcceptTime"
                   placeholder="选择日期">
                 </el-date-picker>
               </li>
@@ -614,6 +612,9 @@
               style="width:72%;"
               rows="4"
             ></el-input>
+          </p>
+          <p class="cess_remark" style="marginTop:20px;">
+            <el-button type="primary" v-for="(reType,Reindex) in remarkTypeList" size="medium" @click="onRemarkTypr(Reindex,1)">{{reType.name}}</el-button>
           </p>
           <p class="cess_btn">
             <el-button type="primary" size="medium" @click="saveProState()">保存</el-button>
@@ -897,6 +898,11 @@
               <span v-if="projectMes.remark!=null">{{projectMes.remark}}</span><span v-else>-</span>
             </pre>
           </li>
+          <li>
+            <p class="cess_remark" style="marginTop:20px;">
+              <el-button type="primary" v-for="(reType,Reindex) in remarkTypeList" size="medium" @click="onRemarkTypr(Reindex,2)">{{reType.name}}</el-button>
+            </p>
+          </li>
         </ul>
       </div>
       <div class="" v-show="showMes" v-for="(point,key) in projectMes.projectPointVOList" :key="'point'+key" style="minHeight:450px;maxHeight:none;margin-top:20px;">
@@ -1170,6 +1176,73 @@
         </span>
       </el-dialog>
     </div>
+    <!-- 项目说明类型上传 -->
+    <div class="project_remark">
+      <el-dialog
+        :title="remarkBoxTitle"
+        :visible.sync="remarkType"
+        width="45%">
+        <div class="" style="maxHeight:450px;overflow:auto;paddingBottom:20px;">
+          <p class="remarkBoxCon">
+            记录时间:
+            <el-date-picker
+               v-model="remarkTime"
+               align="right"
+               type="date"
+               placeholder="选择日期"
+               size="small"
+               value-format="yyyy-MM-dd"
+               :picker-options="pickerOptions2">
+             </el-date-picker>
+          </p>
+          <p class="remarkBoxCon" style="paddingLeft:93px;">
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;说明:</span>
+            <el-input
+              type="textarea"
+              :rows="4"
+              placeholder="请输入内容"
+              style="width:80%;"
+              v-model="remarkCon">
+            </el-input>
+          </p>
+          <p class="sub_remark"><el-button type="primary" @click="sunRemark()" size="small">提&nbsp;交</el-button></p>
+          <p>历史记录</p>
+          <p style="width:100%;textAlign:center;color:#666;fontSize:15px;lineHeight:50px;" v-if="isHasRLog">暂无记录</p>
+          <ul class="remarkBack">
+            <li v-for="(remarkBack,indexRB) in remarkLogList">
+              <p>更新时间:&nbsp;&nbsp;&nbsp;{{remarkBack.time}}</p>
+              <p class="flexRemark">
+                <span>说明详情:</span>
+                <span>{{remarkBack.content}}</span>
+              </p>
+              <p class="del_remark">
+                <el-button type="primary" icon="el-icon-delete" size="mini" @click="delRemark(indexRB)">删除</el-button>
+              </p>
+            </li>
+          </ul>
+        </div>
+      </el-dialog>
+    </div>
+    <!-- 项目说明类型历史记录 -->
+    <div class="project_remark">
+      <el-dialog
+        :title="remarkBoxTitle"
+        :visible.sync="remarkTypeBack"
+        width="45%">
+        <div class="" style="maxHeight:350px;overflow:auto;paddingBottom:20px;">
+          <p style="width:100%;textAlign:center;color:#666;fontSize:15px;lineHeight:50px;" v-if="isHasRLog">暂无记录</p>
+          <ul class="remarkBack">
+            <li v-for="(remarkBack,indexRB) in remarkLogList">
+              <p>更新时间:&nbsp;&nbsp;&nbsp;{{remarkBack.time}}</p>
+              <p class="flexRemark">
+                <span>说明详情:</span>
+                <span>{{remarkBack.content}}</span>
+              </p>
+            </li>
+          </ul>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </div>
 </template>
@@ -1414,16 +1487,27 @@ export default {
         startTime:null,//入场时间
         endTime:null,//完工时间
         acceptTime:null,//验收时间
+        remarkList:[],//项目说明列表
       },
       noPro:false,//无数据情况
       blFounder:false,//变更负责人
       changeFounText:null,//搜索变更负责人
       founderID:null,//变更负责人ID
+      remarkTypeList:[],//项目说明类别列表
+      remarkType:false,//项目说明盒子
+      remarkBoxTitle:null,//项目说明盒子title
+      remarkBoxCode:null,//项目说明盒子类型码
+      remarkLogList:[],//项目说明盒子历史列表
+      remarkTime:null,//项目说明更新时间
+      remarkCon:null,//项目说明更新内容
+      isHasRLog:false,//是否有项目说明记录
+      remarkTypeBack:false,//回显项目说明盒子
     }
   },
   created(){
     this.getProList();
-    this.getLineList()
+    this.getLineList();
+    this.getRemarkType()
   },
   computed:{
     workEndTime(){
@@ -1431,6 +1515,9 @@ export default {
     },
     workAcceptTime(){
       return this.proStateMes.acceptTime  //4
+    },
+    remarkLog(){
+      return this.remarkLogList.length;
     }
   },
   watch:{
@@ -1482,9 +1569,36 @@ export default {
         this.isDown=false;
       }
     },
-
+    remarkType(val,oldVal){
+      if(!val){
+        this.remarkLogList=[];
+      }
+    },
+    remarkTypeBack(val,oldVal){
+      if(!val){
+        this.remarkLogList=[];
+      }
+    },
+    remarkLog(val,old){
+      if(val<1){
+        this.isHasRLog=true;
+      }else{
+        this.isHasRLog=false;
+      }
+    }
   },
   methods:{
+    getRemarkType(){
+      this.$axios.get(this.url+'/enum/projectRemarkList').then((res)=>{
+        if(res.data.code==0){
+          this.remarkTypeList=res.data.data;
+        }else{
+          this.$message.error(res.data.msg)
+        }
+      }).catch((err)=>{
+        this.$message.error('未知错误,请联系管理员')
+      })
+    },
     getLineList(){//获取产品线选项
       this.$axios.get(this.url+'/usingTechnologyList').then((res)=>{
         if(res.data.code==0){
@@ -2267,7 +2381,7 @@ export default {
     threeStep(index){//第三步进程管理
       let _vm=this;
       _vm.proID=_vm.proList[index].id;
-      _vm.$axios.get(_vm.url+'/projectInfo?projectId='+_vm.proID).then((res)=>{
+      _vm.$axios.get(_vm.url+'/projectInfo?projectId='+_vm.proList[index].id).then((res)=>{
         if(res.data.code==0){
           _vm.proStateMes.stateText=res.data.data.stateStr;
           _vm.proStateMes.state=res.data.data.state;
@@ -2279,6 +2393,7 @@ export default {
           _vm.proStateMes.startTime=_vm.conversionTime(res.data.data.startTime);
           _vm.proStateMes.endTime=_vm.conversionTime(res.data.data.finishTime);
           _vm.proStateMes.acceptTime=_vm.conversionTime(res.data.data.acceptTime);
+          _vm.proStateMes.remarkList=res.data.data.projectRemarkVOList;
           _vm.pointList=res.data.data.projectPointVOList;
           _vm.pointList.forEach((e)=>{
             _vm.$set(e,'goWorkList',[]);
@@ -2297,7 +2412,7 @@ export default {
               });
             }
           });
-          res.data=null;
+          // res.data=null;
           const loading = _vm.$loading({
             lock: true,
             text: '数据获取中...',
@@ -3673,6 +3788,79 @@ export default {
     //     this.pointList[index].goWorkList[workIndex].state=1;
     //   }
     // },
+    onRemarkTypr(index,num){//回显项目说明列表
+      let _vm=this;
+      _vm.remarkBoxTitle=_vm.remarkTypeList[index].name;
+      _vm.remarkBoxCode=_vm.remarkTypeList[index].code;
+      if(num==1){
+        if(_vm.proStateMes.remarkList!=null){
+          _vm.proStateMes.remarkList.forEach((e)=>{
+            if(e.type==_vm.remarkBoxCode){
+              _vm.remarkLogList.push(e)
+            }
+          });
+        }else{
+          _vm.remarkLogList=[]
+        };
+        _vm.remarkType=true;
+      }else{
+        _vm.remarkBoxTitle=_vm.remarkTypeList[index].name;
+        if(_vm.projectMes.projectRemarkVOList!=null){
+          _vm.projectMes.projectRemarkVOList.forEach((e)=>{
+            if(e.type==_vm.remarkBoxCode){
+              _vm.remarkLogList.push(e)
+            }
+          });
+          _vm.remarkTypeBack=true;
+        }else{
+          _vm.remarkLogList=[]
+        };
+      }
+    },
+    sunRemark(){//提交项目说明
+      if(this.remarkTime==null||this.remarkTime==''){
+        this.$message.error('请选择更新时间')
+      }else if(this.remarkCon==null||this.remarkCon==''){
+        this.$message.error('请输入对应说明')
+      }else{
+        let formdata=new FormData();
+        formdata.append('content',this.remarkCon)
+        formdata.append('type',this.remarkBoxCode)
+        formdata.append('time',this.remarkTime)
+        formdata.append('projectId',this.proID);
+        this.$axios.post(this.url+'/projectRemark/save',formdata).then((res)=>{
+          if(res.data.code==0){
+            this.$message.success('上传记录成功');
+            this.remarkLogList.push(res.data.data);
+            this.remarkCon=null;
+            this.remarkTime=null;
+          }else{
+            this.$message.error(res.data.msg)
+          }
+        }).catch((err)=>{
+          this.$message.error('未知错误,请联系管理员')
+        })
+      }
+    },
+    delRemark(index){
+      // /projectRemark/delete/
+      this.$confirm('此操作将删除该条记录, 是否继续?', '提示', {
+         confirmButtonText: '确定',
+         cancelButtonText: '取消',
+         type: 'warning'
+       }).then(() => {
+         this.$axios.get(this.url+'/projectRemark/delete/'+this.remarkLogList[index].id).then((res)=>{
+           if(res.data.code==0){
+             this.remarkLogList.splice(index,1);
+             this.$message.success('删除记录成功')
+           }else{
+             this.$message.error(res.data.msg)
+           }
+         }).catch((err)=>{
+           this.$message.error('未知错误,请联系管理员')
+         })
+       })
+    },
   }
 }
 </script>
@@ -4465,6 +4653,61 @@ input[type=checkbox]:checked:after {
       }
       li:last-child{
         margin-bottom: 70px;
+      }
+    }
+  }
+  .remarkBoxCon{
+    line-height: 50px;
+    width: 100%;
+    text-align: left;
+    box-sizing: border-box;
+    padding-left: 30px;
+    position: relative;
+    span{
+      position: absolute;
+      left:30px;
+    }
+  }
+  .sub_remark{
+    width: 100%;
+    text-align: right;
+    box-sizing: border-box;
+    padding-right: 30px;
+    margin-top: 10px;
+  }
+  .remarkBack{
+    width: 100%;
+    li{
+      box-sizing: border-box;
+      padding-left: 20px;
+      min-height: 120px;
+      width: 80%;
+      background: white;
+      margin:0 auto;
+      margin-top: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 5px #333;
+      p{
+        line-height:40px;
+      }
+      .flexRemark{
+        width: 100%;
+        display: flex;
+        span{
+          display: inline-block;
+        }
+        span:first-child{
+          width: 12%;
+        }
+        span:last-child{
+          width: 88%;
+        }
+      }
+      .del_remark{
+        width: 100%;
+        text-align: right;
+        box-sizing: border-box;
+        padding-right: 20px;
       }
     }
   }
