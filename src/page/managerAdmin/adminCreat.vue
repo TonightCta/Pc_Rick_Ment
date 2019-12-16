@@ -614,7 +614,7 @@
             ></el-input>
           </p>
           <p class="cess_remark" style="marginTop:20px;">
-            <el-button type="primary" v-for="(reType,Reindex) in remarkTypeList" size="medium" @click="onRemarkTypr(Reindex,1)">{{reType.name}}</el-button>
+            <el-button type="primary" v-for="(reType,Reindex) in remarkTypeList" :key="Reindex" size="medium" @click="onRemarkTypr(Reindex,1)">{{reType.name}}</el-button>
           </p>
           <p class="cess_btn">
             <el-button type="primary" size="medium" @click="saveProState()">保存</el-button>
@@ -900,7 +900,7 @@
           </li>
           <li>
             <p class="cess_remark" style="marginTop:20px;">
-              <el-button type="primary" v-for="(reType,Reindex) in remarkTypeList" size="medium" @click="onRemarkTypr(Reindex,2)">{{reType.name}}</el-button>
+              <el-button type="primary" v-for="(reType,Reindex) in remarkTypeList" :key="Reindex" size="medium" @click="onRemarkTypr(Reindex,2)">{{reType.name}}</el-button>
             </p>
           </li>
         </ul>
@@ -1181,7 +1181,7 @@
       <el-dialog
         :title="remarkBoxTitle"
         :visible.sync="remarkType"
-        width="45%">
+        width="50%">
         <div class=""  style="maxHeight:450px;overflow:auto;paddingBottom:20px;">
           <p class="remarkBoxCon">
             记录时间:
@@ -1209,11 +1209,13 @@
           <p>历史记录</p>
           <p style="width:100%;textAlign:center;color:#666;fontSize:15px;lineHeight:50px;" v-if="isHasRLog">暂无记录</p>
           <ul class="remarkBack">
-            <li v-for="(remarkBack,indexRB) in remarkLogList">
+            <li v-for="(remarkBack,indexRB) in remarkLogList" :key="indexRB">
               <p>更新时间:&nbsp;&nbsp;&nbsp;{{remarkBack.time}}</p>
               <p class="flexRemark">
                 <span>说明详情:</span>
-                <span>{{remarkBack.content}}</span>
+                <pre style="textAlign:left;">
+                  <span>{{remarkBack.content}}</span>
+                </pre>
               </p>
               <p class="del_remark">
                 <el-button type="primary" icon="el-icon-delete" size="mini" @click="delRemark(indexRB)">删除</el-button>
@@ -1228,15 +1230,17 @@
       <el-dialog
         :title="remarkBoxTitle"
         :visible.sync="remarkTypeBack"
-        width="45%">
+        width="50%">
         <div class=""  style="maxHeight:350px;overflow:auto;paddingBottom:20px;">
           <p style="width:100%;textAlign:center;color:#666;fontSize:15px;lineHeight:50px;" v-if="isHasRLog">暂无记录</p>
           <ul class="remarkBack">
-            <li v-for="(remarkBack,indexRB) in remarkLogList">
+            <li v-for="(remarkBack,indexRB) in remarkLogList" :key="indexRB">
               <p>更新时间:&nbsp;&nbsp;&nbsp;{{remarkBack.time}}</p>
               <p class="flexRemark">
                 <span>说明详情:</span>
-                <span>{{remarkBack.content}}</span>
+                <pre>
+                  <span>{{remarkBack.content}}</span>
+                </pre>
               </p>
             </li>
           </ul>
@@ -3825,7 +3829,8 @@ export default {
         this.$axios.post(this.url+'/projectRemark/save',formdata).then((res)=>{
           if(res.data.code==0){
             this.$message.success('上传记录成功');
-            this.remarkLogList.push(res.data.data);
+            this.remarkLogList.unshift(res.data.data);
+            this.proStateMes.remarkList.unshift(res.data.data);
             this.remarkCon=null;
             this.remarkTime=null;
           }else{
@@ -4693,15 +4698,20 @@ input[type=checkbox]:checked:after {
         span:first-child{
           width: 12%;
         }
-        span:last-child{
+        pre{
           width: 88%;
+          word-wrap:break-word;
+          word-break:break-all;
+          overflow: auto;
+          margin-top: 20px;
         }
       }
       .del_remark{
         width: 100%;
         text-align: right;
         box-sizing: border-box;
-        padding-right: 20px;
+        margin-top: 30px;
+        margin-left: -150px;
       }
     }
   }

@@ -236,7 +236,7 @@
             </li>
             <li>
               <p class="cess_remark" style="marginTop:20px;">
-                <el-button type="primary" v-for="(reType,Reindex) in remarkTypeList" size="medium" @click="onRemarkTypr(Reindex,2)">{{reType.name}}</el-button>
+                <el-button type="primary" v-for="(reType,Reindex) in remarkTypeList" :key="Reindex" size="medium" @click="onRemarkTypr(Reindex,2)">{{reType.name}}</el-button>
               </p>
             </li>
           </ul>
@@ -557,15 +557,17 @@
         <el-dialog
           :title="remarkBoxTitle"
           :visible.sync="remarkTypeBack"
-          width="45%">
+          width="50%">
           <div class="" style="maxHeight:350px;overflow:auto;paddingBottom:20px;">
             <p style="width:100%;textAlign:center;color:#666;fontSize:15px;lineHeight:50px;" v-if="isHasRLog">暂无记录</p>
             <ul class="remarkBack">
-              <li v-for="(remarkBack,indexRB) in remarkLogList">
+              <li v-for="(remarkBack,indexRB) in remarkLogList" :key="indexRB">
                 <p>更新时间:&nbsp;&nbsp;&nbsp;{{remarkBack.time}}</p>
                 <p class="flexRemark">
                   <span>说明详情:</span>
-                  <span>{{remarkBack.content}}</span>
+                  <pre>
+                    <span>{{remarkBack.content}}</span>
+                  </pre>
                 </p>
               </li>
             </ul>
@@ -2001,8 +2003,13 @@ export default {
         span:first-child{
           width: 12%;
         }
-        span:last-child{
+        pre{
           width: 88%;
+          word-wrap:break-word;
+          word-break:break-all;
+          overflow: auto;
+          margin-top: 30px;
+          margin-left: -150px;
         }
       }
       .del_remark{
