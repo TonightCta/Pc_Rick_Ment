@@ -258,7 +258,7 @@
           </ul>
           <div class="coll">
             <el-collapse v-model="activeNames" @change="handleChange">
-              <el-collapse-item :name="point.openKey">
+              <el-collapse-item name="1">
                   <template slot="title">
                    <span style="color:rgba(235,122,29,1);fontSize:16px;">项目进程【点击展开】</span>
                   </template>
@@ -299,7 +299,7 @@
                     </el-col>
                   </el-row>
               </el-collapse-item>
-              <el-collapse-item :name="point.openKey">
+              <el-collapse-item name="2">
                   <template slot="title">
                    <span style="color:rgba(235,122,29,1);fontSize:16px;">项目文档【点击展开】</span>
                   </template>
@@ -566,7 +566,7 @@ export default {
       openDetils:false,//打开详情弹框
       showMes:false,//显示内容
       page:0,//当前页
-      activeNames: [],
+      activeNames: ['1','2'],
       searchMes:{//筛选条件
         proName:null,//项目名称
         cusName:null,//客户名称
@@ -1498,7 +1498,9 @@ export default {
           });
           _vm.remarkTypeBack=true;
         }else{
-          _vm.remarkLogList=[]
+          _vm.remarkTypeBack=true;
+          _vm.remarkLogList=[];
+          _vm.isHasRLog=true;
         };
     },
   }

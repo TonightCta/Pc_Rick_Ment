@@ -3804,7 +3804,8 @@ export default {
             }
           });
         }else{
-          _vm.remarkLogList=[]
+          _vm.remarkLogList=[];
+          _vm.isHasRLog=true;
         };
         _vm.remarkType=true;
       }else{
@@ -3818,7 +3819,9 @@ export default {
           _vm.remarkTypeBack=true;
         }else{
           _vm.remarkLogList=[]
+          _vm.isHasRLog=true;
         };
+        _vm.remarkTypeBack=true;
       }
     },
     sunRemark(){//提交项目说明
@@ -3836,6 +3839,9 @@ export default {
           if(res.data.code==0){
             this.$message.success('上传记录成功');
             this.remarkLogList.unshift(res.data.data);
+            if(this.proStateMes.remarkList==null){
+              this.$set(this.proStateMes,'remarkList',[])
+            }
             this.proStateMes.remarkList.unshift(res.data.data);
             this.remarkCon=null;
             this.remarkTime=null;
@@ -3843,6 +3849,7 @@ export default {
             this.$message.error(res.data.msg)
           }
         }).catch((err)=>{
+          console.log(err)
           this.$message.error('未知错误,请联系管理员')
         })
       }
@@ -4717,7 +4724,7 @@ input[type=checkbox]:checked:after {
         width: 100%;
         text-align: right;
         box-sizing: border-box;
-        padding-right: 20px;
+        margin-right: -50px;
       }
     }
   }

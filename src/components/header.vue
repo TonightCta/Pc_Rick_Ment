@@ -4,7 +4,7 @@
 
     </div>
     <!-- <img src="../../static/img/tab_logo_home_nor.png" alt=""> -->
-    <p style="position:absolute;left:30%;color:red;top:0;">当前环境:<span style="text-decoration:underline;">{{url}}</span></p>
+    <!-- <p style="position:absolute;left:30%;color:red;top:0;">当前环境:<span style="text-decoration:underline;">{{url}}</span></p> -->
     <p class="signMes" ref="signMes">
       欢迎您,
       <el-popover
@@ -71,7 +71,7 @@ export default {
     },
     resetPass(){//修改密码
       let formdata=new FormData();
-      formdata.append('operatorId',window.localStorage.getItem('Uid'))
+      formdata.append('operatorId',window.sessionStorage.getItem('Uid'))
       if(this.oldPass==null||this.oldPass==''){
         this.$message.error('请输入原密码')
       }else if(this.newPass==null||this.newPass==''){

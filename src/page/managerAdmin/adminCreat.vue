@@ -3799,6 +3799,7 @@ export default {
           });
         }else{
           _vm.remarkLogList=[]
+          _vm.isHasRLog=true;
         };
         _vm.remarkType=true;
       }else{
@@ -3811,8 +3812,10 @@ export default {
           });
           _vm.remarkTypeBack=true;
         }else{
-          _vm.remarkLogList=[]
+          _vm.remarkLogList=[];
+          _vm.isHasRLog=true;
         };
+        _vm.remarkTypeBack=true;
       }
     },
     sunRemark(){//提交项目说明
@@ -3830,6 +3833,9 @@ export default {
           if(res.data.code==0){
             this.$message.success('上传记录成功');
             this.remarkLogList.unshift(res.data.data);
+            if(this.proStateMes.remarkList==null){
+              this.$set(this.proStateMes,'remarkList',[])
+            }
             this.proStateMes.remarkList.unshift(res.data.data);
             this.remarkCon=null;
             this.remarkTime=null;
@@ -4704,6 +4710,7 @@ input[type=checkbox]:checked:after {
           word-break:break-all;
           overflow: auto;
           margin-top: 20px;
+          margin-left: -150px;
         }
       }
       .del_remark{

@@ -1631,7 +1631,9 @@ export default {
           });
           _vm.remarkTypeBack=true;
         }else{
-          _vm.remarkLogList=[]
+          _vm.remarkTypeBack=true;
+          _vm.remarkLogList=[];
+          _vm.isHasRLog=true;
         };
     },
   }
